@@ -1,0 +1,138 @@
+﻿div.wheel_selector {
+
+    position: relative;
+    overflow: visible;
+    padding-bottom: 30%;
+}
+
+div.wheel_selector > img{
+    position: absolute; 
+    right: 5%; 
+    bottom: 0;
+    width: 20%;
+    transition: visibility .5s, opacity .5s;
+    opacity: 1;
+    visibility: visible;
+}
+
+div.wheel_selector > img.invisible {opacity: 0;}
+
+.wheel_selector > .planets {
+    display: inline-block;  
+    position: absolute;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+}
+
+.wheel_selector > .button_selector {
+
+    
+    position: absolute;
+    right: 1em;
+    width: 1em;
+    text-align: center;
+    top:0;
+    bottom:0;
+    height: 100%;
+}
+
+.button_selector > div {
+    display: table; 
+    height:100%;
+    width: 100%;
+}
+.button_selector > div > div {
+     display: table-cell;
+     vertical-align: middle;
+}
+.button_selector > div > div> input[type=radio] {
+    /*Лучше всего было бы поставить display:none ... 
+      Но Сами-Знаете-Какой-Браузер слишком туп для этого( */
+
+     position: absolute; 
+     opacity:0;
+     filter: alpha(opacity=0);
+     width:100%; 
+}
+
+input[type=radio] { cursor: pointer;}
+
+.button_selector > div > div> label {
+    cursor: pointer;
+    left:0; 
+    display: block; 
+    transition: all .5s; 
+    box-shadow: 0px 0px 5px #9f3737;
+    margin-bottom: .3em; 
+    border-radius: 1em 1em; 
+    border: .2em solid white; 
+    width:100%;
+    padding-bottom: 100%; 
+    background-color: #9f3737;
+}
+.button_selector > div > div> label>.tooltip {
+    right: 200%;
+    margin-top: -50%;
+}
+.button_selector > div > div > input[type=radio]:hover + label {
+     background-color: rgb(64,64,64);
+}
+.button_selector > div > div > input[type=radio]:hover + label > .tooltip {
+    visibility: visible;
+    right: 150%;  
+    opacity: 1;
+}
+    .button_selector > div > div> input[type=radio]:checked + label {
+        background-color: black;
+    }
+
+.object {
+    -webkit-transition: bottom linear .25s, left linear 0.25s, height linear 0.25s;
+    -moz-transition: bottom linear .25s, left linear 0.25s, height linear 0.25s;
+    -o-transition: bottom linear .25s, left linear 0.25s, height linear 0.25s;
+    transition: bottom linear .25s, left linear 0.25s, height linear 0.25s;
+    visibility: hidden;
+    position: absolute;
+}
+
+
+.object.focused:hover + .tooltip, .object.moon:hover + .tooltip {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: .5s;
+} 
+
+.object.moon {
+    transition: opacity .5s;
+    visibility: visible;
+    opacity: 1;
+}
+.object.focused {
+    
+    left: 30%;
+    bottom: 0;
+    height: 100%;
+    visibility: visible;
+}
+
+.object.planet.moveforward {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 250%;
+    visibility: visible;
+}
+
+.object.planet.moveback {
+    left: 10%;
+    bottom: 0;
+    height: 0;
+    visibility: visible;
+}
+
+.invisible { visibility: hidden;}
+
+.object.moon.invisible {
+    opacity: 0;
+}

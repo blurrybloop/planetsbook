@@ -1,0 +1,315 @@
+﻿@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700&subset=latin,cyrillic);
+
+body {
+    background: url("../img/bg.jpg");
+}
+
+a > img {
+border: none;
+
+}
+
+a{
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dashed;
+}
+
+.left_slide {
+    transition: width .5s;
+    display: inline-block;
+    position: fixed; 
+    top:0; 
+    bottom:0; 
+    left:0; 
+    background-color: rgb(40, 39, 39); 
+    text-align: left;
+    padding-top: 1em;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-y: auto;  
+    width: 0;  
+    z-index: 100;
+    color: rgb(212, 206, 206);
+}
+
+.left_slide > div:first-child{
+    padding-bottom: .5em;
+    border-bottom: .1em solid rgb(212, 206, 206);
+}
+
+.left_slide a {
+    color: inherit;
+    border-bottom: none;
+}
+
+#menu {
+    width: 4em;
+    z-index: 99;
+}
+
+.expand {
+    margin-left: 1em;
+    transition: transform .5s;
+}
+
+.left_slide.expanded {
+    width: 20em !important;
+}
+
+.left_slide.expanded .expand {
+    transform: rotate(-180deg);
+}
+
+.left_slide h1 {
+    font-size: 16pt;
+    visibility: visible;
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    margin-left: 1em;
+
+}
+
+.left_slide.expanded h1 { visibility: visible;}
+
+.items {
+    width: 100%;
+    position: absolute;
+    display: inline-block;
+    margin-top: 1em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    bottom: 0;
+    top: 3em;
+    left: 0;
+}
+
+.items > .bottom{
+    bottom:1em;
+    position: absolute;
+}
+
+.items * {
+    display: block;
+    cursor: pointer;
+    margin: 0em 0;
+}
+
+.items img {
+
+    display: inline-block;
+    width: 1.4em;
+    height: 1.4em;
+    margin: .7em 1.1em 0;
+}
+
+.items p {
+     white-space:nowrap;
+     display: inline-block;
+     position: absolute;
+     margin: .7em .7em 0;
+}
+
+.items > .search_container{
+     background: linear-gradient(rgb(53, 53, 53), #4b4747, rgb(53, 53, 53));
+      margin: 1em 1em 1em 1em;
+          border-radius: .2em;
+          white-space: nowrap;
+          border:rgb(74, 72, 72) solid .1em;
+}
+
+.items input[type=search]
+{
+    width: 100%;
+   height: 1.5em;
+   background: none;
+    border: none;
+    font-size:1em;
+    color: inherit;
+    display: inline-block;
+    width: 80%;
+    padding: .5em;
+}
+
+.items > .search_container > img{
+    right: .5em;
+    top:1em;
+    position: absolute;
+}
+
+#planets_menu{
+    background-color: rgb(0, 30, 18);
+}
+
+#moon_menu{
+    background-color: rgb(30, 4, 0);
+}
+
+div#main {
+    position: absolute;
+    display: inline-block;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    max-width: 1600px;
+    max-height: 900px;
+    overflow-x: hidden;
+}
+
+div.banner {
+    position: relative;
+    height: 20%;
+    text-align: center;
+}
+
+div.banner > a > img {
+    margin-left: -10%;
+    height: 90%;
+    margin-bottom: 5em;
+}
+
+
+
+footer {
+    color: white;
+    text-align: right;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-right: -6em;
+    bottom: 0; 
+    position: fixed; 
+    width: 100%;
+}
+
+footer> address {
+    margin-right: 1em;
+}
+
+.tooltip{
+    display: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: absolute;
+    opacity: 0;
+    z-index: 1000;
+    display: table;
+     visibility: hidden;
+    transition: all .5s;   
+}
+
+.tooltip>.tiptext{
+    display: table-cell;
+    text-align: center;
+    vertical-align: baseline;
+    padding: .5em;
+    background-color: rgb(64,64,64); 
+    color: white;
+    white-space:nowrap;
+}
+
+.tooltip>.tiptext>* {
+    display: inline;
+    margin-right: .3em;
+    height: 1em;
+}
+
+.tooltip>.tipimg{ 
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.content{
+    font-family: 'Open Sans', sans-serif;
+   left: 6em;
+   white-space: nowrap;
+   vertical-align: top;
+   position: absolute;
+   right: 0;
+
+}
+
+.content > *{
+    background-color: rgb(20, 19, 19);
+    opacity: .7;
+    color: white;
+    box-shadow: 0 0 10px gray;
+    border: solid 1px black;
+    margin-bottom: 1em;
+    font-size: 14px;
+}
+
+.read{
+    width: 77%;
+}
+
+article{
+    white-space: normal;
+    border-bottom: 1px dashed white;
+}
+
+.updown{
+    margin-bottom: 1em;
+}
+
+.updown > input[type=radio]{
+   opacity: 0;
+   position: absolute;
+}
+
+.updown > input[type=radio] + div{
+   
+}
+
+.updown >input[type] + div>label{
+    cursor: pointer;
+    background-color: rgb(53, 51, 51);
+    display: block;
+    padding-bottom: 1em;
+    padding-top: 1em;
+    padding-left: 1em;
+    margin-right: 1em;
+}
+
+.updown >input[type] + div>div{
+    text-align: justify;
+    white-space: normal;
+    height: 0;
+    overflow-y: scroll;
+    transition: height .5s;
+    background-color: rgb(73, 68, 68);
+    margin-right: 1em;
+    border-top: 1px solid rgb(68, 66, 66);
+    padding-left: 2em;
+    padding-right: 2em;
+    text-indent: 2em;
+}
+
+.updown >input[type]:checked + div>div{
+    height: 15em;
+
+}
+
+.read > *, aside > * {
+    padding-left: 1em;
+}
+
+.updown label > a{
+
+}
+
+.updown label > img{
+    float: right;
+    display: inline-block;
+}
+.updown label > a{
+   
+    display: inline-block;
+}
+
+aside{
+    right: 1%;
+    position: absolute;
+    top:0;
+    width: 20%;
+}
