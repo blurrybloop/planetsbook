@@ -1,11 +1,10 @@
-<div id="menu" class="left_slide">
-    <div>
-        <img src="img/arrow.png" class="expand" />
-        <a href="/">
+<div id="menu" class="sidebar">
+            <div>
+            <img src="img/arrow.png" class="expand" />
             <h1>PlanetsBook</h1>
-        </a>
-    </div>
-    <div class="items">
+        </div>
+    <div class="items vscroll">
+
         <a href="/">
             <img src="img/house.png" /><p>Домой</p>
         </a>
@@ -41,7 +40,7 @@
 
     </div>
 </div>
-<div class="left_slide" id="planets_menu">
+<div class="sidebar vscroll" id="planets_menu">
     <div>
         <img src="img/arrow.png" class="expand" />
         <h1>Планеты</h1>
@@ -76,7 +75,7 @@
         </a>
     </div>
 </div>
-<div class="left_slide" id="moon_menu">
+<div class="sidebar vscroll" id="moon_menu">
     <div>
         <img src="img/arrow.png" class="expand" />
         <h1>Спутники</h1>
@@ -111,7 +110,7 @@
         </a>
     </div>
 </div>
-<div class="left_slide" id="search_menu">
+<div class="sidebar vscroll" id="search_menu">
     <div>
         <img src="img/arrow.png" class="expand" />
         <h1>Поиск</h1>
@@ -127,12 +126,12 @@
  <script>
      $('#main').click(function () {
 
-             $('.left_slide').removeClass('expanded');
+             $('.sidebar').removeClass('expanded');
          });
 
          $('.expand').click(this, function () {
-             if ($(this).parents('.left_slide').hasClass('expanded')) $(this).parents('.left_slide').removeClass('expanded');
-             else $(this).parents('.left_slide').addClass('expanded');
+             if ($(this).parents('.sidebar').hasClass('expanded')) $(this).parents('.sidebar').removeClass('expanded');
+             else $(this).parents('.sidebar').addClass('expanded');
          });
 
          $('#planets_item').click(function () {

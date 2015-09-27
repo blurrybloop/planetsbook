@@ -9,7 +9,7 @@
 </head>
 <body style="background-color: black">
         
-        <div id="main">
+        <div id="main" class="vscroll">
          <?php include('/view/header.php'); ?>
         <div class="wheel_selector">
             <img src="img/scroll_tip.png" />
@@ -23,7 +23,7 @@
                     <div>
                         <input name="radio" type="radio" id="0" />
                         <label for="0">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Плутон</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -31,7 +31,7 @@
                         </label>
                         <input name="radio" type="radio" id="1" />
                         <label for="1">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Нептун</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -39,7 +39,7 @@
                         </label>
                         <input name="radio" type="radio" id="2" />
                         <label for="2">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Уран</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -47,7 +47,7 @@
                         </label>
                         <input name="radio" type="radio" id="3" />
                         <label for="3">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Сатурн</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -55,7 +55,7 @@
                         </label>
                         <input name="radio" type="radio" id="4" />
                         <label for="4">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Юпитер</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -63,7 +63,7 @@
                         </label>
                         <input name="radio" type="radio" id="5" />
                         <label for="5">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Марс</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -71,7 +71,7 @@
                         </label>
                         <input name="radio" type="radio" id="6" />
                         <label for="6">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Земля</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -79,7 +79,7 @@
                         </label>
                         <input name="radio" type="radio" id="7" />
                         <label for="7">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Венера</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -87,7 +87,7 @@
                         </label>
                         <input name="radio" type="radio" id="8" />
                         <label for="8">
-                            <div class="tooltip">
+                            <div class="tip">
                                 <div class="tiptext">Меркурий</div>
                                 <div class="tipimg">
                                     <img src="img/tooltip.png" /></div>
@@ -95,7 +95,7 @@
                         </label>
                         <input name="radio" type="radio" id="9" checked="checked" />
                         <label for="9">
-                            <span class="tooltip">
+                            <span class="tip">
                                 <span class="tiptext">Солнце</span>
                                 <span class="tipimg">
                                     <img src="img/tooltip.png" /></span>
