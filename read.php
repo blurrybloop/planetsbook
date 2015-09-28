@@ -39,7 +39,22 @@
                 </header>
                <p>Фотосфера - самый нижний слой атмосферы Солнца, в котором температура довольно быстро убывает от 8000 до 4000 К. Следствием конвективного движения вещества в верхних слоях Солнца является своеобразный вид фотосферы - грануляция. Фотосфера как бы состоит из отдельных зерен - гранул, размеры которых составляют в среднем несколько сотен (до 1000) километров. Гранула- это поток горячего газа, поднимающийся вверх. В темных промежутках между гранулами находится более холодный газ, опускающийся вниз. Каждая гранула существует всего 5-10 мин, затем на ее месте появляется новая, которая отличается от прежней по форме и размерам. Общая наблюдаемая картина при этом не меняется. Вещество фотосферы нагревается за счет энергии, поступающей из недр Солнца, а излучение, которое уходит в межпланетное пространство, уносит энергию, поэтому наружные слои фотосферы охлаждаются. В самых верхних слоях фотосферы плотность вещества составляет 10-3 - 10-4 кг/м3.</p>
             </article>-->
+                       <div style="text-align: right; margin-bottom: 1em;">             Сортировать по
+               
+
+                <div class="combobox" style="width: 20%; position: relative; height: 1.5em; margin-right: 2em;">
+                    
+                    <div class="combohead"><div>53242346</div><label for="c0" class="arrow"><img src="img/down_arrow.png"/></label></div>
+                    <input type="checkbox" id="c0" style="display: none;" />
+                    <div class="options">
+                    <div>43263425</div>
+                    <div>huyhyhuy</div>
+                        <div>9999999</div>
+                    </div>
+                </div>
+           </div> 
             <div class="updown">
+               
             <input name="radio" id="0" type="radio"/>
             <div>
                 <label for="0"><img src="img/down_arrow.png"/><a href="/">Гипотеза о происхождении пятен на Солнце</a>
@@ -76,7 +91,26 @@
      <?php include("view/slide_menu.php"); ?>
     <?php include("view/footer.php"); ?>
     <script>
+        $('.combobox > .options > div')
 
+        //$(document).ready(function () {
+        //    var t = parseInt($('.combobox > .options > div').css('top'));
+          
+        //    $('.combobox').click(function () {
+        //        $('.combobox > .options').css('top', parseInt($('.combobox > .options > div').css('top')));
+        //        $('.combobox > .options').css('height', $('.combobox > .options > div').length *  $('.combobox > .options > div').height());
+
+        //    });
+
+        //    $('.combobox > .options > div').click(function () {
+
+        //        var h = parseInt($(this).css('height'));
+        //        $(this).parent().css('top', (-($(this).parent().children().index(this)) * h) + 'px');
+        //        $('.combobox').css('overflow', 'hidden');
+        //    });
+
+        //});
+       
     </script>
 </body>
    
