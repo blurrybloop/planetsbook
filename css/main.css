@@ -35,6 +35,10 @@ h1{
     font-weight: bold;
 }
 
+li{
+    padding-bottom: 1em;
+}
+
 .sidebar {
     transition: width .5s;
     position: fixed; 
@@ -185,6 +189,70 @@ footer > address {
     margin-right: 2em;
 }
 
+.msgbox_container{
+    background-color: rgba(0,0,0,.9);
+    position: fixed;
+    left: 0;
+    top:0;
+    width:100%;
+    height:100%;
+    z-index: 0;
+    overflow: auto;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility .3s, opacity .3s;
+}
+
+.msgbox_container.showed{
+    visibility: visible;
+    opacity: 1;
+}
+
+.msgbox_container > div{
+    transition: top .3s;
+    display: table;
+    position: absolute;
+    top: -100%;
+    width:100%;
+    height:100%;    
+}
+
+.msgbox_container.showed > div{
+    top: 0;
+}
+
+.msgbox_container > div > div{
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.msgbox{
+       z-index: 1000;
+    padding: 1em 0 0 1em;
+    text-align: left;
+    background-color: #282727; 
+    width: 30%;
+    left: 0;
+    right:0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.msgbox > div:first-child{
+    padding-right: 1em;
+    text-align: right;
+}
+
+.msgbox > div:first-child > div{
+    cursor: pointer;
+}
+
+.msgbox > div:first-child + div{
+overflow: auto;
+padding-right:1em;
+}
+
 .tip{
     display: none;
     position: absolute;
@@ -235,12 +303,12 @@ article{
     margin-bottom: 1em;
 }
 
-.updown > input[type=radio]{
+.updown > input{
    opacity: 0;
    position: absolute;
 }
 
-.updown >input[type] + div>label{
+.updown >input + div>label{
     cursor: pointer;
     background-color: rgba(53, 51, 51, .5);
     display: block;
@@ -249,12 +317,12 @@ article{
 	overflow: hidden;  
 }
 
-.updown >input[type] + div>label > a{
+.updown >input + div>label > a{
     font-weight: bold;
     font-size: 1.2em;
 }
 
-.updown >input[type] + div>label > span{
+.updown >input + div>label > span{
      margin-top:1em; 
      margin-right:.7em; 
      font-size: .9em;
@@ -274,7 +342,7 @@ article{
     text-indent: 2em;
 }
 
-.updown >input[type]:checked + div>.updown_content{
+.updown >input:checked + div>.updown_content{
     height: 15em;
 }
 
@@ -313,7 +381,7 @@ background: url(/img/calender.png) 0 0 no-repeat;
 	background: url(/img/eye1.png) 0 center no-repeat;
 }
 
-.updown >input[type]:checked + div>label > img{
+.updown >input:checked + div>label > img{
 	-moz-transform: scale(1,-1);
     -webkit-transform: scale(1, -1);
     -o-transform: scale(1, -1);
@@ -359,9 +427,17 @@ aside{
     margin-top: -1em;
     visibility: hidden;
     opacity: 0;
-    transition: margin-top .5s, visibility .5s, opacity .5s;
+    transition: margin-top .2s, visibility .2s, opacity .2s;
     overflow: hidden;
     background-color: inherit;
+}
+
+.combobox > .options > div{
+     transition: background-color .3s;
+}
+
+.combobox > .options > div:hover{
+    background-color: rgb(33, 30, 30);
 }
 
 .combobox > input[type=checkbox]:checked + .options{
