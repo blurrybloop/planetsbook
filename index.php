@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>PlanetsBook</title>
-    <link rel="stylesheet" href="css/main.css">
-     <link rel="stylesheet" href="css/wheel.css">
-    <!--[if lte IE 8]>
-        <script src="js/html5shiv.js"></script>
-    <![endif]-->
-</head>
-<body style="background-color: black">
-
-        <div id="main" class="vscroll">
-
-         <?php include('/view/header.php'); ?>
+<?php include('/view/header.php'); ?>  
         <div class="wheel_selector">
             <img src="img/scroll_tip.png" />
             <div class="planets">
@@ -130,10 +115,7 @@
             </div>
         </div>
         -->
-    </div>
-     <?php include('/view/slide_menu.php'); ?>
     <?php include('/view/footer.php'); ?>
-    <script src="js/jQuery/jquery-1.11.0.min.js"></script>
     <script src="js/wheel.js"></script>
    <script>
        $('.msgbox > div > div').click(function () {
@@ -143,11 +125,8 @@
        $(document).ready(function () {
            $('.msgbox_container').addClass('showed');
        });
-
        //$(window).resize(function () {
        //    var msg = $('.msgbox');
        //    msg.children('div:first-child + div').css('max-height', parseInt(msg.parent().height()) * 0.6);
        //});
    </script>
-</body>
-</html>

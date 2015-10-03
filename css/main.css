@@ -280,6 +280,7 @@ padding-right:1em;
    left: 6em;
    white-space: nowrap;
    position: absolute;
+   right: 0;
 }
 
 .content > *{
@@ -296,7 +297,218 @@ padding-right:1em;
 
 article{
     white-space: normal;
-    border-bottom: 1px dashed white;
+    padding: 0 3em 3em !important;
+    text-align: justify;
+    overflow: auto;
+}
+
+.info{
+    text-align: left;
+    display: block;
+    padding: .5em;
+    font-size: .9em;
+}
+
+article > header > h1{
+    font-size: 20pt;
+}
+
+header > .info{
+     background-color: rgba(73, 68, 68, .7);
+}
+
+article > figure{
+    margin: 1.5em;
+}
+
+article > figure.left{
+    float: left;
+    margin-left:0;
+}
+
+article > figure.right{
+    float: right;
+    margin-right:0;
+}
+
+
+figure> img{
+    width:100%;
+}
+
+figcaption{
+    text-align: center;
+}
+
+section.comments{
+    margin-top: 3em;
+}
+
+.comments > article{
+    padding: 0 !important;
+    background-color: rgba(42, 39, 39, 0.50);
+    border: 2px solid rgb(12, 11, 11);
+    margin-bottom: .1em;
+    width:100%;
+    display: table;
+    table-layout: fixed;
+    padding-left: 0 !important;
+}
+
+.comments > article > div{
+    padding: 1em;
+    display: table-cell;
+    vertical-align: top;
+}
+
+.comments > article > div:first-child{
+    text-align: center;
+    width: 160px;
+     border-right: 2px solid rgb(12, 11, 11);
+     font-size: .9em;
+}
+
+.comments > article > div:first-child > *{
+    display: table-cell;
+    padding: 1em 0;
+}
+
+.comments > article > div:last-child > .comm_body {
+    overflow-x: auto;
+    margin-bottom: 2em;
+}
+
+.comm_body > *:last-child{
+    margin-bottom:0;
+}
+
+.comments > article > div:last-child{
+    transition: opacity .2s;
+    position: relative;
+    padding: 1em .5em;
+    vertical-align: top;
+}
+
+.comments > .add{
+    text-align:center;
+    padding:1em;
+    cursor: pointer;
+}
+
+.comments > .add:after{ content: 'Добавить комментарий';}
+
+.comments > article > div:last-child > *{
+    padding: .2em 0;
+   width:100%;
+}
+.comm_footer{
+    position: absolute;
+    bottom: 0;
+    height: 0;
+    left:1em;
+    right:0;
+    width: auto !important;
+    overflow: hidden;
+    transition: height .3s;
+}
+
+.comments > article:hover .comm_footer{
+    height: 2em;
+}
+
+.comm_footer.maximized > div{
+    cursor: pointer;
+    margin-right: 1em;
+}
+
+.comm_footer.maximized > .comm_edit:after{content: 'Редактировать'}
+.comm_footer.maximized > .comm_del:after{content: 'Удалить'}
+.comm_footer.maximized > .comm_cancel:after{content: 'Отменить'}
+.comm_footer.maximized > .comm_send:after{content: 'Отправить'}
+.comm_footer.maximized > .comm_apply:after{content: 'Предпросмотр'}
+
+.comm_footer.edit{
+    height: 2em;
+}
+
+.comm_footer > div{
+    float: right;
+    transition: background-color .3s;
+    border-radius: 3px 3px;
+    display: inline-block;
+    padding: 3px 3px 3px 25px;
+    background-size: auto 1em;
+    background-position: 5px center;
+}
+
+.comm_footer > div:hover{
+    background-color: rgb(16, 14, 14);
+}
+
+.comm_del, .comm_cancel{
+background: url(/img/cross.png) no-repeat;
+}
+
+.comm_edit{
+    background: url(/img/edit.png) no-repeat;
+}
+
+.comm_send{
+    background: url(/img/send.png) no-repeat;
+}
+
+.comm_apply{
+    background: url(/img/eye.png) no-repeat;
+}
+
+.comments > article > div:last-child img{
+ 
+}
+
+.comm_header img{
+    height: 1.3em;
+}
+
+.comments .comm_header{
+    overflow: hidden;
+    font-size: .9em;
+    margin-bottom: 1em;
+}
+
+.comm_header > time{
+    padding-left: 18px;
+    background: url(/img/clock.png) 0 0 no-repeat;
+    background-size: 1em;
+    background-position: left center;
+}
+
+.comm_header > .rate{
+    float: right;
+}
+
+form[name=add_comm] >.comm_body{
+    overflow: hidden;
+
+}
+
+form[name=add_comm]  textarea{
+    padding:0; 
+    margin:0; 
+    width:100%; 
+
+    resize: none; 
+    background-color: transparent; 
+    border: none;
+        font-size: 1em;
+}
+
+.comments .comm_foo{
+    height: 100%
+}
+
+.rate > img{
+    margin: 0 1em;
+    height: 1em;
 }
 
 .updown{
@@ -320,13 +532,6 @@ article{
 .updown >input + div>label > a{
     font-weight: bold;
     font-size: 1.2em;
-}
-
-.updown >input + div>label > span{
-     margin-top:1em; 
-     margin-right:.7em; 
-     font-size: .9em;
-     display: block;
 }
 
 .updown_content{
@@ -371,6 +576,8 @@ article{
 
 .date{
 background: url(/img/calender.png) 0 0 no-repeat;
+background-size: auto 1em;
+background-position: left center;
 }
 
 .user{
