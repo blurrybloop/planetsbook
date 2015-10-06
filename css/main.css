@@ -10,6 +10,11 @@
     overflow-x: hidden;
 }
 
+.invisible{
+    visibility: hidden;
+    opacity:0;
+}
+
 body {
     background: url("../img/bg.jpg");
 }
@@ -196,7 +201,7 @@ footer > address {
     top:0;
     width:100%;
     height:100%;
-    z-index: 0;
+    z-index: 100;
     overflow: auto;
     visibility: hidden;
     opacity: 0;
@@ -344,63 +349,69 @@ section.comments{
     margin-top: 3em;
 }
 
-.comments > article{
+.comments > article{ 
+    transition: visibility .3s, opacity .3s; 
     padding: 0 !important;
-    background-color: rgba(42, 39, 39, 0.50);
     border: 2px solid rgb(12, 11, 11);
     margin-bottom: .1em;
-    width:100%;
-    display: table;
+    background-color: rgb(35, 31, 31);
+    background-image: url('/img/loading.gif');
+    background-position: center;
+    background-repeat: no-repeat;
     table-layout: fixed;
     padding-left: 0 !important;
 }
 
-.comments > article > div{
+.comment{
+    width:100%;
+    transition: visibility .3s, opacity .3s;
+    background-color: rgb(35, 31, 31);
+        display: table;
+}
+
+.comment > div{
     padding: 1em;
     display: table-cell;
     vertical-align: top;
 }
 
-.comments > article > div:first-child{
+.comment > div:first-child{
     text-align: center;
     width: 160px;
      border-right: 2px solid rgb(12, 11, 11);
      font-size: .9em;
 }
 
-.comments > article > div:first-child > *{
-    display: table-cell;
+.comment > div:first-child > *{
     padding: 1em 0;
 }
 
-.comments > article > div:last-child > .comm_body {
+.comment > div:first-child + div> .comm_body {
     overflow-x: auto;
-    margin-bottom: 2em;
+    margin: 0 2em 2em 1em;
+    line-height: 1.5em;
 }
 
 .comm_body > *:last-child{
     margin-bottom:0;
 }
 
-.comments > article > div:last-child{
-    transition: opacity .2s;
+.comment > div:first-child + div{
+    
     position: relative;
     padding: 1em .5em;
     vertical-align: top;
 }
 
-.comments > .add{
+.comments > div.add{
+    transition: visibility .3s, opacity .3s;
     text-align:center;
     padding:1em;
     cursor: pointer;
+    background: none;
 }
 
-.comments > .add:after{ content: 'Добавить комментарий';}
 
-.comments > article > div:last-child > *{
-    padding: .2em 0;
-   width:100%;
-}
 .comm_footer{
     position: absolute;
     bottom: 0;
@@ -412,7 +423,7 @@ section.comments{
     transition: height .3s;
 }
 
-.comments > article:hover .comm_footer{
+.comment:hover .comm_footer{
     height: 2em;
 }
 
@@ -426,6 +437,7 @@ section.comments{
 .comm_footer.maximized > .comm_cancel:after{content: 'Отменить'}
 .comm_footer.maximized > .comm_send:after{content: 'Отправить'}
 .comm_footer.maximized > .comm_apply:after{content: 'Предпросмотр'}
+.comm_footer.maximized > .comm_cancel_apply:after{content: 'Назад'}
 
 .comm_footer.edit{
     height: 2em;
@@ -461,13 +473,18 @@ background: url(/img/cross.png) no-repeat;
     background: url(/img/eye.png) no-repeat;
 }
 
-.comments > article > div:last-child img{
- 
+.comm_cancel_apply{
+    background: url(/img/arrow2.png) no-repeat;
 }
 
+
 .comm_header img{
-    height: 1.3em;
+    height: 1.5em;
+    margin: 0 .3em;
+    cursor: pointer;
 }
+
+.comm_header img:nth-child(4) {margin-left: 3em;}
 
 .comments .comm_header{
     overflow: hidden;
@@ -495,7 +512,7 @@ form[name=add_comm]  textarea{
     padding:0; 
     margin:0; 
     width:100%; 
-
+    line-height: 1.5em;
     resize: none; 
     background-color: transparent; 
     border: none;
@@ -516,8 +533,7 @@ form[name=add_comm]  textarea{
 }
 
 .updown > input{
-   opacity: 0;
-   position: absolute;
+  display: none;
 }
 
 .updown >input + div>label{

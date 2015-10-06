@@ -93,40 +93,20 @@
                 </div>
             </div>
         </div>
-        <!--[if lte IE 9]> 
-        <div class="msgbox_container">
-            <div>
-                <div>
-                    <div class="msgbox">
-                        <div>
-                            <div>✕</div>
-                        </div>
-                        <div>
-                            <p>
-                                Мы заметили, что вы используете косой, кривой и устаревший браузер, известный также под названием Internet Explorer.<p>
-                            <p>Вы можете сделать следующее:</p>
-                            <ol>
-                                <li>Установить последнюю версию одного из популярных браузеров. (например: <a target="_blank" href="https://www.mozilla.org/firefox/new/">Firefox</a>, <a target="_blank" href="http://www.opera.com/">Opera</a>, <a target="_blank" href="https://www.google.com/chrome/browser/">Chrome</a>)</li>
-                                <li>Продолжить пользоваться косым, кривым и устаревшим браузером. Но если вы заметите странное поведение сайта, пеняйте на себя))</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
+       
     <?php include('/view/footer.php'); ?>
     <script src="js/wheel.js"></script>
-   <script>
-       $('.msgbox > div > div').click(function () {
-           $(this).parents('.msgbox_container').removeClass('showed');
-       });
 
+<!--[if lte IE 9]>
+
+   <script>
        $(document).ready(function () {
-           $('.msgbox_container').addClass('showed');
+           messageBox("<p>Мы заметили, что вы используете косой, кривой и устаревший браузер, известный также под названием Internet Explorer.<p><p>Вы можете сделать следующее:</p><ol><li>Установить последнюю версию одного из популярных браузеров. (например: <a target='_blank' href='https://www.mozilla.org/firefox/new/'>Firefox</a>, <a target='_blank' href='http://www.opera.com/'>Opera</a>, <a target='_blank' href='https://www.google.com/chrome/browser/'>Chrome</a>)</li><li>Продолжить пользоваться косым, кривым и устаревшим браузером. Но если вы заметите странное поведение сайта, пеняйте на себя))</li></ol>");
        });
-       //$(window).resize(function () {
-       //    var msg = $('.msgbox');
-       //    msg.children('div:first-child + div').css('max-height', parseInt(msg.parent().height()) * 0.6);
-       //});
    </script>
+
+    
+       -->
+
+
+
