@@ -8,7 +8,7 @@ var tmr;
 var planetID = 0;
 var lockWheel = false;
 var tooltips = new Array();
-for (var i = 0; i < 7; i++) tooltips[i] = $("<div class='tip'><div class='tiptext'>Уран</div><div class='tipimg'><img src='img/tooltip.png' /></div></div>");
+for (var i = 0; i < 7; i++) tooltips[i] = $("<div class='tip'><div></div></div>");
 
 $.fn.percentLeft = function (parentSelector) {
     return (parseInt($(this).css('left')) / parseInt($(parentSelector).css('width'))) * 100;
@@ -51,7 +51,7 @@ function endTransitionEvent() {
 }
 
 function addTip() {
-    tooltips[0].css({ right: '70%', bottom: '50%' }).insertAfter('.planet').children('.tiptext').html(desc[planetID]);
+    tooltips[0].css({ right: '70%', bottom: '50%' }).insertAfter('.planet').children().html(desc[planetID]);
 }
 
 var move = function (dir) {
@@ -68,7 +68,7 @@ var move = function (dir) {
                 for (var i = 0; moons[planetID] != null && i < moons[planetID].length; i++) {
                     var pos = getMoonPosition(i);
                     var moon = $("<img src=\"img/" + moons[planetID][i] + "\" class=\"object moon invisible\" onload=\"$(this).removeClass('invisible')\">").css(pos).insertAfter('.planets .tip');
-                    tooltips[i + 1].css({ right: (100 - parseInt(pos.left)) + '%', top: pos.top }).insertAfter(moon).children('.tiptext').html(moonDesc[planetID][i]);
+                    tooltips[i + 1].css({ right: (100 - parseInt(pos.left)) + '%', top: pos.top }).insertAfter(moon).children().html(moonDesc[planetID][i]);
                 }
             }, 500);
         }));

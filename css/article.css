@@ -1,0 +1,331 @@
+﻿/*статья и боковой блок*/
+
+.read, aside > div{
+    margin-top: .5em;
+    background-color: rgba(20, 19, 19, .7);
+    box-shadow: 0 0 5px gray;
+    border: solid 1px black;
+    margin-bottom: 1em;
+    font-size: 11pt;
+}
+
+#content > div > div{
+    display:inline-block;
+    position: relative;
+    width: 80%;
+}
+
+.read {
+    margin-left: 5em;
+    margin-right: 1em;
+    overflow: auto;
+}
+
+article{
+    padding: 0 3em 3em !important;
+    text-align: justify;
+    min-width: 450px;
+}
+
+.info{
+    text-align: left;
+    display: block;
+    padding: .5em;
+    font-size: .9em;
+}
+
+article > header > h1{
+    font-size: 20pt;
+}
+
+header > .info{
+     background-color: rgba(73, 68, 68, .7);
+}
+
+article > figure{
+    margin: 1.5em;
+    width:30%;
+}
+
+article > figure.left{
+    float: left;
+    margin-left:0;
+}
+
+article > figure.right{
+    float: right;
+    margin-right:0;
+}
+
+figure> img{
+    width:100%;
+}
+
+figcaption{
+    text-align: center;
+}
+
+aside{
+    height:100%;
+    display:inline-block;
+    width: 19%;
+    position: absolute;
+    transition: top .5s;
+    padding: 0 !important;
+}
+
+aside > h1{
+    font-size: 1.5em;
+}
+
+aside a{
+    color: inherit;
+    border: none;
+}
+
+aside ul{
+    padding-left: 1em;
+}
+
+
+/*комментарии*/
+
+section.comments{
+    margin-top: 3em;
+}
+
+.comments > article{ 
+    transition: visibility .3s, opacity .3s; 
+    padding: 0 !important;
+    border: 2px solid rgb(12, 11, 11);
+    margin-bottom: .1em;
+    background-color: rgb(35, 31, 31);
+    background-image: url('/img/loading.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.comment{
+    width:100%;
+    transition: visibility .3s, opacity .3s;
+    background-color: rgb(35, 31, 31);
+    display: table;
+    table-layout: fixed;
+}
+
+.comments > .add{
+    transition: visibility .3s, opacity .3s;
+    text-align:center;
+    padding:1em;
+    cursor: pointer;
+    background: none;
+}
+
+.comment > div{
+    padding: 1em;
+    display: table-cell;
+    vertical-align: top;
+}
+
+.comment > div:first-child{
+    text-align: center;
+    width: 160px;
+    border-right: 2px solid rgb(12, 11, 11);
+    font-size: .9em;
+}
+
+.comment > div:first-child > *{
+    padding: 1em 0;
+}
+
+.comment > div:first-child + div{
+    position: relative;
+    padding: 1em .5em;
+}
+
+.comm_header img{
+    height: 1.5em;
+    margin: 0 .3em;
+    cursor: pointer;
+}
+
+.comm_header img:nth-child(4) {margin-left: 3em;}
+
+.comm_header{
+    overflow: hidden;
+    font-size: .9em;
+    margin-bottom: 1em;
+}
+
+.comm_header > time{
+    padding-left: 18px;
+    background: url(/img/clock.png) 0 0 no-repeat;
+    background-size: 1em;
+    background-position: left center;
+}
+
+.comm_header > .rate{
+    float: right;
+}
+
+.rate > img{
+    cursor: pointer;
+    margin: 0 1em;
+    height: 1em;
+}
+
+.comm_body {
+    overflow-x: auto;
+    margin: 0 2em 1em 1em;
+    line-height: 1.5em;
+}
+
+.comm_footer{
+    position: absolute;
+    bottom: 0;
+    height: 0;
+    left:1em;
+    right:0;
+    width: auto !important;
+    overflow: hidden;
+    transition: height .3s;
+}
+
+.comment:hover .comm_footer{
+    height: 2em;
+}
+
+.comm_footer.maximized > .comm_edit:after{content: 'Редактировать'}
+.comm_footer.maximized > .comm_del:after{content: 'Удалить'}
+.comm_footer.maximized > .comm_cancel:after{content: 'Отменить'}
+.comm_footer.maximized > .comm_send:after{content: 'Отправить'}
+.comm_footer.maximized > .comm_apply:after{content: 'Предпросмотр'}
+.comm_footer.maximized > .comm_cancel_apply:after{content: 'Назад'}
+
+.comm_footer > div{
+    cursor: pointer;
+    margin-right: 1em;
+    float: right;
+    transition: background-color .3s;
+    border-radius: 3px 3px;
+    display: inline-block;
+    padding: 3px 3px 3px 25px;
+    background-size: auto 1em;
+    background-position: 5px center;
+    background-repeat: no-repeat;
+}
+
+.comm_footer > div:hover{
+    background-color: rgb(16, 14, 14);
+}
+
+.comm_del, .comm_cancel{background-image: url(/img/cross.png);}
+.comm_edit{background-image: url(/img/edit.png);}
+.comm_send{background-image: url(/img/send.png);}
+.comm_apply{background-image: url(/img/eye.png);}
+.comm_cancel_apply{background-image: url(/img/arrow2.png);}
+
+form[name=add_comm] textarea{
+    padding:0; 
+    margin:0; 
+    width:100%; 
+    line-height: 1.5em;
+    resize: none; 
+    background: none; 
+    border: none;
+    font-size: 1em;
+}
+
+/*выбор статьи*/
+
+.updown{
+    margin-bottom: 1em;
+}
+
+.updown > input{
+  display: none;
+}
+
+.updown >input + div>label{
+    cursor: pointer;
+    background-color: rgba(53, 51, 51, .5);
+    display: block;
+    padding: 1em 1em 1em;
+    margin-right: 1em;
+	overflow: hidden;  
+}
+
+.updown >input + div>label > a{
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.updown_content{
+    text-align: justify;
+    white-space: normal;
+    height: 0;
+    overflow-y: scroll;
+    transition: height .5s;
+    background-color: rgba(73, 68, 68, .7);
+    margin-right: 1em;
+    border-top: 1px solid rgb(68, 66, 66);
+    padding: 0 2em;
+    text-indent: 2em;
+}
+
+.updown >input:checked + div>.updown_content{
+    height: 15em;
+}
+
+.desc{
+	white-space: normal; 
+	margin: 2em 1em 2em;
+}
+
+.updown label > img {
+    float: right;
+    width: 1.5em;
+    height:.6em;
+    margin: .2em 0;
+    transition: transform .2s linear;
+}
+
+.date, .user, .views{
+	padding-left: 1.5em;
+	display: inline;
+	margin-right: 1em;
+}
+
+.date{
+background: url(/img/calender.png) 0 0 no-repeat;
+background-size: auto 1em;
+background-position: left center;
+}
+
+.user{
+	background: url(/img/user2.png) 0 0 no-repeat;
+}
+
+.views{
+	background: url(/img/eye1.png) 0 center no-repeat;
+}
+
+.updown >input:checked + div>label > img{
+	-moz-transform: scale(1,-1);
+    -webkit-transform: scale(1, -1);
+    -o-transform: scale(1, -1);
+    transform: scale(1, -1);
+    filter: FlipV;
+    -ms-filter: "FlipV";
+}
+
+.sort{
+    text-align: right; 
+    margin-bottom: 1em;
+    font-size: .9em;
+}
+
+.read .combobox{
+    width: 20%; 
+    margin-right: 1em;
+}

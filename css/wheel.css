@@ -1,4 +1,6 @@
-﻿div.wheel_selector {
+﻿
+
+div.wheel_selector {
     position: relative;
     overflow: visible;
     padding-bottom: 30%;
@@ -22,6 +24,7 @@ div.wheel_selector > img.invisible {opacity: 0;}
     width: 100%;
     top: 0;
     bottom: 0;
+    left:0;
 }
 
 .wheel_selector > .button_selector {

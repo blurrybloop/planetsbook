@@ -38,14 +38,21 @@
     <Folder Include="view\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\article.css" />
     <Content Include="css\main.css" />
     <Content Include="css\wheel.css" />
     <Content Include="img\1.jpg" />
     <Content Include="img\2.jpg" />
     <Content Include="img\arrow.png" />
+    <Content Include="img\arrow2.png" />
+    <Content Include="img\ar_bottom.png" />
+    <Content Include="img\ar_left.png" />
+    <Content Include="img\ar_right.png" />
+    <Content Include="img\ar_top.png" />
     <Content Include="img\asteroids.png" />
     <Content Include="img\bg.jpg" />
     <Content Include="img\bold.png" />
+    <Content Include="img\cabinet.png" />
     <Content Include="img\calender.png" />
     <Content Include="img\callisto.png" />
     <Content Include="img\center_align.png" />
@@ -57,6 +64,7 @@
     <Content Include="img\earth.png" />
     <Content Include="img\edit.png" />
     <Content Include="img\europa.png" />
+    <Content Include="img\exclamation.png" />
     <Content Include="img\eye.png" />
     <Content Include="img\eye1.png" />
     <Content Include="img\favicon.png" />
@@ -65,8 +73,11 @@
     <Content Include="img\io.png" />
     <Content Include="img\italic.png" />
     <Content Include="img\jupiter.png" />
+    <Content Include="img\justify_align.png" />
     <Content Include="img\left_align.png" />
     <Content Include="img\like.png" />
+    <Content Include="img\loading.gif" />
+    <Content Include="img\login.png" />
     <Content Include="img\logo.png" />
     <Content Include="img\mars.png" />
     <Content Include="img\mercury.png" />
@@ -78,6 +89,8 @@
     <Content Include="img\photos.png" />
     <Content Include="img\planet.png" />
     <Content Include="img\pluto.png" />
+    <Content Include="img\question.png" />
+    <Content Include="img\register.png" />
     <Content Include="img\right_align.png" />
     <Content Include="img\saturn.png" />
     <Content Include="img\scroll_tip.png" />
@@ -97,6 +110,7 @@
     <Content Include="img\user_big.png" />
     <Content Include="img\venus.png" />
     <Content Include="img\video.png" />
+    <Content Include="img\wait.png" />
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />

@@ -1,35 +1,46 @@
-<?php include("view/header.php"); ?>
-        <div class="content">
-            <div class="read">
-                <h1>Солнце</h1>
+<?php
+include("view/header.php"); ?>
+<link rel="stylesheet" href="css/article.css" />
+<div>
+    <div>
+        <div class="read">
+            <article>
+                <header>
+                    <h1>Солнце</h1>
+                </header>
                 <div class="desc">
                     <p>Добро пожаловать на один из разделов нашего сайта!</p>
                     <p>Вы можете выбрать перейти к понравившейся статье, щелкнув на ее названии. Для того, чтобы увидеть краткое описание статьи, нажмите на стрелку справа.</p>
                 </div>
                 <div class="sort">
                     Сортировать по
-                <div class="combobox">
-                    <div class="combohead">
-                        <div></div>
-                        <label for="c0" class="arrow">
-                            <img src="img/down_arrow.png" />
-                        </label>
+                    <div class="combobox">
+                        <div class="combohead">
+                            <div></div>
+                            <label for="c0" class="arrow">
+                                <img src="img/down_arrow.png" />
+                            </label>
+                        </div>
+                        <input type="checkbox" id="c0" />
+                        <div class="options">
+                            <div>дате публикации</div>
+                            <div>популярности</div>
+                            <div>алфавиту</div>
+                        </div>
                     </div>
-                    <input type="checkbox" id="c0" />
-                    <div class="options">
-                        <div>дате публикации</div>
-                        <div>популярности</div>
-                        <div>алфавиту</div>
-                    </div>
-                </div>
                 </div>
                 <div class="updown">
 
                     <input name="item" id="0" type="checkbox" />
                     <div>
                         <label for="0">
-                            <img src="img/down_arrow.png" /><a href="/article_temp.php">Гипотеза о происхождении пятен на Солнце</a>
-                            <span class="info"><span class="date">26.09.2015</span><span class="user">admin</span><span class="views">5</span></span>
+                            <img src="img/down_arrow.png" />
+                            <a href="/article_temp.php">Гипотеза о происхождении пятен на Солнце</a>
+                            <span class="info">
+                                <span class="date">26.09.2015</span>
+                                <span class="user">admin</span>
+                                <span class="views">5</span>
+                            </span>
 
                         </label>
                         <div class="updown_content">
@@ -40,7 +51,9 @@
                     <input name="item" id="1" type="checkbox" />
                     <div>
                         <label for="1">
-                            <img src="img/down_arrow.png" /><a href="/article_temp.php">Изменяется ли светимость Солнца?</a><span class="info">
+                            <img src="img/down_arrow.png" />
+                            <a href="/article_temp.php">Изменяется ли светимость Солнца?</a>
+                            <span class="info">
                                 <span class="date">26.09.2015</span>
                                 <span class="user">admin</span>
                                 <span class="views">10</span>
@@ -53,7 +66,9 @@
                     <input name="item" id="2" type="checkbox" />
                     <div>
                         <label for="2">
-                            <img src="img/down_arrow.png" /><a href="/article_temp.php">Солнечная активность</a><span class="info">
+                            <img src="img/down_arrow.png" />
+                            <a href="/article_temp.php">Солнечная активность</a>
+                            <span class="info">
                                 <span class="date">25.09.2015</span>
                                 <span class="user">vasia</span>
                                 <span class="views">15</span>
@@ -66,7 +81,9 @@
                     <input name="item" id="3" type="checkbox" />
                     <div>
                         <label for="3">
-                            <img src="img/down_arrow.png" /><a href="/article_temp.php">Солнечная активность и атмосфера Солнца</a><span class="info">
+                            <img src="img/down_arrow.png" />
+                            <a href="/article_temp.php">Солнечная активность и атмосфера Солнца</a>
+                            <span class="info">
                                 <span class="date">24.09.2015</span>
                                 <span class="user">2314</span>
                                 <span class="views">20</span>
@@ -77,16 +94,35 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <aside>
-                <p>34234234</p>
-                <p>34234234</p>
-                <p>34234234</p>
-                <p>34234234</p>
-            </aside>
+            </article>
         </div>
-    <?php include("view/footer.php"); ?>
-    <script>
+    </div>
+    <aside>
+        <div class="sticky">
+            <div>
+                <h1>Смотрите также</h1>
+                <ul>
+                    <li><a href="/article_temp.php">Земля</a></li>
+                    <li><a href="/article_temp.php">Марс</a></li>
+                    <li><a href="/article_temp.php">Луна</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+</div>
+<?php include("view/footer.php"); ?>
+<script>
+    var sticky = $('.sticky');
+    var cont = $('#content');
+
+    $(window).scroll(function () {
+        if (parseInt(cont.offset().top) < parseInt($(this).scrollTop())) sticky.addClass('sticked');
+        else sticky.removeClass('sticked');
+    })
+
+    $(window).resize(function () { sticky.width(sticky.parent().width()) });
+    $(window).resize();
+
         $('.combobox > input[type=checkbox]').removeAttr('checked');
 
 
@@ -100,4 +136,4 @@
         });
 
         $('.combobox > .options > div')[0].click();
-    </script>
+</script>
