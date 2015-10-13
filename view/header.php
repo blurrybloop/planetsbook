@@ -321,6 +321,7 @@
             </div>
         </div>
     </div>
+    <img src="img/earth.png" style="position: fixed; right: -5%; bottom:-35%; width: 35%; opacity: .5" />
     <script>
         $('.msgbox > div:first-child > div').click(function () {
             $(this).parents('.msgbox_container').removeClass('showed');

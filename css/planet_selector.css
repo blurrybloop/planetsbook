@@ -6,18 +6,6 @@ div.wheel_selector {
     padding-bottom: 30%;
 }
 
-div.wheel_selector > img{
-    position: absolute; 
-    right: 5%; 
-    bottom: 0;
-    width: 20%;
-    transition: visibility .5s, opacity .5s;
-    opacity: 1;
-    visibility: visible;
-}
-
-div.wheel_selector > img.invisible {opacity: 0;}
-
 .wheel_selector > .planets {
     display: inline-block;  
     position: absolute;
@@ -35,6 +23,12 @@ div.wheel_selector > img.invisible {opacity: 0;}
     top:0;
     bottom:0;
     height: 100%;
+}
+
+.wheel_selector .tip{
+    background-color: rgba(81, 80, 80, 0.55);
+    color: white;
+    font-size: 1em;
 }
 
 .button_selector > div {
@@ -133,4 +127,8 @@ div.wheel_selector > img.invisible {opacity: 0;}
 
 .object.moon.invisible {
     opacity: 0;
+}
+
+.object.notransition{
+    transition: none !important;
 }

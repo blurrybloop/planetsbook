@@ -231,15 +231,6 @@
     $(window).resize(function () { iconSize(); sticky.width(sticky.parent().width()) });
     $(window).resize();
 
-    function endTransitionEvent() {
-        var el = document.createElement('fakeelement');
-        var transitions = { 'transition': 'transitionend', 'MSTransition': 'msTransitionEnd', 'MozTransition': 'transitionend', 'WebkitTransition': 'webkitTransitionEnd' }
-        for (var t in transitions)
-            if (el.style[t] !== undefined)
-                return transitions[t];
-        return null;
-    }
-
     var editComm = $("<div><div class='comm_header'><img class='comm_bold' src='img/bold.png'/><img class='comm_italic' src='img/italic.png'/><img class='comm_underline' src='img/underline.png'/><img class='comm_left_align' src='img/left_align.png'/><img class='comm_center_align' src='img/center_align.png'/><img class='comm_right_align' src='img/right_align.png'/><img class='comm_justify_align' src='img/justify_align.png'/></div><div class='comm_body'><form name='add_comm'><textarea name='add_comm' placeholder='Введите ваш комментарий...'></textarea></form></div><div class='comm_footer maximized edit'><div class='comm_send'>&nbsp;</div><div class='comm_cancel'>&nbsp;</div><div class='comm_apply'>&nbsp;</div></div>");
     var prevComm = null;
     var lock = false;
@@ -282,12 +273,6 @@
     $.fn.makeCenter = function () { this.first().wrapSelected('[align=center]', '[/align]'); }
     $.fn.makeRight = function () { this.first().wrapSelected('[align=right]', '[/align]'); }
     $.fn.makeJustify = function () { this.first().wrapSelected('[align=justify]', '[/align]'); }
-
-    $.fn.transitionEnd = function (callback) {
-        var tEvent = endTransitionEvent();
-        if (tEvent != null) this.one(tEvent, callback);
-        else callback();
-    }
 
     $.fn.toggleVisibilty = function (callback) {
         this.transitionEnd(function () {

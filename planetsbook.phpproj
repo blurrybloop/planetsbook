@@ -40,7 +40,7 @@
   <ItemGroup>
     <Content Include="css\article.css" />
     <Content Include="css\main.css" />
-    <Content Include="css\wheel.css" />
+    <Content Include="css\planet_selector.css" />
     <Content Include="img\1.jpg" />
     <Content Include="img\2.jpg" />
     <Content Include="img\arrow.png" />
@@ -114,6 +114,7 @@
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />
-    <Content Include="js\wheel.js" />
+    <Content Include="js\utils.js" />
+    <Content Include="js\planet_selector.js" />
   </ItemGroup>
 </Project>

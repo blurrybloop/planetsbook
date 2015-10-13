@@ -1,82 +1,109 @@
-<?php include('/view/header.php'); ?> 
-<link rel="stylesheet" href="css/wheel.css"> 
-        <div class="wheel_selector">
-            <img src="img/scroll_tip.png" />
-            <div class="planets">
-                <a href="/read.php">
-                    <img class="object planet focused" src="img/sun.png" /></a>
+<?php include('/view/header.php'); ?>
+<link rel="stylesheet" href="css/planet_selector.css" />
+<script src="js/utils.js"></script>
+<script src="js/planet_selector.js"></script>
+<?php include('/view/footer.php'); ?>
+<script>var ps = new PlanetsSelector('#content', [
+{
+    image: 'img/sun.png',
+    title: 'Солнце',
+    description: 'Солнце',
+    href: '/read.php',
+    moons: []
+},
+{
+    image: '/img/mercury.png',
+    title: 'Меркурий',
+    description: 'Меркурий',
+    href: '/read.php',
+    moons: []
+},
+{
+    image: '/img/venus.png',
+    title: 'Венера',
+    description: 'Венера',
+    href: '/read.php',
+    moons: []
+},
+{
+    image: '/img/earth.png',
+    title: 'Земля',
+    description: 'Земля',
+    href: '/read.php',
+    moons: [{image: '/img/moon.png', description: 'Луна', href: '/read.php'}]
+},
+{
+    image: '/img/mars.png',
+    title: 'Марс',
+    description: 'Марс',
+    href: '/read.php',
+    moons: [{ image: '/img/phobos_deimos.png', description: 'Фобос и Деймос', href: '/read.php' }]
+},
+{
+    image: '/img/jupiter.png',
+    title: 'Юпитер',
+    description: 'Юпитер',
+    href: '/read.php',
+    moons: [{ image: '/img/io.png', description: 'Ио', href: '/read.php' },
+            { image: '/img/europa.png', description: 'Европа', href: '/read.php' },
+            { image: '/img/callisto.png', description: 'Каллисто', href: '/read.php' },
+            { image: '/img/ganymede.png', description: 'Ганимед', href: '/read.php' }
+    ]
+},
+{
+    image: '/img/saturn.png',
+    title: 'Сатурн',
+    description: 'Сатурн',
+    href: '/read.php',
+    moons: [{ image: '/img/titan.png', description: 'Титан', href: '/read.php' }]
+},
+{
+    image: '/img/uranus.png',
+    title: 'Уран',
+    description: 'Уран',
+    href: '/read.php',
+    moons: []
+},
+{
+    image: '/img/neptune.png',
+    title: 'Нептун',
+    description: 'Нептун',
+    href: '/read.php',
+    moons: [{ image: '/img/triton.png', description: 'Тритон', href: '/read.php' }]
+},
+{
+    image: '/img/pluto.png',
+    title: 'Плутон',
+    description: 'Плутон',
+    href: '/read.php',
+    moons: [{ image: '/img/charon.png', description: 'Харон', href: '/read.php' }]
+}
+]);
 
-            </div>
-            <div class="button_selector">
-                <div>
-                    <div>
-                        <input name="radio" type="radio" id="0" />
-                        <label for="0">
-                            <div class="tip">
-                                <div>Плутон</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="1" />
-                        <label for="1">
-                            <div class="tip">
-                                <div>Нептун</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="2" />
-                        <label for="2">
-                            <div class="tip">
-                                <div>Уран</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="3" />
-                        <label for="3">
-                            <div class="tip">
-                                <div>Сатурн</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="4" />
-                        <label for="4">
-                            <div class="tip">
-                                <div>Юпитер</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="5" />
-                        <label for="5">
-                            <div class="tip">
-                                <div>Марс</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="6" />
-                        <label for="6">
-                            <div class="tip">
-                                <div>Земля</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="7" />
-                        <label for="7">
-                            <div class="tip">
-                                <div>Венера</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="8" />
-                        <label for="8">
-                            <div class="tip">
-                                <div>Меркурий</div>
-                            </div>
-                        </label>
-                        <input name="radio" type="radio" id="9" checked="checked" />
-                        <label for="9">
-                            <span class="tip">
-                                <span>Солнце</span>
-                            </span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-       
-    <?php include('/view/footer.php'); ?>
-    <script src="js/wheel.js"></script>
+    setTimeout(function (e) {
+        e.children('.wheel_tip').addClass('invisible');
+    },
+    5000,
+    $('#content').append("<img class='wheel_tip' src='img/scroll_tip.png' />"));
+
+    var onwheel = function (e) {
+        if (e.originalEvent) {
+            $('#content > .wheel_tip').addClass('invisible');
+            var delta = e.originalEvent.deltaY || e.originalEvent.detail || e.originalEvent.wheelDelta;
+            if (delta > 0) ps.moveNext();
+            else if (delta < 0) ps.movePrev();
+            return false;
+        }
+    };
+
+    if ('onwheel' in document)
+        $(document).on('wheel', '#content', onwheel);
+    else if ('onmousewheel' in document)
+        $(document).on('mousewheel', '#content', onwheel);
+    else
+        $(document).on('MozMousePixelScroll', '#content', onwheel);
+
+</script>
 
 <!--[if lte IE 9]>
   <script>

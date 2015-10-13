@@ -16,7 +16,8 @@
 }
 
 body {
-    background: url("../img/bg.jpg");
+    background: url("../img/bg.jpg") no-repeat;
+    background-size: cover;
     overflow: auto;
     left:0;
     right:0;
@@ -431,3 +432,16 @@ footer > div {
     margin-bottom: auto;
     width: 100%;
 }
+
+
+img.wheel_tip{
+    position: absolute; 
+    right: 5%; 
+    bottom: 0;
+    width: 20%;
+    transition: visibility .5s, opacity .5s;
+    opacity: 1;
+    visibility: visible;
+}
+
+img.wheel_tip.invisible {opacity: 0;}
