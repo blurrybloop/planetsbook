@@ -1,5 +1,15 @@
 ﻿/*статья и боковой блок*/
 
+.tip{
+    white-space: nowrap;
+}
+
+div:hover > .tip{
+    transition-delay: 1s;
+    visibility: visible;
+    opacity:1;
+}
+
 .read, aside > div{
     margin-top: .5em;
     background-color: rgba(20, 19, 19, .7);
@@ -100,9 +110,6 @@ section.comments{
     border: 2px solid rgb(12, 11, 11);
     margin-bottom: .1em;
     background-color: rgb(35, 31, 31);
-    background-image: url('/img/loading.gif');
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 .comment{
@@ -149,10 +156,15 @@ section.comments{
     cursor: pointer;
 }
 
-.comm_header img:nth-child(4) {margin-left: 3em;}
+.comm_header > div {
+    display: inline-block;
+    position: relative;
+}
+
+.comm_header div:nth-child(4) {margin-left: 3em;}
 
 .comm_header{
-    overflow: hidden;
+    overflow: visible;
     font-size: .9em;
     margin-bottom: 1em;
 }
@@ -191,6 +203,8 @@ section.comments{
     transition: height .3s;
 }
 
+.comm_footer.nohide {height: 2em;}
+
 .comment:hover .comm_footer{
     height: 2em;
 }
@@ -213,6 +227,7 @@ section.comments{
     background-size: auto 1em;
     background-position: 5px center;
     background-repeat: no-repeat;
+    position: relative;
 }
 
 .comm_footer > div:hover{
@@ -224,6 +239,7 @@ section.comments{
 .comm_send{background-image: url(/img/send.png);}
 .comm_apply{background-image: url(/img/eye.png);}
 .comm_cancel_apply{background-image: url(/img/arrow2.png);}
+.loading {background-image: url(/img/loading.gif)}
 
 form[name=add_comm] textarea{
     padding:0; 

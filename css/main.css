@@ -18,6 +18,7 @@
 body {
     background: url("../img/bg.jpg") no-repeat;
     background-size: cover;
+    background-color: black;
     overflow: auto;
     left:0;
     right:0;
@@ -103,6 +104,24 @@ li{
     -ms-filter: "FlipH";
 }
 
+#sidebar_bg{
+    z-index: 98;
+    background-color: black;
+    visibility: hidden;
+    opacity: 0;  
+    position: fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom: 0;
+    transition: visibility .5s, opacity .5s;
+}
+
+#menu.expanded + #sidebar_bg{
+    visibility: visible;
+    opacity: .7;
+}
+
 .items_wrapper{
     position: absolute;
     bottom:1em;
@@ -169,6 +188,7 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
 }
  .sidebar form label span{
      float: right;
+     position: relative;
  }
 
 
@@ -318,7 +338,7 @@ footer > div {
 
 .msgbox{
     z-index: 1000;
-    padding: 1em 0 0 1em;
+    padding: 1em 0 1em 1em;
     text-align: left;
     background-color: #282727; 
     width: 30%;
@@ -351,6 +371,7 @@ footer > div {
     background-color: white;
     padding: .5em;
     font-size: .8em;
+    text-align: left;
 }
 
 .tip > *{color: black;}
@@ -432,7 +453,6 @@ footer > div {
     margin-bottom: auto;
     width: 100%;
 }
-
 
 img.wheel_tip{
     position: absolute; 

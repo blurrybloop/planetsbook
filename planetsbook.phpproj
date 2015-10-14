@@ -24,10 +24,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="article_temp.php" />
+    <Compile Include="controller\ControllerBase.php" />
+    <Compile Include="controller\MainController.php" />
+    <Compile Include="include\app.php" />
+    <Compile Include="include\mysql.php" />
     <Compile Include="index.php" />
     <Compile Include="read.php" />
     <Compile Include="view\footer.php" />
-    <Compile Include="view\header.php" />
+    <Compile Include="view\html_head.php" />
+    <Compile Include="view\main.php" />
+    <Compile Include="view\msgbox.php" />
     <Compile Include="view\slide_menu.php" />
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +41,8 @@
     <Folder Include="js\jQuery\" />
     <Folder Include="css\" />
     <Folder Include="img\" />
+    <Folder Include="include\" />
+    <Folder Include="controller\" />
     <Folder Include="view\" />
   </ItemGroup>
   <ItemGroup>

@@ -128,7 +128,7 @@
                                         <p>Здесь хотелось бы упомянуть <u>об удивительном сходстве</u> цветка подсолнечника с Солнцем. Будто сама природа создала на Земле маленькую модель Солнца. Подобно солнечной короне, шляпка подсолнуха окружают желтые лепестки. Желто-оранжевые цветки подсолнечника имеют трубчатую форму, подобно трубчатым плазменным волокнам Солнца, Они также плотно, но, не сливаясь, покрывают поверхность шляпки подсолнечника. Цветки подсолнечника растут из черных семечек, подобных черным гранулам у основания плазменных волокон. Люди давно подметили схожесть этого растения с Солнцем и его особенность поворачиваться за Солнцем, поэтому и дали ему имя производное от Солнца.</p><p>Пятна на Солнце должны рассматриваться как явление положительное, хотя они и вызывают возмущение магнитного поля Земли, что может привести к сбоям в работе некоторых систем. Падение небесных тел увеличивает массу Солнца, которая непрерывно убывает, поддерживают его активность, и, как следствие, сдерживают удаление планет, а это очень важный положительный фактор.</p>
                                     </div>
                                     <div class="comm_footer maximized">
-                                        <div class="comm_del">&nbsp;</div><div class="comm_edit">&nbsp;</div>
+                                        <div class="comm_del"></div><div class="comm_edit">&nbsp;</div>
                                     </div>
                                 </div>
                             </div>
@@ -211,6 +211,7 @@
     </div>
 
 <?php include("view/footer.php"); ?>
+<script src="js/utils.js"></script>
 <script>
     var sticky = $('.sticky');
     var cont = $('#content');
@@ -218,7 +219,9 @@
     $(window).scroll(function () {
         if (parseInt(cont.offset().top) < parseInt($(this).scrollTop())) sticky.addClass('sticked');
         else sticky.removeClass('sticked');
-    })
+    });
+
+    $(window).scroll();
 
     function iconSize() {
             var f = $('.comm_footer')
@@ -231,7 +234,7 @@
     $(window).resize(function () { iconSize(); sticky.width(sticky.parent().width()) });
     $(window).resize();
 
-    var editComm = $("<div><div class='comm_header'><img class='comm_bold' src='img/bold.png'/><img class='comm_italic' src='img/italic.png'/><img class='comm_underline' src='img/underline.png'/><img class='comm_left_align' src='img/left_align.png'/><img class='comm_center_align' src='img/center_align.png'/><img class='comm_right_align' src='img/right_align.png'/><img class='comm_justify_align' src='img/justify_align.png'/></div><div class='comm_body'><form name='add_comm'><textarea name='add_comm' placeholder='Введите ваш комментарий...'></textarea></form></div><div class='comm_footer maximized edit'><div class='comm_send'>&nbsp;</div><div class='comm_cancel'>&nbsp;</div><div class='comm_apply'>&nbsp;</div></div>");
+    var editComm = $("<div><div class='comm_header'><div><img class='comm_bold' src='img/bold.png'/><div class='tip'>Вставить тег жирного начертания</div></div><div><img class='comm_italic' src='img/italic.png'/><div class='tip'>Вставить тег курсивного начертания</div></div><div><img class='comm_underline' src='img/underline.png'/><div class='tip'>Вставить тег подчеркивания</div></div><div><img class='comm_left_align' src='img/left_align.png'/><div class='tip'>Выравнивание по левому краю</div></div><div><img class='comm_center_align' src='img/center_align.png'/><div class='tip'>Выравнивание по центру</div></div><div><img class='comm_right_align' src='img/right_align.png'/><div class='tip'>Выравнивание по правому краю</div></div><div><img class='comm_justify_align' src='img/justify_align.png'/><div class='tip'>Выравнивание по ширине</div></div></div><div class='comm_body'><form name='add_comm'><textarea name='add_comm' placeholder='Введите ваш комментарий...'></textarea></form></div><div class='comm_footer maximized nohide'><div class='comm_send'>&nbsp;</div><div class='comm_cancel'>&nbsp;</div><div class='comm_apply'>&nbsp;</div></div>");
     var prevComm = null;
     var lock = false;
 
@@ -242,10 +245,10 @@
     {
         this.click(function (e) {
             var t = $(e.target);
-            if (t.hasClass('comm_edit') || t.hasClass('add')) $(this).beginEdit();
-            else if (t.hasClass('comm_cancel')) $(this).cancelEdit();
-            else if (t.hasClass('comm_apply')) $(this).apply();
-            else if (t.hasClass('comm_cancel_apply')) $(this).cancelApply();
+            if (t.hasClass('comm_edit') || t.hasClass('add')) $(this).beginEdit(t);
+            else if (t.hasClass('comm_cancel')) $(this).cancelEdit(t);
+            else if (t.hasClass('comm_apply')) $(this).apply(t);
+            else if (t.hasClass('comm_cancel_apply')) $(this).cancelApply(t);
             else if (t.hasClass('comm_bold')) $(add_comm).children('textarea').makeBold();
             else if (t.hasClass('comm_italic')) $(add_comm).children('textarea').makeItalic();
             else if (t.hasClass('comm_underline')) $(add_comm).children('textarea').makeUnderline();
@@ -282,8 +285,10 @@
         if (endTransitionEvent() != null) this.addClass('invisible');
     }
 
-    $.fn.apply = function() {
+    $.fn.apply = function (target) {
+        target.addClass("loading");
         $(this).toggleVisibilty(function () {
+            target.removeClass("loading");
             var field = $(this).children(':nth-child(2)');
 
             ////////////////////////////////////////////////
@@ -296,16 +301,20 @@
         });     
     }
 
-    $.fn.cancelApply = function() {
+    $.fn.cancelApply = function (target) {
+        target.addClass("loading");
         $(this).toggleVisibilty(function () {
+            target.removeClass("loading");
             $(this).children(':nth-child(2)').replaceWith(editComm);
             iconSize();
             return this;
         });
     }
 
-    $.fn.cancelEdit = function() {
+    $.fn.cancelEdit = function (target) {
+        target.addClass("loading");
         $(this).toggleVisibilty(function () {
+            target.removeClass("loading");
                 var isAdd = $(this).hasClass('comm_add');
                 (isAdd ? $(this).parent() : $(this).children(':nth-child(2)')).replaceWith(prevComm);
                 if (isAdd) prevComm.attachCommentHandlers();
@@ -315,11 +324,15 @@
             });
     }
     
-    $.fn.beginEdit = function() {
+    $.fn.beginEdit = function (target) {
         if (lock) { messageBox("<p>Вы пытались редактировать два комментария одновременно, поэтому мы заблокировали Ваше действие.</p><p>Отмените или подтвердите редактирование другого комментария.</p>"); return; }
         lock = true;
         var isAdd = $(this).hasClass('add');
+        target.addClass('loading');
+        target.parent().addClass("nohide");
         $(this).toggleVisibilty(function () {
+            target.removeClass('loading');
+            target.parent().removeClass("nohide");
                 var a = isAdd ? $("<article class='invisible' style='margin-bottom:4em'></div>").append($("<div class='comment comm_add'><div>PlanetsBook<div><img src='img/favicon.png' style='width: 50%' /></div>Администратор<div class='info'><div>Репутация: <span style='color: green;'>+10</span></div><div>Зарегистирован: <time datetime='2015-09-29'>04.09.2015</time></div><div>Комментариев: 10</div></div></div>").append(editComm)) : null;
                 var field = isAdd ? $(this) : $(this).children(':nth-child(2)');
                 var h = isAdd ? 150 : field.children(':nth-child(2)').height(), txt = isAdd ? "" : field.children(':nth-child(2)').html();
