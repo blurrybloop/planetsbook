@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <?php require 'html_head.php' ?>
@@ -7,9 +7,9 @@
     <script src="/js/planet_selector.js"></script>
 </head>
 <body>
-    <!--<img src="/img/earth.png" style="position: fixed; right: -5%; bottom:-35%; width: 35%; opacity: .5" />-->
+
 <?php 
-    require 'slide_menu.php';
+echo $this->data['menu'];
     require 'msgbox.php' 
 ?>
         <div id="main">
@@ -25,7 +25,7 @@
 </html>
 
 <script>
-var ps = new PlanetsSelector('#content', <?php echo json_encode($this->data) ?>);
+var ps = new PlanetsSelector('#content', <?php echo json_encode(array_values($this->data['show'])) ?>);
 
     setTimeout(function (e) {
         e.children('.wheel_tip').addClass('invisible');

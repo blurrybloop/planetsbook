@@ -335,13 +335,42 @@ background-position: left center;
     -ms-filter: "FlipV";
 }
 
-.sort{
-    text-align: right; 
+.updown.nocontent > div{
+    padding-top: .5em;
+    text-align: center;
+}
+
+.updown.nocontent >div:first-child{
+    font-weight: bold;
+}
+
+.add_article{
+     padding: .5em;
+    text-align: center;
+    display: inline;
+}
+
+.updown_head{
+    width: 100%;
     margin-bottom: 1em;
     font-size: .9em;
+    display: table;
+}
+
+.updown_head > div{
+    width:50%;
+    display: table-cell;
+}
+.updown_head > div:first-child{
+    text-align: left;
+}
+
+.updown_head > div:first-child + div{
+    text-align: right;
 }
 
 .read .combobox{
-    width: 20%; 
+    width: 35%; 
     margin-right: 1em;
+
 }

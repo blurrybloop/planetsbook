@@ -117,7 +117,7 @@ li{
     transition: visibility .5s, opacity .5s;
 }
 
-#menu.expanded + #sidebar_bg{
+#sidebar_bg.expanded{
     visibility: visible;
     opacity: .7;
 }
@@ -418,11 +418,12 @@ footer > div {
     background-color: inherit;
 }
 
-.combobox > .options > div{
+.combobox > .options > *{
+    display: block;
      transition: background-color .3s;
 }
 
-.combobox > .options > div:hover{
+.combobox > .options > *:hover{
     background-color: rgb(33, 30, 30);
 }
 
@@ -432,7 +433,7 @@ footer > div {
     opacity: 1;
 }
 
-.combobox > div > div{
+.combobox > div > *{
     padding:  .1em .5em;
 }
 
@@ -445,13 +446,22 @@ footer > div {
     width: 1em;
 }
 
+.combobox a{
+    color: inherit;
+    border: none;
+}
+
+.combobox a:hover{
+    color: inherit;
+}
+
 .arrow > img{
     position: absolute;
     top: 0;
     bottom: 0;
     margin-top: auto; 
     margin-bottom: auto;
-    width: 100%;
+    width: 1em;
 }
 
 img.wheel_tip{

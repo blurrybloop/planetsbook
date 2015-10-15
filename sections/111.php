@@ -1,6 +1,14 @@
+﻿
 <?php
-include("view/header.php"); ?>
-<link rel="stylesheet" href="css/article.css" />
+header('Content-type: text/html; charset=utf-8');
+define('PATH_CONTROLLER',$_SERVER['DOCUMENT_ROOT'] .'/controller/');
+define('PATH_VIEW', $_SERVER['DOCUMENT_ROOT'] . '/view/');
+include($_SERVER['DOCUMENT_ROOT'] .'/include/mysql.php');
+include($_SERVER['DOCUMENT_ROOT'] .'/include/app.php');
+$app=new Application();
+$app->Run();
+//include("view/header.php"); ?>
+<!--<link rel="stylesheet" href="css/article.css" />
 <div>
     <div>
         <div class="read">
@@ -110,7 +118,7 @@ include("view/header.php"); ?>
         </div>
     </aside>
 </div>
-<?php include("view/footer.php"); ?>
+<?php //include("view/footer.php"); ?>
 <script src="js/utils.js"></script>
 <script>
     var sticky = $('.sticky');
@@ -139,4 +147,4 @@ include("view/header.php"); ?>
         });
 
         $('.combobox > .options > div')[0].click();
-</script>
+</script>-->

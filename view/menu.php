@@ -1,3 +1,4 @@
+<div id="sidebar_bg"></div>
 <div id="menu" class="sidebar">
     <div>
         <img src="/img/arrow.png" class="expand" />
@@ -53,7 +54,6 @@
         </div>
     </div>
 </div>
-<div id="sidebar_bg" class="invisible"></div>
 <div class="sidebar" id="planets_menu">
     <div>
         <img src="/img/arrow.png" class="expand" />
@@ -90,16 +90,14 @@
                 <div>
                     <?php
                     foreach ($this->data as $val)
-                        foreach($val['moons'] as $val2){
-                            if ($val2['type'] == 2)
+                            if ($val['type'] == 2)
                             {
-                                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val2['data_folder'] . '/main_small.png'))
-                                    $sf = '/sections/' . $val2['data_folder'] . '/main_small.png';
+                                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
+                                    $sf = '/sections/' . $val['data_folder'] . '/main_small.png';
                                 else 
-                                    $sf = $val2['image'];
-                                echo "<a href='{$val2['href']}'><img src='{$sf}' /><p>{$val2['title']}</p></a>";
+                                    $sf = $val['image'];
+                                echo "<a href='{$val['href']}'><img src='{$sf}' /><p>{$val['title']}</p></a>";
                             }
-                    }
                     ?>
                 </div>
             </div>
@@ -249,25 +247,32 @@
     </div>
 </div>
 <script>
-
+    var mcnt = 0;
      $(window).click(function (e) {
          if ($(e.target).closest('.sidebar').length == 0)
              $('.sidebar').removeClass('expanded');
+            $('#sidebar_bg').removeClass('expanded');
          });
 
      $('.expand').click(this, function () {
              if ($(this).closest('.sidebar').hasClass('expanded')) {
                  $(this).closest('.sidebar').removeClass('expanded');
+                 mcnt--;
              }
              else {
                  $(this).closest('.sidebar').addClass('expanded');
+                 mcnt++;
              }
+             if (mcnt == 0) $('#sidebar_bg').removeClass('expanded');
+             else $('#sidebar_bg').addClass('expanded');
          });
 
          $('[id$=_item]').click(function () {
              var i = '#' + this.id.substr(0, this.id.lastIndexOf('_item')) + '_menu';
-             if ($(i).hasClass('expanded')) $(i).removeClass('expanded');
-             else $(i).addClass('expanded');
+             if ($(i).hasClass('expanded')) { $(i).removeClass('expanded'); mcnt--;}
+             else { $(i).addClass('expanded'); mcnt++;}
+             if (mcnt == 0) $('#sidebar_bg').removeClass('expanded');
+             else $('#sidebar_bg').addClass('expanded');
          });
 
          $('#login_menu form').submit(function () {

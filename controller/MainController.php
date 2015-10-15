@@ -1,27 +1,34 @@
 <?php 
 require_once 'ControllerBase.php';
+require_once 'MenuController.php';
 
 class MainController extends ControllerBase
 {
 	function show(){
-        $res = $this->db->fetch('SELECT id AS moons, title, data_folder, description, show_main, type FROM sections WHERE parent_id IS NULL');
+        $res = $this->db->fetch('SELECT id, title, data_folder, description, show_main, type, parent_id FROM sections');
         if ($res === FALSE) echo 'error';
+        $show_res = [];
         foreach ($res as &$val)
         {
-            $r = $this->db->fetch("SELECT title, data_folder, description, parent_id, show_main, type FROM sections WHERE parent_id={$val['moons']}");
-            if ($r === FALSE) echo 'error';
-            if ($r)
-                foreach ($r as &$val2){
-                    $val2['image'] = '/sections/' . $val2['data_folder'] . '/main.png';
-                    $val2['href'] = '/sections/' . $val2['data_folder'];
-                }
-            unset($val2);
-            $val['moons'] = $r;
             $val['image'] = '/sections/' . $val['data_folder'] . '/main.png';
-            $val['href'] = '/sections/' . $val['data_folder'];
+            $val['href'] = '/sections/' . $val['data_folder'] . '/';
+            if ($val['show_main'])
+            {
+                if ($val['type'] == 0 || $val['type'] == 1)
+                    $show_res[$val['id']] = [ 'title' => $val['title'], 'description' => $val['description'], 'image' => $val['image'], 'href' => $val['href'], 'moons' => [] ];
+                else if ($val['type'] == 2)
+                    $show_res[$val['parent_id']]['moons'][] = [ 'title' => $val['title'], 'description' => $val['description'], 'image' => $val['image'], 'href' => $val['href']];
+            }
         }
+
         unset($val);
-        $this->data = $res;
+        $m = new MenuController;
+        $m->data = $res;
+        ob_start();
+        $m->render('menu');
+        $this->data['menu'] = ob_get_clean();
+
+        $this->data['show'] = $show_res;
 		$this->render('main');
 	}
 }
