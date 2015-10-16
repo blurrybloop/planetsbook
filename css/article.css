@@ -1,4 +1,12 @@
-﻿/*статья и боковой блок*/
+﻿body > img{
+    position: fixed; 
+    right: -5%; 
+    bottom:-35%; 
+    width: 35%; 
+    opacity: .5;
+}
+
+/*статья и боковой блок*/
 
 .tip{
     white-space: nowrap;
@@ -286,11 +294,14 @@ form[name=add_comm] textarea{
     margin-right: 1em;
     border-top: 1px solid rgb(68, 66, 66);
     padding: 0 2em;
-    text-indent: 2em;
 }
 
 .updown >input:checked + div>.updown_content{
     height: 15em;
+}
+
+.updown_content > *{
+    margin-top:0;
 }
 
 .desc{

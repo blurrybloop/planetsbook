@@ -4,10 +4,25 @@ abstract class ControllerBase
 {
 	public $db;
 	public $data=array();
-	
-	function render($view) {
+
+    function __construct($db, array $data = NULL) {
+        $this->db = $db;
+        $this->data =$data;
+    }
+
+	function renderView($view) {
 		include(PATH_VIEW . $view . '.php');
 	}
 
-    abstract function show();
+    function setData(array $data){
+        $this->data = $data;
+    }
+
+    abstract function process();
+    abstract function render();
+
+    function show() {
+        $this->process();
+        $this->render();
+    }
 }

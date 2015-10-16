@@ -10,7 +10,7 @@ function PlanetsSelector(parent, objects) {
     var planets = $("<div class='planets'><a></a></div>"); //контейнер для изображения
     var planet = $("<img class='object planet focused'/>").load(function () { //изображение
         $(this).removeClass('notransition moveback moveforward invisible').addClass('focused');
-        addTip.call(planet, objects[planetID].description);
+        addTip.call(planet, '<h2>' + objects[planetID].title + '</h2>' + objects[planetID].description);
         lockMove = false; //можете переходить к другой планете
 
         tmr = setTimeout(function () { //начинаем загрузку спутников
@@ -18,7 +18,7 @@ function PlanetsSelector(parent, objects) {
                 var pos = getMoonPosition(i);
                 var moon = $("<img src=\"" + objects[planetID].moons[i].image + "\" class=\"object moon invisible\" onload=\"$(this).removeClass('invisible')\">").css(pos);
                 planets.append(moon.wrap("<a href='" + objects[planetID].moons[i].href + "'></a>").parent());
-                addTip.call(moon, objects[planetID].moons[i].description, pos);
+                addTip.call(moon, '<h2>' + objects[planetID].moons[i].title + '</h2>' + objects[planetID].moons[i].description, pos);
             }
         }, 500);
     });
@@ -70,7 +70,7 @@ function PlanetsSelector(parent, objects) {
     function addTip(text, position) {
         var p;
         if ($(this).hasClass('planet'))
-            p = { right: '70%', bottom: '40%' };
+            p = { right: '71%', bottom: '40%' };
         else if ($(this).hasClass('moon'))
             p = { right: (100 - parseInt(position.left)) + '%', top: position.top };
         $("<div class='tip'>" + text + "</div>").css(p).insertAfter(this);
@@ -110,7 +110,6 @@ function PlanetsSelector(parent, objects) {
     }
 
     //сначала покажем первую планету
-    addTip.call(planet, objects[0].description);
     bSelector.find("input[name='ps_radio']").change(function () {
         var newID = parseInt(this.id[this.id.length - 1]);
         var dir = planetID - newID;

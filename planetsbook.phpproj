@@ -23,7 +23,8 @@
     <IncludeDebugInformation>false</IncludeDebugInformation>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="article_temp.php" />
+    <Compile Include="view\article.php" />
+    <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
     <Compile Include="controller\MainController.php" />
     <Compile Include="controller\MenuController.php" />
@@ -51,14 +52,8 @@
     <Content Include="css\article.css" />
     <Content Include="css\main.css" />
     <Content Include="css\planet_selector.css" />
-    <Content Include="img\1.jpg" />
-    <Content Include="img\2.jpg" />
     <Content Include="img\arrow.png" />
     <Content Include="img\arrow2.png" />
-    <Content Include="img\ar_bottom.png" />
-    <Content Include="img\ar_left.png" />
-    <Content Include="img\ar_right.png" />
-    <Content Include="img\ar_top.png" />
     <Content Include="img\asteroids.png" />
     <Content Include="img\bg.jpg" />
     <Content Include="img\bold.png" />
@@ -71,7 +66,6 @@
     <Content Include="img\cross.png" />
     <Content Include="img\dislike.png" />
     <Content Include="img\down_arrow.png" />
-    <Content Include="img\earth.png" />
     <Content Include="img\edit.png" />
     <Content Include="img\europa.png" />
     <Content Include="img\exclamation.png" />
@@ -90,9 +84,6 @@
     <Content Include="img\login.png" />
     <Content Include="img\logo.png" />
     <Content Include="img\mars.png" />
-    <Content Include="img\mercury.png" />
-    <Content Include="img\mercury1.png" />
-    <Content Include="img\moon.png" />
     <Content Include="img\moon_small.png" />
     <Content Include="img\neptune.png" />
     <Content Include="img\phobos_deimos.png" />
@@ -106,9 +97,6 @@
     <Content Include="img\scroll_tip.png" />
     <Content Include="img\search.png" />
     <Content Include="img\send.png" />
-    <Content Include="img\sun.png" />
-    <Content Include="img\sun006.jpg" />
-    <Content Include="img\sun_small.png" />
     <Content Include="img\system.png" />
     <Content Include="img\titan.png" />
     <Content Include="img\tooltip.png" />
@@ -118,9 +106,7 @@
     <Content Include="img\user.png" />
     <Content Include="img\user2.png" />
     <Content Include="img\user_big.png" />
-    <Content Include="img\venus.png" />
     <Content Include="img\video.png" />
-    <Content Include="img\wait.png" />
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />

@@ -23,7 +23,7 @@ echo $this->data['menu'];
         </div>
 </body>
 </html>
-
+<script></script>
 <script>
 var ps = new PlanetsSelector('#content', <?php echo json_encode(array_values($this->data['show'])) ?>);
 

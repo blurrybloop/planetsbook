@@ -5,6 +5,8 @@ class Application
 	{
 		$menu='main';
         if (isset($_REQUEST['menu'])) $menu = $_REQUEST['menu'];
+        if (!empty($_REQUEST['param2']) && $menu == 'sections') $menu='article';
+
 		if (!is_file(PATH_CONTROLLER . $menu . 'Controller.php'))
 		{
 			echo 'error file controller';
@@ -24,8 +26,7 @@ class Application
 			echo 'error DB';
 			return;
 		}
-		$c=new $class();
-		$c->db=$db;
+		$c=new $class($db);
 		$c->show();
 	}
 }

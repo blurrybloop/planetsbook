@@ -15,7 +15,7 @@
                         <img src="/img/search.png" /><p>Поиск</p>
                     </div>
                     <?php
-                        foreach ($this->data as $val){
+                    foreach ($this->data['menu'] as $val){
                             if ($val['type'] == 0)
                             {
                                 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
@@ -64,7 +64,7 @@
             <div>
                 <div class="vtop">
                     <?php
-                    foreach ($this->data as $val){
+                    foreach ($this->data['menu'] as $val){
                         if ($val['type'] == 1) {
                             if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
                                 $sf = '/sections/' . $val['data_folder'] . '/main_small.png';
@@ -89,7 +89,7 @@
             <div>
                 <div>
                     <?php
-                    foreach ($this->data as $val)
+                    foreach ($this->data['menu'] as $val)
                             if ($val['type'] == 2)
                             {
                                 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
@@ -249,9 +249,11 @@
 <script>
     var mcnt = 0;
      $(window).click(function (e) {
-         if ($(e.target).closest('.sidebar').length == 0)
+         if ($(e.target).closest('.sidebar').length == 0) {
+             mcnt = 0;
              $('.sidebar').removeClass('expanded');
-            $('#sidebar_bg').removeClass('expanded');
+             $('#sidebar_bg').removeClass('expanded');
+         }
          });
 
      $('.expand').click(this, function () {
@@ -261,7 +263,7 @@
              }
              else {
                  $(this).closest('.sidebar').addClass('expanded');
-                 mcnt++;
+                 mcnt++; 
              }
              if (mcnt == 0) $('#sidebar_bg').removeClass('expanded');
              else $('#sidebar_bg').addClass('expanded');
@@ -272,7 +274,7 @@
              if ($(i).hasClass('expanded')) { $(i).removeClass('expanded'); mcnt--;}
              else { $(i).addClass('expanded'); mcnt++;}
              if (mcnt == 0) $('#sidebar_bg').removeClass('expanded');
-             else $('#sidebar_bg').addClass('expanded');
+             $('#sidebar_bg').addClass('expanded');
          });
 
          $('#login_menu form').submit(function () {

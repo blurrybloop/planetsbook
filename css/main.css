@@ -1,4 +1,23 @@
-﻿@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700&subset=latin,cyrillic);
+﻿@font-face{
+    font-family: Open Sans;
+    src: url(fonts/OpenSans-Regular.ttf);
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face{
+    font-family: Open Sans;
+    src: url(fonts/OpenSans-Bold.ttf);
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face{
+    font-family: Open Sans;
+    src: url(fonts/OpenSans-Italic.ttf);
+    font-weight: normal;
+    font-style: italic;
+}
 
 *{
     color: #D4CECE;
@@ -18,6 +37,7 @@
 body {
     background: url("../img/bg.jpg") no-repeat;
     background-size: cover;
+    background-attachment: fixed;
     background-color: black;
     overflow: auto;
     left:0;
@@ -181,23 +201,24 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     width: 5em;
 }
 
-.sidebar form label span img{
+.sidebar form label > span img{
     height: 1em;
     width: auto;
     margin:0;
 }
- .sidebar form label span{
+ .sidebar form label > span{
      float: right;
      position: relative;
  }
 
 
-    .sidebar form label span > div {
-        width: 17em;
+    .sidebar form label span > .tip {
+        width: 16em;
         white-space: normal;
+        top:100%;
     }
 
-.sidebar form label:hover span> div{
+.sidebar form label:hover span> .tip{
     transition-delay: .7s;
     visibility: visible;
     opacity:1;

@@ -2,13 +2,12 @@
 require_once 'ControllerBase.php';
 require_once 'MenuController.php';
 
-class MainController extends ControllerBase
+class MainController extends MenuController
 {
-	function show(){
-        $res = $this->db->fetch('SELECT id, title, data_folder, description, show_main, type, parent_id FROM sections');
-        if ($res === FALSE) echo 'error';
+	function process(){
+        parent::process();
         $show_res = [];
-        foreach ($res as &$val)
+        foreach ($this->data['menu'] as &$val)
         {
             $val['image'] = '/sections/' . $val['data_folder'] . '/main.png';
             $val['href'] = '/sections/' . $val['data_folder'] . '/';
@@ -22,14 +21,12 @@ class MainController extends ControllerBase
         }
 
         unset($val);
-        $m = new MenuController;
-        $m->data = $res;
-        ob_start();
-        $m->render('menu');
-        $this->data['menu'] = ob_get_clean();
-
-        $this->data['show'] = $show_res;
-		$this->render('main');
+        $this->data['show'] = $show_res; 
 	}
+
+    function render(){
+        $this->data['menu'] = parent::render();
+		$this->renderView('main');
+    }
 }
 ?>

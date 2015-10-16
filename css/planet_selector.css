@@ -25,10 +25,26 @@ div.wheel_selector {
     height: 100%;
 }
 
+.wheel_selector .tip > h2{
+    font-size: 1.2em;
+    margin:0;
+}
+
+.wheel_selector .tip > h3{
+    font-weight: normal;
+    font-style: italic;
+    margin:0 0 .5em;
+}
+
 .wheel_selector .tip{
     background-color: rgba(81, 80, 80, 0.55);
     color: white;
-    font-size: 1em;
+    padding: 1em;
+}
+
+.wheel_selector .tip > *{
+
+    color: white;
 }
 
 .button_selector > div {
@@ -92,7 +108,7 @@ div.wheel_selector {
 .object.focused:hover + .tip, .object.moon:hover + .tip {
     visibility: visible;
     opacity: 1;
-    transition-delay: .5s;
+    transition-delay: 1s;
 } 
 
 .object.moon {
