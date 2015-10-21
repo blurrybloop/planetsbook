@@ -23,6 +23,8 @@
     <IncludeDebugInformation>false</IncludeDebugInformation>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="controller\CommentsController.php" />
+    <Compile Include="include\ControllerException.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
@@ -32,6 +34,7 @@
     <Compile Include="include\app.php" />
     <Compile Include="include\mysql.php" />
     <Compile Include="index.php" />
+    <Compile Include="view\comment.php" />
     <Compile Include="view\section.php" />
     <Compile Include="view\footer.php" />
     <Compile Include="view\html_head.php" />
@@ -99,7 +102,6 @@
     <Content Include="img\send.png" />
     <Content Include="img\system.png" />
     <Content Include="img\titan.png" />
-    <Content Include="img\tooltip.png" />
     <Content Include="img\triton.png" />
     <Content Include="img\underline.png" />
     <Content Include="img\uranus.png" />
@@ -107,6 +109,7 @@
     <Content Include="img\user2.png" />
     <Content Include="img\user_big.png" />
     <Content Include="img\video.png" />
+    <Content Include="js\comments.js" />
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />

@@ -1,4 +1,7 @@
 <?php
+
+require_once 'ControllerException.php';
+
 class Application
 {
 	function Run()
@@ -27,7 +30,15 @@ class Application
 			return;
 		}
 		$c=new $class($db);
-		$c->show();
+        try{
+            $c->show();
+        }
+        catch (ControllerException $ex) {
+            echo '<p>' . $ex . '</p>';
+            if ($d = trim($ex->getDetails())) echo '<p class="details">' . $d . '</p>';
+            http_response_code(500);
+            return;
+        }
 	}
 }
 ?>

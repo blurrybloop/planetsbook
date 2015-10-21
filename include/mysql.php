@@ -42,6 +42,14 @@ class mysql
         return mysqli_query($this->con, $sql);
    }
 
+   function last_insert_id(){
+       return mysqli_insert_id($this->con);
+   }
+
+   function last_error($includeCode = TRUE){
+       return ($includeCode ? mysqli_errno($this->con) : '') . ': ' . mysqli_error( $this->con);
+   }
+
    function fetch($sql, $count = -1) {
        $r = $this->query($sql);
        if ($r === FALSE) return false;

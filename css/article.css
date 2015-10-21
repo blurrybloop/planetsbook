@@ -12,8 +12,8 @@
     white-space: nowrap;
 }
 
-div:hover > .tip{
-    transition-delay: 1s;
+*:hover > .tip{
+    transition-delay: .7s;
     visibility: visible;
     opacity:1;
 }
@@ -115,14 +115,13 @@ section.comments{
 .comments > article{ 
     transition: visibility .3s, opacity .3s; 
     padding: 0 !important;
-    border: 2px solid rgb(12, 11, 11);
-    margin-bottom: .1em;
+    margin-bottom: 5px;
     background-color: rgb(35, 31, 31);
 }
 
 .comment{
     width:100%;
-    transition: visibility .3s, opacity .3s;
+    transition: all .3s;
     background-color: rgb(35, 31, 31);
     display: table;
     table-layout: fixed;
@@ -130,10 +129,16 @@ section.comments{
 
 .comments > .add{
     transition: visibility .3s, opacity .3s;
-    text-align:center;
-    padding:1em;
+    padding: 0 0 2em !important;
     cursor: pointer;
     background: none;
+    text-align: center;
+
+}
+
+.comments > .add > *{
+    background-color: rgb(35, 31, 31);
+    text-align: left;
 }
 
 .comment > div{
@@ -188,9 +193,14 @@ section.comments{
     float: right;
 }
 
-.rate > img{
+.rate > div{
+    display: inline-block;
     cursor: pointer;
-    margin: 0 1em;
+    margin: 0;
+    
+}
+
+.rate > div > img{
     height: 1em;
 }
 
@@ -218,11 +228,11 @@ section.comments{
 }
 
 .comm_footer.maximized > .comm_edit:after{content: 'Редактировать'}
-.comm_footer.maximized > .comm_del:after{content: 'Удалить'}
+.comm_footer.maximized > .comm_delete:after{content: 'Удалить'}
 .comm_footer.maximized > .comm_cancel:after{content: 'Отменить'}
 .comm_footer.maximized > .comm_send:after{content: 'Отправить'}
 .comm_footer.maximized > .comm_apply:after{content: 'Предпросмотр'}
-.comm_footer.maximized > .comm_cancel_apply:after{content: 'Назад'}
+.comm_footer.maximized > .comm_cancelApply:after{content: 'Назад'}
 
 .comm_footer > div{
     cursor: pointer;
@@ -242,22 +252,29 @@ section.comments{
     background-color: rgb(16, 14, 14);
 }
 
-.comm_del, .comm_cancel{background-image: url(/img/cross.png);}
+.comm_delete, .comm_cancel{background-image: url(/img/cross.png);}
 .comm_edit{background-image: url(/img/edit.png);}
 .comm_send{background-image: url(/img/send.png);}
 .comm_apply{background-image: url(/img/eye.png);}
-.comm_cancel_apply{background-image: url(/img/arrow2.png);}
+.comm_cancelApply{background-image: url(/img/arrow2.png);}
 .loading {background-image: url(/img/loading.gif)}
 
-form[name=add_comm] textarea{
+textarea#edit_field{
     padding:0; 
     margin:0; 
     width:100%; 
     line-height: 1.5em;
     resize: none; 
-    background: none; 
+    background: none;
     border: none;
-    font-size: 1em;
+    font-size: .8em;
+    height: 250px;
+}
+
+.comments > div:last-child{
+    text-align: center;
+    padding: 1em;
+    cursor: pointer;
 }
 
 /*выбор статьи*/

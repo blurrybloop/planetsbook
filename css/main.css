@@ -330,7 +330,7 @@ footer > div {
     overflow: auto;
     visibility: hidden;
     opacity: 0;
-    transition: visibility .3s, opacity .3s;
+    transition: visibility .2s, opacity .2s;
 }
 
 .msgbox_container.showed{
@@ -339,7 +339,7 @@ footer > div {
 }
 
 .msgbox_container > div{
-    transition: top .3s;
+    transition: top .2s;
     display: table;
     position: absolute;
     top: -100%;
@@ -380,6 +380,45 @@ footer > div {
 
 .msgbox > div:first-child + div{
     padding-right:1em;
+}
+
+.msgbox .details{
+    transition: height .5s;
+    height: 0;
+    overflow: auto;
+    font-size: .8em;
+    text-align: left !important;
+}
+
+.msgbox label{
+    font-size: .8em;
+    border-top: 1px dashed #D4CECE;
+    display: block;
+    padding-top: 5px;
+}
+
+.msgbox label > img{
+    height: .5em;
+    width: .8em;
+    margin-left: 5px;
+    transition: transform .5s;
+}
+
+.msgbox #details_check{
+    display: none;
+}
+
+.msgbox #details_check:checked + label + .details{
+    height: 100px;
+}
+
+.msgbox #details_check:checked + label > img{
+     -moz-transform: scale(1, -1);
+    -webkit-transform: scale(1, -1);
+    -o-transform: scale(1, -1);
+    transform: scale(1, -1);
+    filter: FlipV;
+    -ms-filter: "FlipV";
 }
 
 .tip{

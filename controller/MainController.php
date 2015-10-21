@@ -4,6 +4,7 @@ require_once 'MenuController.php';
 
 class MainController extends MenuController
 {
+   
 	function process(){
         parent::process();
         $show_res = [];

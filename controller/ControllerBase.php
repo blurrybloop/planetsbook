@@ -12,10 +12,6 @@ abstract class ControllerBase
 
 	function renderView($view) {
 		include(PATH_VIEW . $view . '.php');
-	}
-
-    function setData(array $data){
-        $this->data = $data;
     }
 
     abstract function process();
