@@ -117,10 +117,10 @@
     $.fn.makeBold = function () { this.first().wrapSelected('[b]', '[/b]'); }
     $.fn.makeItalic = function () { this.first().wrapSelected('[i]', '[/i]'); }
     $.fn.makeUnderline = function () { this.first().wrapSelected('[u]', '[/u]'); }
-    $.fn.makeLeft = function () { this.first().wrapSelected('[p align=left]', '[/p]'); }
-    $.fn.makeCenter = function () { this.first().wrapSelected('[p align=center]', '[/p]'); }
-    $.fn.makeRight = function () { this.first().wrapSelected('[p align=right]', '[/p]'); }
-    $.fn.makeJustify = function () { this.first().wrapSelected('[p align=justify]', '[/p]'); }
+    $.fn.makeLeft = function () { this.first().wrapSelected('[left]', '[/left]'); }
+    $.fn.makeCenter = function () { this.first().wrapSelected('[center]', '[/center]'); }
+    $.fn.makeRight = function () { this.first().wrapSelected('[right]', '[/right]'); }
+    $.fn.makeJustify = function () { this.first().wrapSelected('[justify]', '[/justify]'); }
 
     comments.onUpdateComment = function(){
         this.attachCommentHandlers();

@@ -1,16 +1,16 @@
 <?php
 
 require_once 'ControllerBase.php';
+require_once '/include/TagsParser.php';
 
 class CommentsController extends ControllerBase
 {
     public $outputMode = 0;
+    public $parser;
 
-    static function parseTags($input){
-        $regex = '#(?Ui)\[\s*([biup])(?:\s+align\s*=\s*(left|center|right|justify))?\s*\](.*)\[\s*\/\1\\s*]#';
-        if (is_array($input))
-            $input = '<' . $input[1] . (!empty($input[2]) ? ' style="text-align:' . $input[2] . '"' : '') . '>' . $input[3] . '</' . $input[1] . '>';
-        return preg_replace_callback($regex, 'CommentsController::parseTags', $input);
+    function __construct($db, array $data = NULL){
+        parent::__construct($db, $data);
+        $this->parser = new TagsParser;
     }
 
     function like($id){
@@ -71,7 +71,8 @@ class CommentsController extends ControllerBase
         $user = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar FROM users WHERE id=1");
         if (!$user) throw new ControllerException('Произошла ошибка при обработке комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
         $this->data[0] = $user[0];
-        $this->data[0]['comm_text'] = $this->parseTags(str_replace(['\n', '\r'], '', strip_tags($text)));
+        $this->parser->text = str_replace(['\n', '\r'], '', strip_tags($text));
+        $this->data[0]['comm_text'] = $this->parser->parse();
         $this->data[0]['add_date'] = date('d.m.Y H:i');
         $this->outputMode = 2;
     }
@@ -97,11 +98,10 @@ class CommentsController extends ControllerBase
     }
 
     function process() {
-
         if (!isset($_REQUEST['args'])) throw new ControllerException('Неправильные параметры запроса');
-        if (!is_array($args = $_REQUEST['args'])) throw new ControllerException('Неправильные параметры запроса');
+        if (!is_array($args = $_REQUEST['args'])) $args=[1,1,10]; //throw new ControllerException('Неправильные параметры запроса');
         $action = strtolower($_REQUEST['param1']);
-        file_put_contents('huy.txt', $action); 
+
         call_user_func_array(get_class($this) . '::' . $action, $args);
     }
 

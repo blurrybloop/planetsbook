@@ -36,7 +36,10 @@ foreach ($this->data as $comment) {?>
                 <textarea id='edit_field' placeholder='Введите ваш комментарий...'><?php if (isset($comment['comm_text'])) echo $comment['comm_text'] ?></textarea>
                 <?php
                       }
-                      else echo $this->parseTags($comment['comm_text'])
+                      else {
+                          $this->parser->text = $comment['comm_text'];
+                            echo $this->parser->parse();
+                      }
                 ?>
             </div>
             <div class="comm_footer maximized <?php if ($this->outputMode == 1) echo 'nohide' ?>">

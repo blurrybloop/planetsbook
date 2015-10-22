@@ -25,6 +25,7 @@
   <ItemGroup>
     <Compile Include="controller\CommentsController.php" />
     <Compile Include="include\ControllerException.php" />
+    <Compile Include="include\TagsParser.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />

@@ -15,14 +15,14 @@ function Comments(parent, articleID, allowAdd) {
     this.fetch = function () {
             if (lockFetch) return;
             lockFetch = true;
-            $.post("/comments/fetch/", { args: [_article, curPage++, 10] }, function (data) {
+            var j  = $.post("/comments/fetch/", { args: [_article, curPage++, 10] }, function (data) {
                 var el = $(data);
                 el.addClass('invisible');
                 el.insertBefore(nextPage);
                 setTimeout(function () { el.removeClass('invisible'); }, 0);
                 if (self.onUpdateComment) self.onUpdateComment.call(el);
                 lockFetch = false;
-            });
+            }).fail(function () { alert(j.responseText);});
     }
 
     var add = $("<article class='comment add'>Добавить комментарий</article>").click(function () { self.edit($(this), $(this)); });

@@ -31,7 +31,7 @@ class Application
 		}
 		$c=new $class($db);
         try{
-            $c->show();
+            $c->show(); 
         }
         catch (ControllerException $ex) {
             echo '<p>' . $ex . '</p>';
@@ -39,6 +39,7 @@ class Application
             http_response_code(500);
             return;
         }
+
 	}
 }
 ?>
