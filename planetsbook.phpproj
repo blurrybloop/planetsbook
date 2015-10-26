@@ -24,6 +24,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="controller\CommentsController.php" />
+    <Compile Include="controller\UsersController.php" />
     <Compile Include="include\ControllerException.php" />
     <Compile Include="include\TagsParser.php" />
     <Compile Include="view\article.php" />
@@ -35,6 +36,7 @@
     <Compile Include="include\app.php" />
     <Compile Include="include\mysql.php" />
     <Compile Include="index.php" />
+    <Compile Include="view\bbhelp.php" />
     <Compile Include="view\comment.php" />
     <Compile Include="view\section.php" />
     <Compile Include="view\footer.php" />

@@ -9,7 +9,7 @@
 /*статья и боковой блок*/
 
 .tip{
-    white-space: nowrap;
+    white-space: normal;
 }
 
 *:hover > .tip{
@@ -136,6 +136,11 @@ section.comments{
 
 }
 
+.comments > .add > img{
+    height: 1em;
+    margin-right: 10px;
+}
+
 .comments > .add > *{
     background-color: rgb(35, 31, 31);
     text-align: left;
@@ -174,7 +179,7 @@ section.comments{
     position: relative;
 }
 
-.comm_header div:nth-child(4) {margin-left: 3em;}
+.comm_header div:nth-child(5), .comm_header div:nth-child(7), .comm_header div:nth-child(11), .comm_header div:nth-child(15){margin-left: 2em;}
 
 .comm_header{
     overflow: visible;
@@ -208,6 +213,10 @@ section.comments{
     overflow-x: auto;
     margin: 0 2em 1em 1em;
     line-height: 1.5em;
+}
+
+.comm_body figure{
+    display: inline-block;
 }
 
 .comm_footer{
@@ -252,11 +261,12 @@ section.comments{
     background-color: rgb(16, 14, 14);
 }
 
-.comm_delete, .comm_cancel{background-image: url(/img/cross.png);}
+.comm_delete{background-image: url(/img/delete.png);}
+.comm_cancel{background-image: url(/img/cancel.png);}
 .comm_edit{background-image: url(/img/edit.png);}
-.comm_send{background-image: url(/img/send.png);}
+.comm_send{background-image: url(/img/airplane.png);}
 .comm_apply{background-image: url(/img/eye.png);}
-.comm_cancelApply{background-image: url(/img/arrow2.png);}
+.comm_cancelApply{background-image: url(/img/prev.png);}
 .loading {background-image: url(/img/loading.gif)}
 
 textarea#edit_field{
@@ -267,14 +277,19 @@ textarea#edit_field{
     resize: none; 
     background: none;
     border: none;
-    font-size: .8em;
-    height: 250px;
+    font-size: 1em;
+    height: 400px;
 }
 
 .comments > div:last-child{
     text-align: center;
     padding: 1em;
     cursor: pointer;
+}
+
+.comments > div:last-child > img{
+    height: 1em;
+    margin-right: 5px;
 }
 
 /*выбор статьи*/
@@ -338,20 +353,21 @@ textarea#edit_field{
 	padding-left: 1.5em;
 	display: inline;
 	margin-right: 1em;
+    background-size: 15px 1.1em !important;
 }
 
 .date{
-background: url(/img/calender.png) 0 0 no-repeat;
+background: url(/img/calender.png) 0 no-repeat;
 background-size: auto 1em;
 background-position: left center;
 }
 
 .user{
-	background: url(/img/user2.png) 0 0 no-repeat;
+	background: url(/img/user2.png) 0 no-repeat;
 }
 
 .views{
-	background: url(/img/eye1.png) 0 center no-repeat;
+	background: url(/img/eye.png) 0 center no-repeat;
 }
 
 .updown >input:checked + div>label > img{

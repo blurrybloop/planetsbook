@@ -246,7 +246,6 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
 }
 
 .log_message{
-    background-color: rgba(255, 120, 120, 0.82);
     color: black;
     font-size: .8em;
     background-image: url(/img/exclamation.png);
@@ -263,6 +262,14 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     padding: .5em .5em .5em 2.5em !important;
 }
 
+.log_message.success{
+    background-color: rgba(49, 185, 22, 0.82);
+}
+
+.log_message.fail{
+    background-color: rgba(255, 120, 120, 0.82);
+}
+
 .items .search_container > input[type=search]
 {
     background: none;
@@ -276,6 +283,12 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     right: .5em;
     top: 1em;
     position: absolute;
+}
+
+#reg_submit.loading, #login_submit.loading{
+    border: none;
+    background: url(/img/loading.gif) center left no-repeat;
+    background-size: 1em;
 }
 
 #menu {
@@ -369,6 +382,19 @@ footer > div {
     margin-right: auto;
 }
 
+.msgbox figure{
+    display: inline-block;
+}
+
+.msgbox h1{
+    font-size: 1.3em;
+}
+
+.msgbox h2{
+    color: #9F3737;
+    font-size: 1.1em;
+}
+
 .msgbox > div:first-child{
     padding-right: 1em;
     text-align: right;
@@ -432,6 +458,7 @@ footer > div {
     padding: .5em;
     font-size: .8em;
     text-align: left;
+    box-shadow: 0 0 5px rgba(255,255,255,0.4);
 }
 
 .tip > *{color: black;}

@@ -22,12 +22,19 @@ function Comments(parent, articleID, allowAdd) {
                 setTimeout(function () { el.removeClass('invisible'); }, 0);
                 if (self.onUpdateComment) self.onUpdateComment.call(el);
                 lockFetch = false;
-            }).fail(function () { alert(j.responseText);});
+            }).fail(function () { messageBox(j.responseText);});
     }
 
-    var add = $("<article class='comment add'>Добавить комментарий</article>").click(function () { self.edit($(this), $(this)); });
-    _parent.append(add);
-    var nextPage = $("<div>Еще...</div>").click(this.fetch);
+    this.help = function () {
+        var j = $.post("/comments/help/", { args: [0] }, function (data) {
+            messageBox(data, 'left', '60%');
+        }).fail(function () { messsageBox(j.responseText); });
+
+    }
+
+    var add = $("<article class='comment add'><img src='/img/comment.png'/>Комментировать...</article>").click(function () { self.edit($(this), $(this)); });
+    if (allowAdd) _parent.append(add);
+    var nextPage = $("<div><img src='/img/playback.png' />Еще...</div>").click(this.fetch);
     _parent.append(nextPage);
 
     this.performAction = function (comment, target, action, actionName, requestParams, noTransition) {

@@ -6,6 +6,7 @@ class Application
 {
 	function Run()
 	{
+        session_start();
 		$menu='main';
         if (isset($_REQUEST['menu'])) $menu = $_REQUEST['menu'];
         if (!empty($_REQUEST['param2']) && $menu == 'sections') $menu='article';

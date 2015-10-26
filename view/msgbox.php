@@ -20,17 +20,19 @@
     });
 
     $('.msgbox_container > div > div').click(function (e) {
-       if ($(e.target).closest('.msgbox').length == 0)
+        if ($(e.target).closest('.msgbox').length == 0) {
             $(this).closest('.msgbox_container').removeClass('showed');
+        }
     });
 
-        function messageBox(content, align) {
+        function messageBox(content, align, _width) {
             var c = $(content);
             var el = $('.msgbox > div:last-child');
             el.html('');
             el.append(c);
             $("<input type='checkbox' id='details_check' /><label for='details_check'>Детали<img src='/img/details_arrow.png' /></label>").insertBefore($('.details'));
             if (align) el.css('text-align', align);
+            if (_width) $('.msgbox').width(_width);
             $('.msgbox_container').addClass('showed');
         }
 

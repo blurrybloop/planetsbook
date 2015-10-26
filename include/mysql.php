@@ -46,6 +46,10 @@ class mysql
        return mysqli_insert_id($this->con);
    }
 
+   function last_error_code(){
+       return mysqli_errno($this->con);
+   }
+
    function last_error($includeCode = TRUE){
        return ($includeCode ? mysqli_errno($this->con) : '') . ': ' . mysqli_error( $this->con);
    }
