@@ -3,15 +3,28 @@ if (empty($this->data['comments'])) return;
 foreach ($this->data['comments'] as $comment) {?>
 <article class="comment" <?php if (isset($comment['id'])) echo "id='comm{$comment['id']}'" ?> >
         <div>
-            <?php echo $comment['login'] ?>
+            <div class='user_name'><?php echo $comment['login'] ?></div>
             <div>
-                <img src="/img/user_big.png" style="width: 50%" />
+                <?php if (isset($comment['user_id'])) { ?>
+                <a href="<?php echo '/users/profile?id=' . $comment['user_id'] ?>">
+                    <?php } ?>
+                    <img src="<?php if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/avatars/' . $comment['avatar'] . '.png')) echo '/avatars/' . $comment['avatar'] . '.png';  ?>" style="width: 50%" />
+                <?php if (isset($comment['user_id'])) { ?>
+                </a>
+                <?php } ?>
             </div>
             <?php  echo $comment['is_admin'] ? 'Администратор' : 'Пользователь' ?>
             <div class="info">
-                <div>Репутация: <span style="color: green;">+5</span></div>
+                <div>Репутация: 
+                <?php
+    $rate =  isset($comment['rating']) ? $comment['rating'] : 0;
+    if ($rate > 0) echo "<span style='color: green;'>+$rate</span>";
+    else if ($rate == 0) echo "<span style='color: white;'>$rate</span>";
+    else echo "<span style='color: red;'>$rate</span>"; 
+                ?>
+                </div>
                 <div>Зарегистирован: <time><?php echo $comment['reg_date'] ?></time></div>
-                <div>Комментариев: 3</div>
+                <div>Комментариев: <span class="comm_cnt"><?php echo (isset($comment['comments_cnt']) ? $comment['comments_cnt'] : '0');?></span></div>
             </div>
         </div>
         <div>
@@ -58,8 +71,9 @@ foreach ($this->data['comments'] as $comment) {?>
             </div>
             <div class="comm_footer maximized <?php if ($this->outputMode == 1) echo 'nohide' ?>">
                 <?php if ($this->outputMode == 0) { ?>
-                <?php if ($this->validateRights([USER_ADMIN], 0, FALSE)) { ?><div class="comm_delete"></div><?php } ?>
-                <?php if ($this->validateRights(NULL, $comment['user_id'], FALSE)) {?>
+                <?php if ($this->validateRights([USER_ADMIN], $comment['id'], FALSE)) { ?><div class="comm_delete"></div><?php } ?>
+                <?php
+                  if ($this->validateRights(NULL, $comment['id'], FALSE)) {?>
                 <div class="comm_edit">&nbsp;</div>
                 <?php } ?>
                 <?php } else if ($this->outputMode ==1) { ?>

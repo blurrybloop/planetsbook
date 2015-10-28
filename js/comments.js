@@ -64,9 +64,11 @@ function Comments(parent, articleID, allowAdd) {
     }
 
     this.rate = function (comment, target, val) {
+        if (lock) return;
         this.performAction(comment, target, function (data) {
             var d = $(data);
             comment.replaceWith(d);
+            updateUserInfo(d.children('div:first-child'));
             return d;
         }, val > 0 ? 'like' : 'dislike', { args: [$(comment).attr('id').replace('comm', '')] }, true);
     }
@@ -78,13 +80,18 @@ function Comments(parent, articleID, allowAdd) {
             var d = $(data);
             if (isAdd) {d.insertAfter(comment); comment.replaceWith(add)} else comment.replaceWith(d);
             lock = false;
+            if (isAdd) updateUserInfo(d.children('div:first-child'));
             return isAdd ? $([d, add]) : d;
         }, isAdd ? "add" : "edit", { args: isAdd ? [_article, edit.find('#edit_field').val()] : [$(comment).attr('id').replace('comm', ''), edit.find('#edit_field').val()] });
     }
 
     this.delete = function (comment, target) {
+        if (lock) return;
+        var u = $('<div>' + $(comment).children('div:first-child').html() + '</div>');
+        u.find('.comm_cnt').html(parseInt(u.find('.comm_cnt').text()) - 1);
         this.performAction(comment, target, function (data) {
             comment.remove();
+            updateUserInfo(u);
         }, "delete", { args: [$(comment).attr('id').replace('comm', '')] });
     }
 
@@ -94,7 +101,6 @@ function Comments(parent, articleID, allowAdd) {
         this.performAction(comment, target, function (data) {
             var d = isAdd ? $(data).addClass('add') : $(data).attr('id', i);
             edit = comment.replaceWith(d);
-            lock = false;
             return d;
         }, "preview", { args: [$(edit_field).val()] });
     }
@@ -130,5 +136,13 @@ function Comments(parent, articleID, allowAdd) {
             }, "text", { args: isAdd ? [0] : [$(comment).attr('id').replace('comm', '')] });
         }
 
-        
+    function updateUserInfo(updatedUserInfo) {
+        var userName = $(updatedUserInfo).children('.user_name').text();
+        $('.comment > div > .user_name').each(function () {
+            if ($(this).text() == userName) {
+                $(this).parent().html($(updatedUserInfo).html());
+            }
+        });
+    }
+
 }

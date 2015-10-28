@@ -1,0 +1,45 @@
+﻿.sticky > div > div:first-child{
+   width:100%;
+   height: 40px;
+   top: 27px;
+   position: absolute;
+   left: -60px;
+   padding-left: 60px;
+   background: url(/img/left.png) left center no-repeat;
+   background-size: auto 100%;
+   z-index:99;
+   transition: top .3s;
+
+}
+
+.sticky > div > div:first-child > div{
+    width:100%;
+       position: absolute;
+       left: 30px;
+       height: 100%;
+       padding-left: 40px;
+       background-color: #282727;
+}
+
+.sticky > div > div{
+
+    cursor: pointer;
+}
+
+.sticky > div > div > p{
+   position: relative;
+   z-index: 100;
+}
+
+.sticky{
+    overflow: visible;
+    background: none;
+    border: none;
+    box-shadow: none;
+    top: 1em;
+    position: relative;
+}
+
+.sticky > *{
+    padding: 0 1em;
+}

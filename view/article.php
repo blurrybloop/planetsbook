@@ -32,9 +32,9 @@
                                     <time class="date">
                                         <?php echo $this->data['article']['pub_date'] ?>
                                     </time>
-                                    <div class="user">
+                                    <a href="<?php echo '/users/profile?id=' . $this->data['article']['user_id'] ?>" class="user">
                                         <?php echo $this->data['article']['login'] ?>
-                                    </div>
+                                    </a>
                                     <div class="views">
                                         <?php echo $this->data['article']['views'] ?>
                                     </div>

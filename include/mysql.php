@@ -64,5 +64,49 @@ class mysql
        return $f;
    }
 
+   function insert($table, array $values){
+       $fldList =''; $valList='';
+       foreach ($values as $field => $value) {
+           $fldList .= '`' . $field . '`,';
+           $valList .=  $this->escapeString($value) . ',';
+       }
+      
+       $fldList = rtrim($fldList, ',');
+       $valList = rtrim($valList, ',');
+       $sql = 'INSERT INTO `' . $table . '` (' . $fldList . ') VALUES (' . $valList . ')';
+       return $this->query($sql);
+   }
+
+   function update($table, array $values, array $where){
+       $list = '';
+       foreach ($values as $field => $value) {
+           $list .= '`' . $field . '`=' . $this->escapeString($value) . ',';
+       }
+
+       $list = rtrim($list, ',');
+
+       $listW = '';
+       foreach ($where as $field => $value) {
+           $listW .= '`' . $field . '`=' . $this->escapeString($value) . ' AND ';
+       }
+       if (substr($listW, -4) == 'AND ') $listW = substr($listW, 0, -4);
+       $sql = 'UPDATE `' . $table . '` SET ' . $list . ' WHERE ' . $listW;
+       return $this->query($sql);
+   }
+
+   function delete($table, array $where){
+       $listW = '';
+       foreach ($where as $field => $value) {
+           $listW .= '`' . $field . '`=' . $this->escapeString($value) . ' AND ';
+       }
+       if (substr($listW, -4) == 'AND ') $listW = substr($listW, 0, -4);
+       $sql = 'DELETE FROM `' . $table . '` WHERE ' . $listW;
+       return $this->query($sql);
+   }
+
+   function escapeString($str){
+       return strcasecmp($str, 'NULL') == 0 || $str === NULL ? 'NULL' : '\'' . mysqli_real_escape_string($this->con, $str) . '\'';
+   }
+
 }
 ?>

@@ -15,6 +15,13 @@ class CommentsController extends ControllerBase
         $this->parser = new TagsParser;
     }
 
+    function getUser($id){
+        $res = $this->db->fetch("SELECT rating FROM users WHERE id=$id LIMIT 1 UNION SELECT COUNT(*) FROM comments INNER JOIN users ON comments.user_id=users.id WHERE users.id=$id");
+        if (!$res || count($res) < 2) throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
+        $this->data['user']['rating'] = $res[0];
+        $this->data['user']['comm_cnt'] = $res[1];
+    }
+
     function validateRights(array $users = NULL, $idComment = 0, $throw = TRUE){
         if ($users === NULL) $users = [];
         if ($idComment){
@@ -34,22 +41,44 @@ class CommentsController extends ControllerBase
 
     function like($id){
         $this->validateRights([USER_REGISTERED]);
-        if (!$this->db->query("INSERT INTO rates VALUES($id, 1, 1)"))
-            throw new ControllerException('Вы уже оценили этот комментарий.', 'Ошибка MySQL #' . $this->db->last_error());
+        $res = $this->db->insert('rates', [
+                'comment_id'    =>      $id,
+                'user_id'       =>      $this->data['user']['id'],
+                'value'         =>      '1'
+            ]);
+        if (!$res){
+            if ($this->db->last_error_code() == 1062) 
+                throw new ControllerException('Вы уже оценили этот комментарий.', 'Ошибка MySQL #' . $this->db->last_error());
+            else 
+                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
+        }
         $this->html($id);
     }
 
     function dislike($id){
         $this->validateRights([USER_REGISTERED]);
-        if (!$this->db->query("INSERT INTO rates VALUES($id, 1, -1)"))
-            throw new ControllerException('Вы уже оценили этот комментарий.', 'Ошибка MySQL #' . $this->db->last_error());
+        $res = $this->db->insert('rates', [
+                'comment_id'    =>      $id,
+                'user_id'       =>      $this->data['user']['id'],
+                'value'         =>      '-1'
+            ]);
+        if (!$res){
+            if ($this->db->last_error_code() == 1062) 
+                throw new ControllerException('Вы уже оценили этот комментарий.', 'Ошибка MySQL #' . $this->db->last_error());
+            else 
+                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
+        }
         $this->html($id);
     }
 
     function add($article, $text){
         $this->validateRights([USER_REGISTERED]);
-        $text = strip_tags($text);
-        if (!$this->db->query("INSERT INTO comments(article_id, user_id, comm_text, add_date) VALUES ($article, 1, \"$text\", now())"))
+        $res = $this->db->insert('comments', [
+                'article_id'    =>      $article,
+                'user_id'       =>      $this->data['user']['id'],
+                'comm_text'     =>      strip_tags($text),
+            ]);
+        if (!$res)
             throw new ControllerException('Произошла ошибка при добавлении комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
         $this->html($this->db->last_insert_id());
     }
@@ -57,7 +86,13 @@ class CommentsController extends ControllerBase
     function edit($id, $text){
         $this->validateRights(NULL, $id);
         $text = strip_tags($text);
-        if (!$this->db->query("UPDATE comments SET comm_text=\"$text\" WHERE id=$id"))
+        $res = $this->db->update('comments', [
+                'comm_text'     =>      strip_tags($text),
+            ], 
+            [
+                'id'            => $id
+            ]);
+        if (!$res)
             throw new ControllerException('Произошла ошибка при редактировании комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
         $this->html($id);
     }
@@ -65,14 +100,12 @@ class CommentsController extends ControllerBase
     function text($id = 0){
         if ($id == 0){
             $this->validateRights([USER_REGISTERED]);
-            $user = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar FROM users WHERE id=1");
-            if (!$user) throw new ControllerException('Произошла ошибка при обработке комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
-            $this->data['comments'][0] = $user[0];
+            $this->data['comments'][0] = $this->data['user'];
             $this->outputMode = 1;
             return;
         }
         $this->validateRights(NULL, $id);
-        $res = $this->db->fetch("SELECT comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS add_date, login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id FROM comments INNER JOIN users ON (users.id=comments.user_id) WHERE comments.id=$id");
+        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS add_date, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.id = $id");
         if (!$res) 
             throw new ControllerException('Произошла ошибка при обработке комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
             $this->data['comments'][0] = $res[0];
@@ -81,16 +114,14 @@ class CommentsController extends ControllerBase
 
     function html($id){
         $this->validateRights([USER_ANY]);
-        $res = $this->db->fetch("SELECT comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS add_date, login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id=comments.user_id) LEFT JOIN rates ON rates.comment_id=comments.id WHERE comments.id=$id");
+        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS add_date, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.id = $id");
         if (!$res) throw new ControllerException('Произошла ошибка при обработке комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
         $this->data['comments'][0] = $res[0];
     }
 
     function preview($text){
         $this->validateRights([USER_REGISTERED]);
-        $user = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar FROM users WHERE id=1");
-        if (!$user) throw new ControllerException('Произошла ошибка при обработке комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
-        $this->data['comments'][0] = $user[0];
+        $this->data['comments'][0] = $this->data['user'];
         $this->parser->text = strip_tags($text);
         $this->data['comments'][0]['comm_text'] = $this->parser->parse();
         $this->data['comments'][0]['add_date'] = date('d.m.Y H:i');
@@ -99,7 +130,7 @@ class CommentsController extends ControllerBase
 
     function delete($id){
         $this->validateRights([USER_ADMIN], $id);
-        if (!$this->db->query("DELETE FROM comments WHERE id=$id")) throw new ControllerException('Произошла ошибка при удалении комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
+        if (!$this->db->delete('comments', ['id' => $id])) throw new ControllerException('Произошла ошибка при удалении комментария.<br/>Повторите действие позже.', 'Ошибка MySQL #' . $this->db->last_error());
     }
 
     function fetch($article, $page, $pagesize){
@@ -112,7 +143,7 @@ class CommentsController extends ControllerBase
         if ($page>$count_page) return;
         if ($page==0) $page=1; 
 
-        $res = $this->db->fetch("SELECT comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS add_date, login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id=comments.user_id) LEFT JOIN rates ON rates.comment_id=comments.id WHERE article_id=$article GROUP BY comments.id ORDER BY add_date DESC LIMIT " . (($page-1)*$pagesize) . ",{$pagesize}");
+        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS add_date, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.article_id = $article GROUP BY comments.id ORDER BY add_date DESC LIMIT " . (($page-1)*$pagesize) . ",{$pagesize}");
         if ($res === FALSE) throw new ControllerException('Ошибка при получении списка комментариев', 'Ошибка MySQL #' . $this->db->last_error());
 
         $this->data['comments'] = $res;

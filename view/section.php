@@ -45,9 +45,9 @@ if($this->data['section']['allow_user_articles']) echo '<a href=\'/\'>Предл
                         </div>
                         <input type="checkbox" id="c0" />
                         <div class="options">
-                            <a href="<?php echo strtok($_SERVER["REQUEST_URI"],'?') . '?sort=0'?>">дате публикации</a>
-                            <a href="<?php echo strtok($_SERVER["REQUEST_URI"],'?') . '?sort=1'?>">популярности</a>
-                            <a href="<?php echo strtok($_SERVER["REQUEST_URI"],'?') . '?sort=2'?>">алфавиту</a>
+                            <a href="?sort=0">дате публикации</a>
+                            <a href="?sort=1">популярности</a>
+                            <a href="?sort=2">алфавиту</a>
                         </div>
                     </div>
 </div>

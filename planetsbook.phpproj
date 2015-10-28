@@ -27,6 +27,7 @@
     <Compile Include="controller\UsersController.php" />
     <Compile Include="include\ControllerException.php" />
     <Compile Include="include\TagsParser.php" />
+    <Compile Include="view\admin.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
@@ -38,6 +39,7 @@
     <Compile Include="index.php" />
     <Compile Include="view\bbhelp.php" />
     <Compile Include="view\comment.php" />
+    <Compile Include="view\profile.php" />
     <Compile Include="view\section.php" />
     <Compile Include="view\footer.php" />
     <Compile Include="view\html_head.php" />
@@ -58,6 +60,8 @@
     <Content Include="css\article.css" />
     <Content Include="css\main.css" />
     <Content Include="css\planet_selector.css" />
+    <Content Include="css\admin.css" />
+    <Content Include="css\profile.css" />
     <Content Include="img\arrow.png" />
     <Content Include="img\arrow2.png" />
     <Content Include="img\asteroids.png" />

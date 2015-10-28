@@ -101,10 +101,16 @@ li{
 
 .sidebar > div:first-child > h1{
     font-size: 1.3em;
-    margin: 0 1em .4em 1em; 
+    margin: 0 1em .4em .5em; 
     display: inline-block;
+    position: relative;
+    top: -2px;
+
 }
 
+.notransition{
+    transition: none;
+}
 
 .expand {
     transition: transform .5s;
@@ -199,6 +205,7 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
 .sidebar form label{
     display: inline-block;
     width: 5em;
+    position: relative;
 }
 
 .sidebar form label > span img{
@@ -206,19 +213,15 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     width: auto;
     margin:0;
 }
- .sidebar form label > span{
-     float: right;
-     position: relative;
- }
 
-
-    .sidebar form label span > .tip {
-        width: 16em;
+    .sidebar form label .tip {
+        width: 19em;
         white-space: normal;
         top:100%;
+        left: 50%;
     }
 
-.sidebar form label:hover span> .tip{
+.sidebar form label:hover > .tip{
     transition-delay: .7s;
     visibility: visible;
     opacity:1;
@@ -245,29 +248,42 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     padding: .5em;
 }
 
-.log_message{
-    color: black;
-    font-size: .8em;
-    background-image: url(/img/exclamation.png);
-    background-repeat: no-repeat;
-    background-position: 0.5em 0.4em;
+.items .log_message{
+    font-size: .9em;
     height: 0;
     padding: 0;
     overflow: hidden;
     transition: height .3s, padding .3s;
-}
-
-.log_message.expanded{
-    height: 17px;
-    padding: .5em .5em .5em 2.5em !important;
+    white-space: normal;
 }
 
 .log_message.success{
-    background-color: rgba(49, 185, 22, 0.82);
+    background-color: rgba(17, 90, 3, 0.82);
 }
 
 .log_message.fail{
-    background-color: rgba(255, 120, 120, 0.82);
+    background-color: rgba(117, 8, 8, 0.82);
+}
+
+.items .log_message > div{
+    background-size: auto 1.4em !important;
+    margin: 10px 0;
+    padding-left: 40px;
+    
+}
+
+.items .log_message.fail > div {
+    background: url(/img/exclamation.png) 5px center no-repeat;
+}
+
+.items .log_message.success > div {
+    background: url(/img/info.png) 5px center no-repeat;
+}
+
+.items .log_message > div > *{
+    position: relative;
+    white-space: normal;
+    margin: 0;
 }
 
 .items .search_container > input[type=search]
@@ -475,6 +491,7 @@ footer > div {
 
 .sticky > *{
     padding: 1em;
+    position: relative;
 }
 
 .sticky.sticked{
