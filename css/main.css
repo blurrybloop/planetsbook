@@ -109,7 +109,7 @@ li{
 }
 
 .notransition{
-    transition: none;
+    transition: none !important;
 }
 
 .expand {
@@ -117,7 +117,7 @@ li{
 }
 
 .sidebar.expanded {
-    width: 20em !important;
+    width: 320px !important;
 }
 
 
@@ -208,12 +208,6 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     position: relative;
 }
 
-.sidebar form label > span img{
-    height: 1em;
-    width: auto;
-    margin:0;
-}
-
     .sidebar form label .tip {
         width: 19em;
         white-space: normal;
@@ -221,40 +215,39 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
         left: 50%;
     }
 
-.sidebar form label:hover > .tip{
+form label:hover > .tip{
     transition-delay: .7s;
     visibility: visible;
     opacity:1;
 }
 
-.sidebar form input{
+input{
     background: linear-gradient(#353535, #4b4747, #353535);
     margin: 1em 0;
     border-radius: .2em;
     border: #4A4848 solid .1em;
     font-size:1em;
     width: 12em;
+    padding: .5em;
 }
 
-.sidebar form > div:first-child + div input{
+input[type=submit], input[type=reset]{
     cursor: pointer;
     width: 9em;
     margin-right: 1em;
     padding: .5em;
     font-size: .9em;
+   
 }
 
-.sidebar form input{
-    padding: .5em;
-}
-
-.items .log_message{
+.log_message{
     font-size: .9em;
     height: 0;
     padding: 0;
     overflow: hidden;
     transition: height .3s, padding .3s;
     white-space: normal;
+    width: 320px;
 }
 
 .log_message.success{
@@ -265,22 +258,22 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     background-color: rgba(117, 8, 8, 0.82);
 }
 
-.items .log_message > div{
+.log_message > div{
     background-size: auto 1.4em !important;
     margin: 10px 0;
     padding-left: 40px;
     
 }
 
-.items .log_message.fail > div {
+.log_message.fail > div {
     background: url(/img/exclamation.png) 5px center no-repeat;
 }
 
-.items .log_message.success > div {
+.log_message.success > div {
     background: url(/img/info.png) 5px center no-repeat;
 }
 
-.items .log_message > div > *{
+.log_message > div > *{
     position: relative;
     white-space: normal;
     margin: 0;
@@ -293,6 +286,7 @@ form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
     font-size:1em;
     width: 80%;
     padding: .5em;
+    margin:0;
 }
 
 .items .search_container > img{
@@ -335,7 +329,7 @@ div.banner > a{
 
 div.banner > a > img {
     height: 80%;
-    margin-left: -10%;
+
 }
 
 footer {

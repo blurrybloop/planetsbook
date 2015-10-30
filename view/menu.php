@@ -232,7 +232,7 @@
                         <label for="real_name">
                                 <span class="tip"><b>Ваше настоящее имя</b><br />Можете оставить это поле незаполненным.</span>Имя
                         </label>
-                        <input id="real_name" type="text" name="real_name" pattern="^[A-Za-zА-ЯЁІЇЄа-яёіїє\s]+$"/>
+                        <input id="real_name" type="text" name="real_name" pattern="^[A-Za-zА-ЯЁІЇЄа-яёіїє\s]+$" maxlength="50"/>
                         <br />
                     </div>
                 </div>

@@ -10,7 +10,6 @@ function PlanetsSelector(parent, objects) {
     var planets = $("<div class='planets'><a></a></div>"); //контейнер для изображения
     var planet = $("<img class='object planet focused'/>").load(function () { //изображение
         $(this).removeClass('notransition moveback moveforward invisible').addClass('focused');
-        addTip.call(planet, '<h2>' + objects[planetID].title + '</h2>' + objects[planetID].description);
         lockMove = false; //можете переходить к другой планете
 
         tmr = setTimeout(function () { //начинаем загрузку спутников
@@ -70,7 +69,7 @@ function PlanetsSelector(parent, objects) {
     function addTip(text, position) {
         var p;
         if ($(this).hasClass('planet'))
-            p = { right: '71%', bottom: '40%' };
+            p = { right: '67%', bottom: '40%' };
         else if ($(this).hasClass('moon'))
             p = { right: (100 - parseInt(position.left)) + '%', top: position.top };
         $("<div class='tip'>" + text + "</div>").css(p).insertAfter(this);
@@ -87,6 +86,7 @@ function PlanetsSelector(parent, objects) {
         var callback = function () { //замена планеты
             if (planet.hasClass(cl) || !planet.hasClass(not_cl)) planet.removeClass(cl).addClass(not_cl);
             planet.attr('class', 'object notransition planet ' + cl + ' invisible').attr('src', objects[planetID].image).parent().attr('href', objects[planetID].href);
+            addTip.call(planet, '<h2>' + objects[planetID].title + '</h2>' + objects[planetID].description);
         }
         $('.moon').remove();
         lockMove = true; //здесь ответственная часть - загрузка планеты, так что переходы нам ни к чему

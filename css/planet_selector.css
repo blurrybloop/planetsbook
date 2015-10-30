@@ -116,9 +116,8 @@ div.wheel_selector {
     visibility: visible;
     opacity: 1;
 }
-.object.focused {
-    
-    left: 30%;
+.object.focused {    
+    left: 34%;
     bottom: 0;
     height: 100%;
     visibility: visible;

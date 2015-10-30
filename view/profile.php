@@ -22,7 +22,9 @@ require 'msgbox.php'
                 <div>
                     <div>
                         <div class="read">
+                            <div id="edit_log" class="log_message"><div></div></div>
                             <div>
+                                <?php if ($this->mode == 1) { ?>
                                 <section>
                                     <img src="<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>" />
                                 </section>
@@ -70,6 +72,66 @@ require 'msgbox.php'
                                         <?php } ?>
                                     </section>
                                 </section>
+                                <?php } else if ($this->mode == 2) {?>
+                                <form name="edit_profile" method="post">
+                                    <h1><?php echo $this->data['profile']['login']?></h1>
+                                    <section>
+                                        <img src="<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>"/>
+                                        <label for="avatar">Аватар</label>
+                                        <input type="file" name="avatar" />
+                                    </section>
+                                    <section>
+                                        <h2>Смена пароля</h2>
+                                        <div>
+                                            <label for="old_psw">Старый пароль</label>
+                                            <input type="password" name="old_psw" />
+                                        </div>
+                                        <div>
+                                            <label for="new_psw">Новый пароль</label>
+                                            <input type="password" name="new_psw" />
+                                        </div>
+                                    </section>
+                                    <section>
+                                        <h2>Контакты</h2>
+                                        <div>
+                                            <label for="mail">E-mail</label>
+                                            <input type="email" name="mail" value="<?php if (!empty($this->data['profile']['email'])) echo $this->data['profile']['email']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="real_name">Настоящее имя</label>
+                                            <input type="text" name="real_name" pattern="^[A-Za-zА-ЯЁІЇЄа-яёіїє\s]+$" maxlength="50" value="<?php if (!empty($this->data['profile']['real_name'])) echo $this->data['profile']['real_name']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="skype">Skype</label>
+                                            <input type="text" name="skype" maxlength="50" pattern="^[\w]{1,50}$" value="<?php if (!empty($this->data['profile']['skype'])) echo $this->data['profile']['skype']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="vk">ВКонтакте</label>
+                                            <input type="text" name="vk" maxlength="100" pattern="^[\w]{1,100}$" value="<?php if (!empty($this->data['profile']['vk'])) echo $this->data['profile']['vk']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="facebook">Facebook</label>
+                                            <input type="text" name="facebook" maxlength="100" pattern="^[\w]{1,100}$" value="<?php if (!empty($this->data['profile']['facebook'])) echo $this->data['profile']['facebook']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="twitter">Twitter</label>
+                                            <input type="text" name="twitter" maxlength="100" pattern="^[\w]{1,100}$" value="<?php if (!empty($this->data['profile']['twitter'])) echo $this->data['profile']['twitter']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="site">Сайт</label>
+                                            <input type="url" name="site" maxlength="100" value="<?php if (!empty($this->data['profile']['site'])) echo $this->data['profile']['site']?>"/>
+                                        </div>
+                                        <div>
+                                            <label for="from_where">Откуда</label>
+                                            <input type="text" name="from_where" maxlength="150" pattern="^.{1,150}$" value="<?php if (!empty($this->data['profile']['from_where'])) echo $this->data['profile']['from_where']?>"/>
+                                        </div>
+                                    </section>
+                                    <div>
+                                        <input type="submit" id="edit_submit" value="Отправить" />
+                                        <input type="reset" />
+                                    </div>
+                                </form>
+                                <?php } ?>
                             </div>
                         </div>
 
@@ -77,9 +139,8 @@ require 'msgbox.php'
                     <aside>
                         <div class="sticky">
                             <div>
-                                <div id="sel"><div></div></div>
-                                <div class="section"><p>Просмотр</p></div>
-                                <?php if ($this->data['user']['id'] == $this->data['profile']['id']) { ?><div class="section"><p>Изменить</p></div> <?php } ?>
+                                <div class="section <?php if ($this->mode == 1) echo 'selected' ?>"><div><a href="/users/profile/?id=<?php echo $this->data['profile']['id'] ?>">Просмотр</a></div></div>
+                                <?php if (isset($this->data['user']['id']) && $this->data['user']['id'] == $this->data['profile']['id']) { ?><div class="section <?php if ($this->mode == 2) echo 'selected' ?>"><div><a href="/users/edit/?id=<?php echo $this->data['profile']['id'] ?>">Изменить</a></div></div> <?php } ?>
                             </div>
                         </div>
                     </aside>
@@ -103,11 +164,21 @@ require 'msgbox.php'
     $(window).resize(function () { sticky.width(sticky.parent().width()) });
     $(window).resize();
 
-    $('.section').click(function () {
-        $('#sel').css('top',  $(this).position().top + ($(this).height() - $('#sel').height()) / 2);
-    });
-
-    $('.section:nth-child(2)').click();
-
+    <?php if ($this->mode == 2) { ?>
+        $(edit_profile).submit(function (e) {
+            e.preventDefault();
+            $('#edit_submit').addClass('loading');
+            var j = $.post('/users/edit/?update=1&id=<?php echo $this->data['profile']['id'] ?>', $(this).serialize(), function(){
+                $('#edit_log > div').html('<p>Все изменения были успешно внесены.</p>').parent().removeClass('fail').addClass('success').css('height', $('#edit_log > *').outerHeight(true));
+                 setTimeout(function () { $('#edit_log').css('height', 0); }, 3000);
+            }).fail(function(){
+                 $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + j.responseText).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
+                 setTimeout(function () { $('#edit_log').css('height', 0); }, 5000);
+            }).always(function(){
+                $('#edit_submit').removeClass('loading');
+                location.assign('#edit_log');
+            });
+        });
+    <?php } ?>
 </script>
 
