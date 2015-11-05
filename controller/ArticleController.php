@@ -17,7 +17,7 @@ class ArticleController extends MenuController
             return;
         }
 
-        $res = $this->db->fetch("SELECT articles.id AS article_id, title, data_folder, DATE_FORMAT(pub_date, '%e.%m.%Y') AS pub_date, views, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE articles.id={$_REQUEST['param2']}");
+        $res = $this->db->fetch("SELECT articles.id AS article_id, title, DATE_FORMAT(pub_date, '%e.%m.%Y') AS pub_date, views, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE articles.id={$_REQUEST['param2']}");
         $this->data['article'] = $res[0];
     }
 

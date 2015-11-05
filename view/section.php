@@ -32,7 +32,7 @@ require 'msgbox.php'
                 <div class="updown_head">
 <div class='add_article'>
 <?php 
-if($this->data['section']['allow_user_articles']) echo '<a href=\'/\'>Предложить статью для публикации</a>';
+if($this->data['section']['allow_user_articles']) echo '<a href=\'/admin/publicate?section=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
 ?>
 </div>
                     <div>Сортировать по

@@ -332,10 +332,6 @@ textarea#edit_field{
     height: 15em;
 }
 
-.updown_content > *{
-    margin-top:0;
-}
-
 .desc{
 	white-space: normal; 
 	margin: 2em 1em 2em;

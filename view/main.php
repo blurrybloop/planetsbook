@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <?php require 'html_head.php' ?>
@@ -23,9 +23,9 @@ echo $this->data['menu'];
         </div>
 </body>
 </html>
-<script></script>
+
 <script>
-var ps = new PlanetsSelector('#content', <?php file_put_contents('dump.txt', json_encode(array_values($this->data['show']))); echo json_encode(array_values($this->data['show'])) ?>);
+var ps = new PlanetsSelector('#content', <?php echo json_encode(array_values($this->data['show'])) ?>);
 
     setTimeout(function (e) {
         e.children('.wheel_tip').addClass('invisible');

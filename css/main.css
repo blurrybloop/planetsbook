@@ -221,8 +221,9 @@ form label:hover > .tip{
     opacity:1;
 }
 
-input{
-    background: linear-gradient(#353535, #4b4747, #353535);
+input, textarea{
+    background-color: rgb(30, 28, 28) !important;
+    transition: box-shadow .5s;
     margin: 1em 0;
     border-radius: .2em;
     border: #4A4848 solid .1em;
@@ -231,13 +232,22 @@ input{
     padding: .5em;
 }
 
-input[type=submit], input[type=reset]{
+input:focus, textarea:focus{
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.66);
+}
+
+input[type=submit], input[type=reset], input[type=button]{
     cursor: pointer;
     width: 9em;
     margin-right: 1em;
     padding: .5em;
     font-size: .9em;
-   
+    transition: background-color .7s, color .7s;
+}
+
+input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover{
+    background-color: white !important;
+    color: black;
 }
 
 .log_message{
@@ -279,6 +289,10 @@ input[type=submit], input[type=reset]{
     margin: 0;
 }
 
+.log_message .details:before{
+    content: 'Подробнее: ';
+}
+
 .items .search_container > input[type=search]
 {
     background: none;
@@ -295,10 +309,17 @@ input[type=submit], input[type=reset]{
     position: absolute;
 }
 
-#reg_submit.loading, #login_submit.loading{
+input[type=submit].loading{
     border: none;
     background: url(/img/loading.gif) center left no-repeat;
     background-size: 1em;
+    box-shadow: none;
+    background-color: transparent !important;
+}
+
+input[type=submit]:hover.loading{
+    background-color: transparent !important;
+    color: white !important;
 }
 
 #menu {
@@ -514,6 +535,7 @@ footer > div {
     transition: margin-top .2s, visibility .2s, opacity .2s;
     overflow: hidden;
     background-color: inherit;
+    z-index: 100500;
 }
 
 .combobox > .options > *{

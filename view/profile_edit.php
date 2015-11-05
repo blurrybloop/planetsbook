@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <?php require 'html_head.php' ?>
@@ -54,7 +54,6 @@ require 'msgbox.php'
 
     $(window).resize(function () { sticky.width(sticky.parent().width()) });
     $(window).resize();
-    
     $('.section').click(function () {
         location.reload();
         //$('#sel').css('top', $(this).position().top + ($(this).height() - $('#sel').height()) / 2);

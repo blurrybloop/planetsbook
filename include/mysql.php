@@ -22,7 +22,7 @@ class mysql
    }
 
    function connect(){
-       if (!($this->con=mysqli_connect($this->options['host'],$this->options['user'],$this->options['pass'])))
+       if (!($this->con=@mysqli_connect($this->options['host'],$this->options['user'],$this->options['pass'])))
             return false;
        if (isset($this->options['db']) && !$this->select_db($this->options['db']))
         {
@@ -39,6 +39,7 @@ class mysql
    }
 
    function query($sql){
+       if (!$this->con) return FALSE;
         return mysqli_query($this->con, $sql);
    }
 
@@ -47,11 +48,14 @@ class mysql
    }
 
    function last_error_code(){
+       if (!$this->con)
+           return mysqli_connect_errno();
        return mysqli_errno($this->con);
    }
 
    function last_error($includeCode = TRUE){
-       return ($includeCode ? mysqli_errno($this->con) : '') . ': ' . mysqli_error( $this->con);
+       if ($this->last_error_code() == 0) return ''; 
+       return ($includeCode ? $this->last_error_code() : '') . ': ' . ($this->con ? mysqli_error($this->con) : mysqli_connect_error());
    }
 
    function fetch($sql, $count = -1) {

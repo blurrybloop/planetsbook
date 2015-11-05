@@ -3,6 +3,7 @@
 <head>
     <?php require 'html_head.php' ?>
     <link rel="stylesheet" href="/css/article.css" />
+    <link rel="stylesheet" href="/css/profile.css" />
     <link rel="stylesheet" href="/css/admin.css" />
     <script src="/js/utils.js"></script>
 </head>
@@ -22,29 +23,107 @@ require 'msgbox.php'
             <div>
                 <div>
                     <div class="read">
-                        <h1><?php $this->data['user']['login'] ?></h1>
+                        <div>
+                            <?php if ($this->action == 'messages') { ?>
+                            <h1>Публикации, ожидающие проверки</h1>
+                            <?php foreach($this->data['messages'] as $message) echo "<div>Статья \"{$message['title']}\", предложенная пользователем <a href='/users/profile/?id={$message['user_id']}'>{$message['login']}</a> {$message['pub_date']} ожидает проверки</div>"; ?>
+
+                            <?php
+ }  else if ($this->action == 'publicate') { ?>
+                                <h1><?php echo ($this->data['user']['is_admin'] ? 'Опубликовать' : 'Добавить'); ?> статью</h1>
+                                <form name="pub_form" method="post">
+                                    <fieldset>
+                                        <legend>Оглавление</legend>
+                                        <label for="title">Название</label>
+                                        <input name="title" id="title" type="text" required maxlength="100" pattern="^.+$" />
+                                        <label for="description">Описание</label>
+                                        <textarea name="description" id="description" required pattern="^.+$"></textarea>
+                                        <label>Раздел</label>
+                                        <div class="combobox">
+                                            <div class="combohead">
+                                                <div></div>
+                                                <label for="c0" class="arrow">
+                                                    <img src="/img/down_arrow.png" />
+                                                </label>
+                                            </div>
+                                            <input type="checkbox" id="c0" />
+                                            <div class="options">
+                                                <?php if (!empty($this->data['sections'])) {
+                                                          foreach ($this->data['sections'] as $section) {
+                                                              echo "<div id='section{$section['id']}'>{$section['title']}</div>";
+                                                          } 
+                                                      }?>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset id="edit_content">
+                                        <legend>Содержание</legend>
+                                        
+                                        <div id="tools">
+                                            <div><img class='comm_bold' src='/img/bold.png' /><div class='tip'>Жирный<br />[b]Пример[/b]</div></div>
+                                            <div><img class='comm_italic' src='/img/italic.png' /><div class='tip'>Курсив<br />[i]Пример[/i]</div></div>
+                                            <div><img class='comm_underline' src='/img/underline.png' /><div class='tip'>Подчеркнутый<br />[u]Пример[/u]</div></div>
+                                            <div><img class='comm_strike' src='/img/strike.png' /><div class='tip'>Зачеркнутый<br />[s]Пример[/s]</div></div>
+                                            <div><img class='comm_sup' src='/img/superscript.png' /><div class='tip'>Верхний индекс<br />[sup]Пример[/sup]</div></div>
+                                            <div><img class='comm_sub' src='/img/subscript.png' /><div class='tip'>Нижний индекс<br />[sub]Пример[/sub]</div></div>
+                                            <div><img class='comm_left_align' src='/img/left_align.png' /><div class='tip'>Выравнивание по левому краю<br />[align=left]Пример[/align]</div></div>
+                                            <div><img class='comm_center_align' src='/img/center_align.png' /><div class='tip'>Выравнивание по центру<br />[align=center]Пример[/align]</div></div>
+                                            <div><img class='comm_right_align' src='/img/right_align.png' /><div class='tip'>Выравнивание по правому краю<br />[align=right]Пример[/align]</div></div>
+                                            <div><img class='comm_justify_align' src='/img/justify_align.png' /><div class='tip'>Выравнивание по ширине<br />[align=justify]Пример[/align]</div></div>
+                                            <div><img class='comm_ul' src='/img/list_bullets.png' /><div class='tip'>Маркированый список<br />[list=*]<br />[*]Один[/*]<br />[*]Два[/*]<br />[*]Три[/*]<br />[/list]</div></div>
+                                            <div><img class='comm_ol' src='/img/list_num.png' /><div class='tip'>Нумерованый список<br />[list=(1|A|a|i|I)]<br />[1]Один[/1]<br />[2]Два[/2]<br />[3]Три[/3]<br />[/list]</div></div>
+                                            <div><img class='comm_url' src='/img/link.png' /><div class='tip'>Ссылка<br />[url]planetsbook.pp.ua[/url]<br />или<br />[url="planetsbook.pp.ua"]Пример[/url]</div></div>
+                                            <label for="hh"><img class='comm_img' src='/img/picture.png' /><span class='tip'>Рисунок с подписью<br />[figure=(left|center|right|float-left|float-right) width=# height=#]<br />[img]test.png[/img]<br />[figcaption=(left|center|right|justify)]Подпись[/figcaption]<br />[/figure]</span></label>
+                                            <div><img class='comm_preview' src='/img/eye.png' /><div class='tip'>Предпросмотр</div></div>
+                                        </div>
+
+                                        <div id="article_content">
+                                            <textarea id="contents" name="contents" required></textarea>
+                                        </div>
+                                        <h2>Прикрепленные изображения</h2>
+                                        <div class="img_thumbs"></div>
+                                    </fieldset>
+                                    <input type="hidden" name="section_id" id="section_id"/>
+                                    <fieldset>
+                                        <input type="submit" name="pub_submit" id="pub_submit" value="<?php echo ($this->data['user']['is_admin'] ? 'Публиковать' : 'Предложить'); ?>"/>
+                                        <input type="reset" />
+                                    </fieldset>
+                                </form>
+                            <form name="images_form" target="superframe" method="post" enctype="multipart/form-data" action="/admin/uploadImg/?args=<?php echo $this->data['page_id']?>">
+                                <input type="file" name="images[]" id="hh" multiple />
+                            </form>
+                            <?php } ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <aside>
                     <div class="sticky">
                         <div>
-                            <div id="sel"><div></div></div>
-                            <div class="section"><p>�������</p></div>
-                            <div class="section"><p>�������</p></div>
-                            <div class="section"><p>������������</p></div>
-                            <div class="section">
-                                <p>����������</p>
+                            <?php if (isset($this->data['user']['id']) && $this->data['user']['is_admin']) { ?>
+                            <div class="section <?php if ($this->action == 'messages') echo 'selected' ?>"><div><a href="/admin/">Сообщения</a></div></div>
+                            <div class="section"><div><a>Разделы</a></div></div>
+                            <?php } ?>
+                            <div class="section <?php if ($this->action == 'publicate') echo 'selected' ?>">
+                                <div>
+                                    <a href="/admin/publicate">Публикации</a></div>
                             </div>
+                            <?php if (isset($this->data['user']['id']) && $this->data['user']['is_admin']) { ?>
+                            <div class="section"><div><a>Пользователи</a></div></div>
+                            <?php } ?>
                         </div>
                     </div>
                 </aside>
+            <?php include('footer.php'); ?>
             </div>
         </div>
-        <?php include('footer.php'); ?>
-    </div>
+
+
 </body>
 </html>
 <script>
+    $('.read').append('<iframe id="superframe" name="superframe"></iframe>');
+
     var sticky = $('.sticky');
     var cont = $('#content');
 
@@ -58,10 +137,121 @@ require 'msgbox.php'
     $(window).resize(function () { sticky.width(sticky.parent().width()) });
     $(window).resize();
 
-    $('.section').click(function () {
-        $('#sel').css('top',  $(this).position().top + ($(this).height() - $('#sel').height()) / 2);
+    $('.combobox > input[type=checkbox]').removeAttr('checked');
+
+
+        $('#main').click(function (e) {
+            if ($(e.target).parents('.combobox').length && $(e.target).parents('.options').length == 0) return;
+            $('.combobox > input[type=checkbox]:checked').click();
+        });
+
+        $('.combobox .options > *').click(function () {
+            $('#section_id').attr('value', $(this).attr('id').replace('section', ''));
+            $(this).parent().siblings('.combohead').children('div').html($(this).html());
+        });
+
+    <?php if (isset($_REQUEST['section'])) {
+              echo "if ($('#section{$_REQUEST['section']}').length != 0) $('#section{$_REQUEST['section']}').click(); else $('.options > div:first-child').click()";
+         }
+          else echo "$('.options > div:first-child').click()";
+    ?>
+
+    $('#tools').click(function (e) {
+        var t = $(e.target);
+        if (t.hasClass('comm_bold')) $(contents).makeBold();
+        else if (t.hasClass('comm_italic')) $(contents).makeItalic();
+        else if (t.hasClass('comm_underline')) $(contents).makeUnderline();
+        else if (t.hasClass('comm_strike')) $(contents).makeStrike();
+        else if (t.hasClass('comm_sub')) $(contents).makeSub();
+        else if (t.hasClass('comm_sup')) $(contents).makeSup();
+        else if (t.hasClass('comm_left_align')) $(contents).makeLeft();
+        else if (t.hasClass('comm_center_align')) $(contents).makeCenter();
+        else if (t.hasClass('comm_right_align')) $(contents).makeRight();
+        else if (t.hasClass('comm_justify_align')) $(contents).makeJustify();
+        else if (t.hasClass('comm_ul')) $(contents).makeUL();
+        else if (t.hasClass('comm_ol')) $(contents).makeOL();
+        else if (t.hasClass('comm_url')) $(contents).makeURL();
+        else if (t.hasClass('comm_help')) comments.help();
     });
 
-    $('.section:nth-child(2)').click();
+    var txtarea = null;
+
+    $('.comm_preview').click(function () {
+
+        var transitionTimeout = 0; //время ожидания для ручного вызова события endTransition
+        var d = $(article_content).transitionDuration();
+        for (var i = 0; i < d.length; i++)
+            if (parseFloat(d[i]) > transitionTimeout) transitionTimeout = parseFloat(d[i]);
+        transitionTimeout *= 1000; transitionTimeout += 50;
+        $('.comm_preview').attr('src', '/img/loading.gif');
+
+        var callback = function (data) {
+            $(article_content).transitionEnd(function () {
+                $('.comm_preview').attr('src', txtarea ? '/img/eye.png' : '/img/edit.png');
+                $('.comm_preview + .tip').html(txtarea ? 'Предпросмотр' : 'Редактировать');
+
+                var d = txtarea ? txtarea : $('<div>' + data + '</div>');
+                if (txtarea) {
+                    $('#article_content > div').replaceWith(txtarea);
+                    txtarea = null;
+                }
+                else txtarea = $(contents).replaceWith(d);
+
+                setTimeout(function () { $(article_content).removeClass('invisible'); }, 0);
+            }, transitionTimeout);
+            $(article_content).addClass('invisible');
+        }
+
+        if (txtarea) {
+            callback();
+        }
+        else {
+            var j = $.post('/admin/preview/', { args: [$(contents).val()] }, callback).fail(function () { $('.comm_preview').removeClass('loading'); messageBox(j.responseText, 'center'); });
+        }
+    });
+
+    $(pub_form).submit(function(e){
+        e.preventDefault();
+            $('#pub_submit').addClass('loading');
+            var j = $.post('/admin/addarticle/', $(this).serialize(), function(){
+                messageBox('<?php if ($this->data['user']['is_admin']) echo '<p>Спасибо за публикацию!</p><p>Ваша статья теперь доступна для просмотра <a href="\' + j.responseText + \'">здесь</a></p>'; else echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>' ?>', 'left');
+           }).fail(function(){
+                messageBox(j.responseText, 'left');
+           }).always(function(){
+                $('#pub_submit').removeClass('loading');
+           });
+    });
+
+    $(pub_form).on('reset', function () {
+        $('.img_thumbs .close').click();      
+    });
+
+    $(hh).change(function () {
+        $('#superframe').one('load', function () {
+            $(this).contents().find('.path').each(function () {
+                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + $(this).html() + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+                $('#edit_content > .img_thumbs').append("<div><div class='close'></div><img src='" + $(this).html() + "' /> <div>" + $(this).html() + "</div></div>")
+            });
+        });
+        $(images_form).submit();
+    });
+
+    $('.img_thumbs').click(function (e) {
+        if (!$(e.target).hasClass('close')) return;
+        var img = $(e.target).next();
+        var j = $.post('/admin/removeImg', { 'args': [img.attr('src')] }, function () {
+            img.parent().remove();
+        }).fail(function () {
+            messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
+        });
+    });
+
+
+    <?php 
+    if (isset($this->data['page_id'])){ ?>
+    setInterval(function () { $.post('/pulse/', { 'page_id': '<?php echo $this->data['page_id'] ?>' }); }, 20000);
+       <?php } ?>
+    
+
 
 </script>

@@ -9,13 +9,13 @@ abstract class ControllerBase
 {
 	public $db;
 	public $data=array();
+    public $showErrorPage = FALSE;
 
     function __construct($db, array $data = NULL) {
         $this->db = $db;
         $this->data =$data;
         if (isset($_SESSION['user_id']))
-            if ($res = $this->db->fetch('SELECT id, login, is_admin, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt FROM users WHERE id=' . $_SESSION['user_id']))
-            {
+            if ($res = $this->db->fetch('SELECT id, login, is_admin, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt FROM users WHERE id=' . $_SESSION['user_id'])) {
                 $this->data['user'] = $res[0];
             }
     }

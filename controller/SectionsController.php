@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once 'ControllerBase.php';
 require_once 'MenuController.php';
 
@@ -23,7 +23,11 @@ class SectionsController extends MenuController
                 else if ($_REQUEST['sort'] == 1) $sort_col = 'views DESC';
             else $sort_col = 'title';
 
-            $res = $this->db->fetch("SELECT articles.id AS article_id, title, data_folder, DATE_FORMAT(pub_date, '%e.%m.%Y') AS pub_date, views, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE section_id={$this->data['section']['id']} ORDER BY $sort_col");
+            $sql = 'SELECT articles.id AS article_id, if(verifier_id IS NULL, CONCAT("[Не проверено] ",title), title) AS title, DATE_FORMAT(pub_date, "%e.%m.%Y") AS pub_date, views, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE section_id=' . $this->data['section']['id'];
+            if (empty($this->data['user']['is_admin']))
+                $sql .= ' AND verifier_id IS NOT NULL ';
+            $sql .=  ' ORDER BY ' . $sort_col;
+            $res = $this->db->fetch($sql);
             if ($res === FALSE){
                 echo 'error';
                 return;

@@ -145,7 +145,7 @@
                     </a>
                     <?php if ($this->data['user']['is_admin']) {?> 
                     
-                    <a href="/">
+                    <a href="/admin/">
                         <img src="/img/wrench.png" /><p>Администрирование</p>
                     </a>
                      <?php } ?>

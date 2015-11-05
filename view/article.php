@@ -100,6 +100,7 @@
             else if (t.hasClass('comm_strike')) $(edit_field).makeStrike();
             else if (t.hasClass('comm_sub')) $(edit_field).makeSub();
             else if (t.hasClass('comm_sup')) $(edit_field).makeSup();
+            else if (t.hasClass('comm_left_align')) $(contents).makeLeft();
             else if (t.hasClass('comm_center_align')) $(edit_field).makeCenter();
             else if (t.hasClass('comm_right_align')) $(edit_field).makeRight();
             else if (t.hasClass('comm_justify_align')) $(edit_field).makeJustify();
@@ -110,31 +111,6 @@
             else if (t.hasClass('comm_help')) comments.help();
         });
     }
-
-    $.fn.wrapSelected = function (openTag, closeTag) {
-        var textarea = this;
-        var value = textarea.val();
-        var start = textarea[0].selectionStart;
-        var end = textarea[0].selectionEnd;
-        textarea.val(value.substr(0, start) + openTag + value.substring(start, end) + closeTag + value.substring(end, value.length));
-        textarea[0].selectionStart = start;
-        textarea[0].selectionEnd = end;
-    }
-
-    $.fn.makeBold = function () { this.first().wrapSelected('[b]', '[/b]'); }
-    $.fn.makeItalic = function () { this.first().wrapSelected('[i]', '[/i]'); }
-    $.fn.makeUnderline = function () { this.first().wrapSelected('[u]', '[/u]'); }
-    $.fn.makeStrike = function () { this.first().wrapSelected('[s]', '[/s]'); }
-    $.fn.makeSub = function () { this.first().wrapSelected('[sub]', '[/s]'); }
-    $.fn.makeSup = function () { this.first().wrapSelected('[sup]', '[/sup]'); }
-    $.fn.makeUL = function () { this.first().wrapSelected('\r\n[list=*]\r\n[*]', '[/*]\r\n[/list]\r\n'); }
-    $.fn.makeOL = function () { this.first().wrapSelected('\r\n[list=1]\r\n[1]', '[/1]\r\n[/list]\r\n'); }
-    $.fn.makeURL = function () { this.first().wrapSelected('[url]', '[/url]'); }
-    $.fn.makeFigure = function () { this.first().wrapSelected('\r\n[figure]\r\n[img][/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n'); }
-    $.fn.makeLeft = function () { this.first().wrapSelected('\r\n[align=left]', '[/align]\r\n'); }
-    $.fn.makeCenter = function () { this.first().wrapSelected('\r\n[align=center]', '[/align]\r\n'); }
-    $.fn.makeRight = function () { this.first().wrapSelected('\r\n[align=right]', '[/align]\r\n'); }
-    $.fn.makeJustify = function () { this.first().wrapSelected('\r\n[alignjustify]', '[/align]\r\n'); }
 
     comments.onUpdateComment = function(){
         this.attachCommentHandlers();

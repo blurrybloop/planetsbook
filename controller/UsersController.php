@@ -88,6 +88,7 @@ class UsersController extends MenuController
     }
 
     function profile($id){
+        $this->showErrorPage = TRUE;
         parent::process();
         $res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id);
         if (!$res) throw new ControllerException('Произошла ошибка при загрузке профиля.<br/>Попробуйте повторить действие позже', $this->db->last_error());
@@ -96,9 +97,8 @@ class UsersController extends MenuController
     }
 
     function edit($id, $update = FALSE){
-        parent::validateRights([$id]);
         if ($update){
-            sleep(2);
+            parent::validateRights([$id]);
             if (!empty($_POST['old_psw'])) {
                 $this->validateParam('password', $_POST['old_psw']);
                 if (empty($_POST['new_psw']) || $this->validateParam('password', $_POST['new_psw'])) throw new ControllerException('Неверный формат пароля.');
@@ -114,7 +114,19 @@ class UsersController extends MenuController
 
             $values = [];
             foreach ($_POST as $key => $value){
-                if ($key != 'new_psw' && $key != 'email' && $key != 'real_name' && $key != 'skype' && $key != 'vk'  && $key != 'facebook' && $key != 'twitter' && $key != 'site' && $key != 'from_where') continue;
+                if ($key != 'new_psw' && $key != 'email' && $key != 'real_name' && $key != 'skype' && $key != 'vk'  && $key != 'facebook' && $key != 'twitter' && $key != 'site' && $key != 'from_where' && $key != 'avatar_action') continue;
+                if ($key == 'avatar_action'){
+                    if ($value == 1){
+                        if (@rename($_SERVER['DOCUMENT_ROOT'] . '/tmp_avatar/' . $id . '.png', $_SERVER['DOCUMENT_ROOT'] . '/avatars/' . $id . '.png') === FALSE)
+                            throw new ControllerException('Произошла ошибка при изменении аватара.<br/>Попробуйте повторить действие позже.');
+                        $values['avatar'] = $id;
+                    }
+                    else if ($value == 2){
+                        @unlink($_SERVER['DOCUMENT_ROOT'] . '/avatars/' . $id . '.png');
+                        $values['avatar'] = 0;
+                    }
+                    continue;
+                }
                 if ($key == 'new_psw') {
                     if (!empty($value)) $values['psw_hash'] = crypt($value, $this->data['user']['login']);
                     continue;
@@ -125,6 +137,8 @@ class UsersController extends MenuController
                 throw new ControllerException('Произошла ошибка.<br/>Попробуйте повторить действие позже', $this->db->last_error());
         }
         else{
+            $this->showErrorPage = TRUE;
+            parent::validateRights([$id]);
             parent::process();
             $res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id);
             if (!$res) throw new ControllerException('Произошла ошибка при загрузке профиля.<br/>Попробуйте повторить действие позже', $this->db->last_error());
@@ -133,11 +147,41 @@ class UsersController extends MenuController
         }
     }
 
+    function uploadImg($id){
+        $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/tmp_avatar/';
+
+        $php_errors = [1 => 'Превышен максимальный размер файла, указанный в php.ini',
+                       2 => 'Превышен максимальный размер файла, указанный в форме HTML',
+                       3 => 'Была отправлена только часть файла',
+                       4 => 'Файл для отправки не был выбран.'];
+        
+        if (!isset($_FILES['avatar']))
+            throw new ControllerException('Сервер не может получить выбранный вами файл.', trim($php_errors[4], '.') . ' или ' . $php_errors[1]);
+
+        if ($_FILES['avatar']['error'] != 0)
+            throw new ControllerException('Сервер не может получить выбранный вами файл.', $php_errors[$_FILES['avatar']['error']]);
+
+        if (!is_uploaded_file($_FILES['avatar']['tmp_name']))
+            throw new ControllerException("Файл не является загруженным.", $php_errors[$_FILES['avatar']['name']]);
+
+        if (!getimagesize($_FILES['avatar']['tmp_name']))
+            throw new ControllerException("Вы выбрали файл, который не является изображением.", $_FILES['avatar']['name'] . ' не является настоящим файлом изображения.');
+
+        $upload_filename = $upload_dir . $id;
+
+        require_once '/include/GDExtensions.php';
+
+        if (($path = GDExtensions::fitToRect($_FILES['avatar']['tmp_name'], 100, 100, $upload_filename, TRUE)) === FALSE)
+            throw new ControllerException('Возникла проблема сохранения вашего изображения.', GDExtensions::lastError());
+
+        echo '<div id="path">' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $path) . '</div>';
+    }
+
     function process(){
         
         //if (!is_array($args = $_REQUEST['args'])) throw new ControllerException('Неправильные параметры запроса');
         $action = strtolower($_REQUEST['param1']);
-        if ($action == 'profile' || $action == 'edit'){
+        if ($action == 'profile' || $action == 'edit' || $action == 'uploadimg'){
             if (!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id'])) throw new ControllerException('Неправильные параметры запроса');
             if ($action == 'edit' && isset($_REQUEST['update']) && $_REQUEST['update']==1)
                 $this->$action($_REQUEST['id'], TRUE);
