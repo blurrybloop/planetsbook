@@ -39,11 +39,10 @@ if($this->data['section']['allow_user_articles']) echo '<a href=\'/admin/publica
                     <div class="combobox">
                         <div class="combohead">
                             <div></div>
-                            <label for="c0" class="arrow">
+                            <div class="arrow">
                                 <img src="/img/down_arrow.png" />
-                            </label>
+                            </div>
                         </div>
-                        <input type="checkbox" id="c0" />
                         <div class="options">
                             <a href="?sort=0">дате публикации</a>
                             <a href="?sort=1">популярности</a>
@@ -110,7 +109,10 @@ foreach ($this->data['articles'] as $val){ ?>
 
     $(window).scroll();
 
-    $(window).resize(function () { sticky.width(sticky.parent().width()) });
+    $(window).resize(function () {
+        cont.toggleClass('compact', parseInt($(window).width()) < 800);
+        sticky.width(sticky.parent().width())
+    });
     $(window).resize();
 
         $('.combobox > input[type=checkbox]').removeAttr('checked');
@@ -118,13 +120,12 @@ foreach ($this->data['articles'] as $val){ ?>
 
         $('#main').click(function (e) {
             if ($(e.target).parents('.combobox').length && $(e.target).parents('.options').length == 0) return;
-            $('.combobox > input[type=checkbox]:checked').click();
+            $('.combobox').removeClass('expanded');
         });
 
-        $('.updown_head .options > *').click(function () {
-            $(this).parent().siblings('.combohead').children('div').html($(this).html());
-        });
+        $('.combohead').click(function () {
+            $(this).parent().toggleClass('expanded');
+        })
 
-        
-        $('.updown_head .combohead > div').html($('.updown_head .options > *:nth-child(<?php echo isset($_REQUEST['sort']) ? $_REQUEST['sort'] + 1 : 1?>)'));
+        $('.updown_head .combohead > div:first-child').html($('.updown_head .options > *:nth-child(<?php echo isset($_REQUEST['sort']) ? $_REQUEST['sort'] + 1 : 1?>)').html());
 </script>

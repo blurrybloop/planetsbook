@@ -22,6 +22,9 @@
             <div>
                 <div>
                     <div class="read">
+                        <?php if (empty($this->data['article']['verifier_id'])) { ?>
+                        <div id="verify_log" class="log_message success"><div><p>Эта статья еще не проверена, и поэтому невидима для обычных пользователей.</p><p><span id="pub">Опубликовать.</span> Статья станет доступна всем без исключения.</p><p><span id="dismiss">Отклонить.</span> Статья будет уничтожена абсолютно и безповоротно.</p></div></div>
+                        <?php } ?>
                         <article>
                             <header>
 
@@ -77,6 +80,9 @@
 </body>
 </html>
 <script>
+
+    $('#verify_log').css('height', $('#verify_log > *').outerHeight(true));
+
     var sticky = $('.sticky');
     var commentsBlock = $('.comments');
     var cont = $('#content');
@@ -117,6 +123,7 @@
         iconSize();
     }
 
+
     $(window).scroll(function(){
         if (parseInt($(window).height()) + parseInt($(this).scrollTop()) > parseInt(commentsBlock.height()) + parseInt(commentsBlock.position().top) + 300) {
             comments.fetch();
@@ -138,7 +145,27 @@
             f.addClass('maximized');
     }
 
-    $(window).resize(function() {iconSize(); sticky.width(sticky.parent().width());});
-    $(window).resize();
+     $(window).resize(function() {
+         cont.toggleClass('compact', parseInt($(window).width()) < 800);
+         iconSize(); sticky.width(sticky.parent().width());
+     });
+     $(window).resize();
+
+     $('#verify_log').click(function(e){
+         if ($(e.target).is('#pub')){
+             var j = $.get('?action=pub', {}, function(){
+                 messageBox(j.responseText + '<p>Ура! Статья опубликована!</p>', 'left');
+             }).fail(function(){
+                 messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
+             });
+         }
+         else if ($(e.target).is('#dismiss')){
+             var j = $.get('?action=dismiss', {}, function(){
+                 messageBox('<p>Статья удалена!</p>', 'left');
+             }).fail(function(){
+                 messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
+             });
+         }
+     });
 
 </script>

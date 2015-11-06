@@ -42,11 +42,10 @@ require 'msgbox.php'
                                         <div class="combobox">
                                             <div class="combohead">
                                                 <div></div>
-                                                <label for="c0" class="arrow">
+                                                <div class="arrow">
                                                     <img src="/img/down_arrow.png" />
-                                                </label>
+                                                </div>
                                             </div>
-                                            <input type="checkbox" id="c0" />
                                             <div class="options">
                                                 <?php if (!empty($this->data['sections'])) {
                                                           foreach ($this->data['sections'] as $section) {
@@ -89,7 +88,7 @@ require 'msgbox.php'
                                         <input type="reset" />
                                     </fieldset>
                                 </form>
-                            <form name="images_form" target="superframe" method="post" enctype="multipart/form-data" action="/admin/uploadImg/?args=<?php echo $this->data['page_id']?>">
+                            <form name="images_form" target="superframe" method="post" enctype="multipart/form-data">
                                 <input type="file" name="images[]" id="hh" multiple />
                             </form>
                             <?php } ?>
@@ -126,6 +125,7 @@ require 'msgbox.php'
 
     var sticky = $('.sticky');
     var cont = $('#content');
+    var lock = false;
 
     $(window).scroll(function () {
         if (parseInt(cont.offset().top) < parseInt($(this).scrollTop())) sticky.addClass('sticked');
@@ -137,18 +137,22 @@ require 'msgbox.php'
     $(window).resize(function () { sticky.width(sticky.parent().width()) });
     $(window).resize();
 
-    $('.combobox > input[type=checkbox]').removeAttr('checked');
+    //$('.combobox > input[type=checkbox]').removeAttr('checked');
 
 
         $('#main').click(function (e) {
             if ($(e.target).parents('.combobox').length && $(e.target).parents('.options').length == 0) return;
-            $('.combobox > input[type=checkbox]:checked').click();
+            $('.combobox').removeClass('expanded');
         });
 
         $('.combobox .options > *').click(function () {
             $('#section_id').attr('value', $(this).attr('id').replace('section', ''));
-            $(this).parent().siblings('.combohead').children('div').html($(this).html());
+            $(this).parent().siblings('.combohead').children('div:first-child').html($(this).html());
         });
+
+        $('.combohead').click(function () {
+            $(this).parent().toggleClass('expanded');
+        })
 
     <?php if (isset($_REQUEST['section'])) {
               echo "if ($('#section{$_REQUEST['section']}').length != 0) $('#section{$_REQUEST['section']}').click(); else $('.options > div:first-child').click()";
@@ -177,7 +181,7 @@ require 'msgbox.php'
     var txtarea = null;
 
     $('.comm_preview').click(function () {
-
+        lock = true;
         var transitionTimeout = 0; //время ожидания для ручного вызова события endTransition
         var d = $(article_content).transitionDuration();
         for (var i = 0; i < d.length; i++)
@@ -187,10 +191,18 @@ require 'msgbox.php'
 
         var callback = function (data) {
             $(article_content).transitionEnd(function () {
+                lock = false;
                 $('.comm_preview').attr('src', txtarea ? '/img/eye.png' : '/img/edit.png');
                 $('.comm_preview + .tip').html(txtarea ? 'Предпросмотр' : 'Редактировать');
-
-                var d = txtarea ? txtarea : $('<div>' + data + '</div>');
+                var dt = new Date;
+                var d;
+                if (txtarea) d = txtarea;
+                else {
+                    d = $('<div>' + data + '</div>');
+                    d.find('img').each(function () {
+                        $(this).attr('src', $(this).attr('src') + '?' + dt.getTime());
+                    });
+                }
                 if (txtarea) {
                     $('#article_content > div').replaceWith(txtarea);
                     txtarea = null;
@@ -210,48 +222,61 @@ require 'msgbox.php'
         }
     });
 
-    $(pub_form).submit(function(e){
+    $(pub_form).submit(function (e) {
+        if (lock) return;
+        lock = true;
         e.preventDefault();
             $('#pub_submit').addClass('loading');
             var j = $.post('/admin/addarticle/', $(this).serialize(), function(){
                 messageBox('<?php if ($this->data['user']['is_admin']) echo '<p>Спасибо за публикацию!</p><p>Ваша статья теперь доступна для просмотра <a href="\' + j.responseText + \'">здесь</a></p>'; else echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>' ?>', 'left');
            }).fail(function(){
                 messageBox(j.responseText, 'left');
-           }).always(function(){
+           }).always(function () {
+               lock = false;
                 $('#pub_submit').removeClass('loading');
            });
     });
 
     $(pub_form).on('reset', function () {
-        $('.img_thumbs .close').click();      
+        $('.thumb_action > div:nth-child(2)').click();
     });
 
+    var pid;
+
     $(hh).change(function () {
+        if (lock) return;
+        lock = true;
         $('#superframe').one('load', function () {
+            pid = $(this).contents().find('.page_id').html();
+            if (pid) {
+                 setInterval(function () { $.post('/pulse/', { 'page_id': pid }); }, 20000);
+            }
             $(this).contents().find('.path').each(function () {
-                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + $(this).html() + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
-                $('#edit_content > .img_thumbs').append("<div><div class='close'></div><img src='" + $(this).html() + "' /> <div>" + $(this).html() + "</div></div>")
+                if (window.contents)
+                    $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + $(this).html() + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+                $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + $(this).html() + "' /> <div>" + $(this).html() + "</div></div>")
             });
+            lock = false;
         });
-        $(images_form).submit();
+        $(images_form).attr('action', '/admin/uploadImg/?args=' + (pid ? pid : 0));
+        setTimeout(function () { $(images_form).submit(); }, 0);
     });
 
     $('.img_thumbs').click(function (e) {
-        if (!$(e.target).hasClass('close')) return;
-        var img = $(e.target).next();
-        var j = $.post('/admin/removeImg', { 'args': [img.attr('src')] }, function () {
-            img.parent().remove();
-        }).fail(function () {
-            messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
-        });
+        var img = $(e.target).parent().next();
+        if ($(e.target).is('.thumb_action > div:nth-child(2)')) {
+            var j = $.post('/admin/removeImg', { 'args': [img.attr('src')] }, function () {
+                img.parent().remove();
+            }).fail(function () {
+                messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
+            });
+        }
+        else if ($(e.target).is('.thumb_action > div:nth-child(1)')) {
+            if (window.contents)
+                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + img.attr('src') + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+        }
     });
 
-
-    <?php 
-    if (isset($this->data['page_id'])){ ?>
-    setInterval(function () { $.post('/pulse/', { 'page_id': '<?php echo $this->data['page_id'] ?>' }); }, 20000);
-       <?php } ?>
-    
 
 
 </script>

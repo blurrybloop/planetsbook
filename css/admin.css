@@ -95,25 +95,45 @@ form[name=pub_form] > fieldset:last-child{
     position: relative;
     margin-right: 50px;
     margin-top:20px;
+    position: relative;
 }
 
-.img_thumbs > div:hover .close{
+.img_thumbs > div:hover .thumb_action{
     opacity:1;
     visibility: visible;
 }
 
-.img_thumbs .close{
-    cursor: pointer;
-    position: absolute; 
-    top:0; 
-    right:0;
+.thumb_action{
+    text-align: right;
     opacity:0;
     visibility: hidden;
     transition: opacity .5s, visibility .5s;
 }
 
-.img_thumbs .close:before{
-    content: 'x';
+.thumb_action > div{
+     cursor: pointer;
+    position: relative;
+    display: inline-block;
+    height: 24px;
+    width: 24px; 
+    margin-left: 10px;
+}
+
+.thumb_action > div > .tip{
+    top: 100%;
+}
+
+.thumb_action > div:hover > .tip{
+    visibility: visible;
+    opacity: 1;
+}
+
+.thumb_action > div:first-child{
+    background: url(/img/brackets.png) 0 0 no-repeat;
+}
+
+.thumb_action > div:first-child + div{
+    background: url(/img/delete.png) 0 0 no-repeat;
 }
 
 form[name=images_form]{

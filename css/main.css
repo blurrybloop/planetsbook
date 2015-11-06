@@ -520,11 +520,14 @@ footer > div {
     cursor: pointer;
     display: inline-block;
     background-color: rgb(42, 40, 40);
+    vertical-align: bottom;
 }
 
-.combobox input[type=checkbox]{
-    display: none;
+.combohead{
+    overflow: hidden;
+    white-space: nowrap;
 }
+
 
 .combobox > .options{
     width: 100%;
@@ -547,7 +550,7 @@ footer > div {
     background-color: rgb(33, 30, 30);
 }
 
-.combobox > input[type=checkbox]:checked + .options{
+.combobox.expanded .options{
     margin-top: 0;
     visibility: visible;
     opacity: 1;
@@ -560,10 +563,11 @@ footer > div {
 .combobox > div> .arrow{
     cursor: pointer;
     position: absolute;
-    right: .1em;
+    right: 0;
     top: 0;
     bottom: 0;
     width: 1em;
+    background-color: #282727;
 }
 
 .combobox a{

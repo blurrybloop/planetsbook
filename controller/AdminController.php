@@ -30,8 +30,9 @@ class AdminController extends MenuController
             throw new ControllerException('Неправильные параметры запроса.<br/>Повторите действие позже.');
 
         if (!preg_match('#^.{1,100}$#', $_POST['title'])) throw new ControllerException('Неправильный формат заголовка.');
-        if (!preg_match('#^.+$#', $_POST['description'])) throw new ControllerException('Неправильный формат описания.');
-        if (!preg_match('#^.+$#', $_POST['contents'])) throw new ControllerException('Неправильный формат содержания.');
+        if (!preg_match('#^.+$#m', $_POST['description'])) throw new ControllerException('Неправильный формат описания.');
+        if (!preg_match('#^.+$#m', $_POST['contents'])) throw new ControllerException('Неправильный формат содержания.');
+        require_once '/include/TagsParser.php';
 
         $parser = new TagsParser(strip_tags(trim($_POST['contents'])));
 
@@ -55,20 +56,32 @@ class AdminController extends MenuController
         mkdir($article_path);
 
         file_put_contents($article_path . '/description.txt' , preg_replace('#^(.+)$#m', '<p>$1</p>', strip_tags(trim($_POST['description']))));
-        file_put_contents($article_path . '/text.txt', $parser->parse());
+
+        $parsed = $parser->parse();
+
+        $parsed = preg_replace_callback('#(?<=<img src=")/res/\d+_\d+\.\w+(?=")#', function($match) use($article_path){
+            $newfile = $article_path . strrchr($match[0], '/');
+            rename($_SERVER['DOCUMENT_ROOT'] . $match[0], $newfile);
+            return str_replace($_SERVER['DOCUMENT_ROOT'], '', $newfile);
+        }, $parsed);
+
+        file_put_contents($article_path . '/text.txt', $parsed);
 
         $this->data['article_path'] = str_replace($_SERVER['DOCUMENT_ROOT'], '', $article_path) . '/';
     }
 
     function publicate(){
-        $this->data['page_id'] = str_replace('.', '', $_SERVER['REQUEST_TIME_FLOAT']);
-        $this->db->query('INSERT INTO temp_pages VALUES (' . $this->data['page_id'] . ', NOW())');
         $res = $this->db->fetch('SELECT id, title FROM sections' . ($this->data['user']['is_admin'] ? '' : ' WHERE allow_user_articles=1'));
         $this->data['sections'] = $res;
     }
 
-    function uploadImg($page_id){
+    function uploadImg($page_id = 0){
         $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/res/';
+
+        if (empty($page_id)){
+            $page_id = str_replace('.', '', $_SERVER['REQUEST_TIME_FLOAT']);
+            $this->db->query('INSERT INTO temp_pages VALUES (' . $page_id . ', NOW())');
+        }
 
         foreach ($_FILES['images']['name'] as $i => $name){
            
@@ -88,6 +101,7 @@ class AdminController extends MenuController
             move_uploaded_file($_FILES['images']['tmp_name'][$i], $upload_filename);
 
             //$_SESSION['temp_images'][] = $upload_filename;
+            echo '<div class="page_id">' . $page_id . '</div>';
             echo '<div class="path">' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $upload_filename) . '</div>';
         }
     }

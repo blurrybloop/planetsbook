@@ -71,7 +71,7 @@ foreach ($this->data['comments'] as $comment) {?>
             </div>
             <div class="comm_footer maximized <?php if ($this->outputMode == 1) echo 'nohide' ?>">
                 <?php if ($this->outputMode == 0) { ?>
-                <?php if ($this->validateRights([USER_ADMIN], $comment['id'], FALSE)) { ?><div class="comm_delete"></div><?php } ?>
+                <?php if ($this->validateRights([USER_ADMIN], $comment['id'], FALSE)) { ?><div class="comm_delete">&nbsp;</div><?php } ?>
                 <?php
                   if ($this->validateRights(NULL, $comment['id'], FALSE)) {?>
                 <div class="comm_edit">&nbsp;</div>

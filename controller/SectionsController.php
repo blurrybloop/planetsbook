@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once 'ControllerBase.php';
 require_once 'MenuController.php';
 
@@ -9,6 +9,7 @@ class SectionsController extends MenuController
     }
 
 	function process(){
+        $this->showErrorPage = TRUE;
             parent::process();
             foreach ($this->data['menu'] as $val){
                 if ($val['data_folder'] == $_REQUEST['param1']){
@@ -16,6 +17,9 @@ class SectionsController extends MenuController
                     break;
                 }
             }
+
+            if (!isset($this->data['section']))
+                throw new ControllerException('', '', 404);
             
             if (isset($_REQUEST))
 
@@ -28,10 +32,10 @@ class SectionsController extends MenuController
                 $sql .= ' AND verifier_id IS NOT NULL ';
             $sql .=  ' ORDER BY ' . $sort_col;
             $res = $this->db->fetch($sql);
-            if ($res === FALSE){
-                echo 'error';
-                return;
-            }
+            if ($res === FALSE)
+                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $this->db->last_error());
+            else if (!count($res))
+                throw new ControllerException('', '', 404);
 
             $this->data['articles'] = $res;
 	}
