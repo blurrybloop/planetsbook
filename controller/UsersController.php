@@ -42,7 +42,6 @@ class UsersController extends MenuController
                'AND psw_hash=' . $this->db->escapeString(crypt($password, $login));
 
         $res = $this->db->fetch($sql);
-        if ($res === FALSE) throw new ControllerException($this->db->last_error());
         if (count($res) == 0) throw new ControllerException('Неправильный логин и/или пароль.');
         return $res[0]['id'];
     }
@@ -53,17 +52,18 @@ class UsersController extends MenuController
         $this->validateParam('password', $_POST['password']);
         if (!empty($_POST['email'])) $this->validateParam('email', $_POST['email']);
         if (!empty($_POST['real_name'])) $this->validateParam('real_name', $_POST['real_name']);
-        $res = $this->db->insert('users', 
-            [
-                'login'         =>      $_POST['login'], 
-                'psw_hash'      =>      crypt($_POST['password'], $_POST['login']),
-                'email'         =>      empty($_POST['email']) ? NULL : $_POST['email'],
-                'real_name'     =>      empty($_POST['real_name']) ? NULL : $_POST['real_name'],
-            ]);
-
-        if (!$res) {
-            if ($this->db->last_error_code() == 1062) throw new ControllerException('Логин уже занят.');
-            else throw new ControllerException($this->db->last_error());
+        try {
+            $this->db->insert('users', 
+                [
+                    'login'         =>      $_POST['login'], 
+                    'psw_hash'      =>      crypt($_POST['password'], $_POST['login']),
+                    'email'         =>      empty($_POST['email']) ? NULL : $_POST['email'],
+                    'real_name'     =>      empty($_POST['real_name']) ? NULL : $_POST['real_name'],
+                ]);
+        }
+        catch (DatabaseException $ex){
+            if ($ex->getCode() == 1062) throw new ControllerException('Логин уже занят.');
+            else throw $ex;
         }
     }
 
@@ -91,7 +91,7 @@ class UsersController extends MenuController
         $this->showErrorPage = TRUE;
         parent::process();
         $res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id);
-        if (!$res) throw new ControllerException('Произошла ошибка при загрузке профиля.<br/>Попробуйте повторить действие позже', $this->db->last_error());
+        if (!$res) throw new ControllerException('Пользователь не существует.');
         $this->data['profile'] = $res[0];
         $this->mode = 1;
     }
@@ -103,10 +103,10 @@ class UsersController extends MenuController
                 $this->validateParam('password', $_POST['old_psw']);
                 if (empty($_POST['new_psw']) || $this->validateParam('password', $_POST['new_psw'])) throw new ControllerException('Неверный формат пароля.');
                 $res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id);
-                if (!$res) throw new ControllerException('Произошла ошибка.<br/>Попробуйте повторить действие позже', $this->db->last_error());
+                if (!$res) throw new ControllerException('Пользователь не существует.');
                 $this->checkUser($this->data['user']['login'], $_POST['old_psw']);
             }
-            else if (!empty($_POST['new_psw']))throw new ControllerException('Для выполнения действия требуется старый пароль');
+            else if (!empty($_POST['new_psw'])) throw new ControllerException('Для выполнения действия требуется старый пароль');
             foreach ($_POST as $key => $value){
                 if (!empty($value))
                     $this->validateParam($key, $value);
@@ -133,15 +133,14 @@ class UsersController extends MenuController
                 }
                 $values[$key] = empty($value) ? NULL : $value;
             }
-            if (!$this->db->update('users', $values, ['id' => $id]))
-                throw new ControllerException('Произошла ошибка.<br/>Попробуйте повторить действие позже', $this->db->last_error());
+            $this->db->update('users', $values, ['id' => $id]);  
         }
         else{
             $this->showErrorPage = TRUE;
             parent::validateRights([$id]);
             parent::process();
             $res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id);
-            if (!$res) throw new ControllerException('Произошла ошибка при загрузке профиля.<br/>Попробуйте повторить действие позже', $this->db->last_error());
+            if (!$res) throw new ControllerException('Пользователь не существует.');
             $this->data['profile'] = $res[0];
             $this->mode = 2;
         }
@@ -178,8 +177,6 @@ class UsersController extends MenuController
     }
 
     function process(){
-        
-        //if (!is_array($args = $_REQUEST['args'])) throw new ControllerException('Неправильные параметры запроса');
         $action = strtolower($_REQUEST['param1']);
         if ($action == 'profile' || $action == 'edit' || $action == 'uploadimg'){
             if (!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id'])) throw new ControllerException('Неправильные параметры запроса');

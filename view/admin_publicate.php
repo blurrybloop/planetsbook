@@ -10,8 +10,8 @@
 <body>
 
     <?php
-echo $this->data['menu'];
-require 'msgbox.php'
+    echo $this->data['menu'];
+    require 'msgbox.php'
     ?>
     <div id="main">
         <div class="banner">
@@ -24,12 +24,7 @@ require 'msgbox.php'
                 <div>
                     <div class="read">
                         <div>
-                            <?php if ($this->action == 'messages') { ?>
-                            <h1>Публикации, ожидающие проверки</h1>
-                            <?php foreach($this->data['messages'] as $message) echo "<div>Статья \"{$message['title']}\", предложенная пользователем <a href='/users/profile/?id={$message['user_id']}'>{$message['login']}</a> {$message['pub_date']} ожидает проверки</div>"; ?>
-
-                            <?php
- }  else if ($this->action == 'publicate') { ?>
+                            
                                 <h1><?php echo ($this->data['user']['is_admin'] ? 'Опубликовать' : 'Добавить'); ?> статью</h1>
                                 <form name="pub_form" method="post">
                                     <fieldset>
@@ -91,28 +86,11 @@ require 'msgbox.php'
                             <form name="images_form" target="superframe" method="post" enctype="multipart/form-data">
                                 <input type="file" name="images[]" id="hh" multiple />
                             </form>
-                            <?php } ?>
                             </div>
                         </div>
                     </div>
+                <?php include('admin_aside.php'); ?>
                 </div>
-                <aside>
-                    <div class="sticky">
-                        <div>
-                            <?php if (isset($this->data['user']['id']) && $this->data['user']['is_admin']) { ?>
-                            <div class="section <?php if ($this->action == 'messages') echo 'selected' ?>"><div><a href="/admin/">Сообщения</a></div></div>
-                            <div class="section"><div><a>Разделы</a></div></div>
-                            <?php } ?>
-                            <div class="section <?php if ($this->action == 'publicate') echo 'selected' ?>">
-                                <div>
-                                    <a href="/admin/publicate">Публикации</a></div>
-                            </div>
-                            <?php if (isset($this->data['user']['id']) && $this->data['user']['is_admin']) { ?>
-                            <div class="section"><div><a>Пользователи</a></div></div>
-                            <?php } ?>
-                        </div>
-                    </div>
-                </aside>
             <?php include('footer.php'); ?>
             </div>
         </div>
@@ -120,25 +98,10 @@ require 'msgbox.php'
 
 </body>
 </html>
+<script src="/js/sticky.js"></script>
 <script>
     $('.read').append('<iframe id="superframe" name="superframe"></iframe>');
-
-    var sticky = $('.sticky');
-    var cont = $('#content');
     var lock = false;
-
-    $(window).scroll(function () {
-        if (parseInt(cont.offset().top) < parseInt($(this).scrollTop())) sticky.addClass('sticked');
-        else sticky.removeClass('sticked');
-    });
-
-    $(window).scroll();
-
-    $(window).resize(function () { sticky.width(sticky.parent().width()) });
-    $(window).resize();
-
-    //$('.combobox > input[type=checkbox]').removeAttr('checked');
-
 
         $('#main').click(function (e) {
             if ($(e.target).parents('.combobox').length && $(e.target).parents('.options').length == 0) return;
@@ -156,7 +119,7 @@ require 'msgbox.php'
 
     <?php if (isset($_REQUEST['section'])) {
               echo "if ($('#section{$_REQUEST['section']}').length != 0) $('#section{$_REQUEST['section']}').click(); else $('.options > div:first-child').click()";
-         }
+          }
           else echo "$('.options > div:first-child').click()";
     ?>
 
@@ -178,7 +141,7 @@ require 'msgbox.php'
         else if (t.hasClass('comm_help')) comments.help();
     });
 
-    var txtarea = null;
+    var preview = false;
 
     $('.comm_preview').click(function () {
         lock = true;
@@ -192,29 +155,28 @@ require 'msgbox.php'
         var callback = function (data) {
             $(article_content).transitionEnd(function () {
                 lock = false;
-                $('.comm_preview').attr('src', txtarea ? '/img/eye.png' : '/img/edit.png');
-                $('.comm_preview + .tip').html(txtarea ? 'Предпросмотр' : 'Редактировать');
+                $('.comm_preview').attr('src', preview ? '/img/eye.png' : '/img/edit.png');
+                $('.comm_preview + .tip').html(preview ? 'Предпросмотр' : 'Редактировать');
                 var dt = new Date;
-                var d;
-                if (txtarea) d = txtarea;
+                if (preview) {
+                    $('#article_content > div').remove();
+                    $(contents).css('display', 'block');
+                }
                 else {
-                    d = $('<div>' + data + '</div>');
+                    var d = $('<div><article>' + data + '</article></div>');
                     d.find('img').each(function () {
                         $(this).attr('src', $(this).attr('src') + '?' + dt.getTime());
                     });
+                    $(contents).css('display', 'none');
+                    d.insertAfter($(contents));
                 }
-                if (txtarea) {
-                    $('#article_content > div').replaceWith(txtarea);
-                    txtarea = null;
-                }
-                else txtarea = $(contents).replaceWith(d);
-
+                preview = !preview;
                 setTimeout(function () { $(article_content).removeClass('invisible'); }, 0);
             }, transitionTimeout);
             $(article_content).addClass('invisible');
         }
 
-        if (txtarea) {
+        if (preview) {
             callback();
         }
         else {

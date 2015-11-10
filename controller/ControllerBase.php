@@ -1,6 +1,9 @@
 <?php
 
 require_once '/include/ControllerException.php';
+require_once '/include/DatabaseException.php';
+require_once '/include/HttpException.php';
+
 const USER_ANY = 0;
 const USER_REGISTERED = -1;
 const USER_ADMIN = -2;
@@ -32,9 +35,11 @@ abstract class ControllerBase
             if (!isset($_SESSION['user_id'])) continue;
             $userID = $_SESSION['user_id'];
             if ($user == USER_ADMIN){
-                $res = $this->db->fetch("SELECT is_admin FROM users WHERE id=$userID");
-                if (!$res){
-                    if($throw) throw new ControllerException('Произошла ошибка проверки прав доступа.', 'Ошибка MySQL #' . $this->db->last_error());
+                try {
+                    $res = $this->db->fetch("SELECT is_admin FROM users WHERE id=$userID");
+                }
+                catch (DatabaseException $ex){
+                    if($throw) throw $ex;
                     else continue;
                 }
                 if (!$res[0]['is_admin']) continue;
@@ -50,7 +55,12 @@ abstract class ControllerBase
     abstract function render();
 
     function show() {
-        $this->process();
+        try{
+            $this->process();
+        }
+        catch (DatabaseException $ex){
+            throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $ex);
+        }
         $this->render();
     }
 }

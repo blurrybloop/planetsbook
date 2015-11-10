@@ -599,3 +599,9 @@ img.wheel_tip{
 }
 
 img.wheel_tip.invisible {opacity: 0;}
+
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}

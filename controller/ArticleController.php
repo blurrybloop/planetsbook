@@ -25,19 +25,15 @@ class ArticleController extends MenuController
         }
 
         $res = $this->db->fetch("SELECT articles.id AS article_id, title, DATE_FORMAT(pub_date, '%e.%m.%Y') AS pub_date, views, verifier_id, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE articles.id={$_REQUEST['param2']}");
-
-        if ($res === FALSE)
-            throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $this->db->last_error());
-        else if (!count($res))
-            throw new ControllerException('', '', 404);
+        if (!count($res) || !file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $this->data['section']['data_folder'] . '/' . $res[0]['article_id']))
+            throw new HttpException(404);
 
         $this->data['article'] = $res[0];
     }
 
     function publicate($id){
         parent::validateRights([USER_ADMIN]);
-        if (!$this->db->update('articles', ['verifier_id' => $this->data['user']['id']], ['id' => $id]))
-            throw new ControllerException('Произошла ошибка при публикации.<br/>Повторите действие позже.', $this->db->last_error());
+        $this->db->update('articles', ['verifier_id' => $this->data['user']['id']], ['id' => $id]);
     }
 
     function dismiss($id){
@@ -45,14 +41,12 @@ class ArticleController extends MenuController
 
         $article_folder = $_SERVER['DOCUMENT_ROOT'] . '/sections/';
 
-        if (!($res = $this->db->fetch('SELECT data_folder from articles INNER JOIN sections ON articles.section_id=sections.id WHERE articles.id=' . $id)))
-            throw new ControllerException('Произошла ошибка при удалении.<br/>Повторите действие позже.', $this->db->last_error());
-
+        $res = $this->db->fetch('SELECT data_folder from articles INNER JOIN sections ON articles.section_id=sections.id WHERE articles.id=' . $id);
+           
         $article_folder .= $res[0]['data_folder'] . '/' . $id;
 
-        if (!$this->db->delete('articles', ['id' => $id]))
-            throw new ControllerException('Произошла ошибка при удалении.<br/>Повторите действие позже.', $this->db->last_error());
-        
+        $this->db->delete('articles', ['id' => $id]);
+
         if (!@$this->delTree($article_folder))
             throw new ControllerException('Произошла ошибка при удалении.<br/>Повторите действие позже.');
     }

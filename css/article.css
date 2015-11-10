@@ -60,19 +60,17 @@ header > .info{
      background-color: rgba(73, 68, 68, .7);
 }
 
-article > figure{
-    margin: 1.5em;
-    width:30%;
+article figure{
+    margin: 15px;
+    display: inline-block;
 }
 
-article > figure.left{
-    float: left;
-    margin-left:0;
-}
+article img{
+    max-width:100%;
+}    
 
-article > figure.right{
-    float: right;
-    margin-right:0;
+article > div{
+    margin: 1em 0;
 }
 
 figure> img{
@@ -215,10 +213,6 @@ section.comments{
     line-height: 1.5em;
 }
 
-.comm_body figure{
-    display: inline-block;
-}
-
 .comm_footer{
     position: absolute;
     bottom: 0;
@@ -345,7 +339,7 @@ textarea#edit_field{
     transition: transform .2s linear;
 }
 
-.date, .user, .views{
+.date, .user, .views, .a_section{
 	padding-left: 1.5em;
 	display: inline;
 	margin-right: 1em;
@@ -366,6 +360,10 @@ background-position: left center;
 	background: url(/img/eye.png) 0 center no-repeat;
 }
 
+.a_section{
+    background: url(/img/folder.png) 0 center no-repeat;
+}
+
 .updown >input:checked + div>label > img{
 	-moz-transform: scale(1,-1);
     -webkit-transform: scale(1, -1);
@@ -375,12 +373,12 @@ background-position: left center;
     -ms-filter: "FlipV";
 }
 
-.updown.nocontent > div{
+.nocontent > div{
     padding-top: .5em;
     text-align: center;
 }
 
-.updown.nocontent >div:first-child{
+.nocontent >div:first-child{
     font-weight: bold;
 }
 

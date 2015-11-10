@@ -19,7 +19,7 @@ class SectionsController extends MenuController
             }
 
             if (!isset($this->data['section']))
-                throw new ControllerException('', '', 404);
+                throw new HttpException(404);
             
             if (isset($_REQUEST))
 
@@ -32,11 +32,6 @@ class SectionsController extends MenuController
                 $sql .= ' AND verifier_id IS NOT NULL ';
             $sql .=  ' ORDER BY ' . $sort_col;
             $res = $this->db->fetch($sql);
-            if ($res === FALSE)
-                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $this->db->last_error());
-            else if (!count($res))
-                throw new ControllerException('', '', 404);
-
             $this->data['articles'] = $res;
 	}
 

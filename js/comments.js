@@ -34,7 +34,8 @@ function Comments(parent, articleID, allowAdd) {
 
     var add = $("<article class='comment add'><img src='/img/comment.png'/>Комментировать...</article>").click(function () { self.edit($(this), $(this)); });
     if (allowAdd) _parent.append(add);
-    var nextPage = $("<div><img src='/img/playback.png' />Еще...</div>").click(this.fetch);
+    //<img src='/img/playback.png' />Еще...
+    var nextPage = $("<div></div>").click(this.fetch);
     _parent.append(nextPage);
 
     this.performAction = function (comment, target, action, actionName, requestParams, noTransition) {
@@ -81,6 +82,7 @@ function Comments(parent, articleID, allowAdd) {
             if (isAdd) {d.insertAfter(comment); comment.replaceWith(add)} else comment.replaceWith(d);
             lock = false;
             if (isAdd) updateUserInfo(d.children('div:first-child'));
+            _parent.find('.nocontent').remove();
             return isAdd ? $([d, add]) : d;
         }, isAdd ? "add" : "edit", { args: isAdd ? [_article, edit.find('#edit_field').val()] : [$(comment).attr('id').replace('comm', ''), edit.find('#edit_field').val()] });
     }

@@ -7,7 +7,9 @@
     <script src="/js/comments.js"></script>
 </head>
 <body>
-    <img src="<?php echo $this->data['section']['image'] ?>" />
+<?php if (is_file($_SERVER['DOCUMENT_ROOT'] . $this->data['section']['image'])) { ?>
+<img src="<?php echo $this->data['section']['image'] ?>"/>
+<?php } ?>
     <?php
     echo $this->data['menu'];
     require 'msgbox.php'
@@ -46,7 +48,7 @@
                             <?php
                     echo file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/sections/{$this->data['section']['data_folder']}/{$this->data['article']['article_id']}/text.txt");
                             ?>
-
+                            <div class="clearfix"></div>
 
 
                             <section class="comments">
@@ -125,7 +127,7 @@
 
 
     $(window).scroll(function(){
-        if (parseInt($(window).height()) + parseInt($(this).scrollTop()) > parseInt(commentsBlock.height()) + parseInt(commentsBlock.position().top) + 300) {
+        if (parseInt($(window).height()) + parseInt($(this).scrollTop()) > parseInt(commentsBlock.height()) + parseInt(commentsBlock.position().top) + 200) {
             comments.fetch();
         }
     });

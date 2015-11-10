@@ -77,20 +77,21 @@ class TagsParser{
                             $closeTag = 'a';
                             break;
                         case 'img':
-                            $openTag = 'img src="' . substr($this->text, $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0])) . '" style="width: 100%; height: 100%"/';
+                            $openTag = 'img src="' . substr($this->text, $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0])) . '"/';
                             $this->text = substr_replace($this->text, '', $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0]));
                             $match[0][1] -= $match[0][1] - $current[0][1] - strlen($current[0][0]);
                             $closeTag = '';
                             break;
                         case 'figure':
-                            $openTag = 'figure style="';
+                            $openTag = 'div style="';
                             if (!empty($current[2][0]) && ($current[2][0] == 'left' || $current[2][0] == 'right' || $current[2][0] == 'center')) $openTag .= ' text-align:' . $current[2][0] . ';';
                             else if (!empty($current[2][0]) && $current[2][0] == 'float-left') $openTag .= 'float:left;';
                             else if (!empty($current[2][0]) && $current[2][0] == 'float-right') $openTag .= 'float:right;';
+                            $openTag .= '"><figure style="';
                             if (!empty($current[3][0])) $openTag .= 'width:' . $current[3][0] .'px;';
                             if (!empty($current[4][0])) $openTag .= 'height: ' . $current[4][0] .'px;';
                             $openTag .= '"';
-                            $closeTag = 'figure';
+                            $closeTag = 'figure></div';
                             break;
                         case 'figcaption':
                             $openTag = 'figcaption' . ((!empty($current[2][0]) && ($current[2][0] == 'left' || $current[2][0] == 'right' || $current[2][0] == 'center' || $current[2][0] == 'justify')) ? ' style="' . 'text-align:' . $current[2][0] . '"' : '');

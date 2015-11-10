@@ -14,8 +14,7 @@ class AdminController extends MenuController
     function messages(){
         $this->showErrorPage = TRUE;
         parent::validateRights([USER_ADMIN]);
-        $res = $this->db->fetch('SELECT articles.id AS id, title, users.id as user_id, login, DATE_FORMAT(pub_date, \'%e.%m.%Y %H:%i\') AS pub_date FROM articles INNER JOIN users ON articles.author_id=users.id WHERE verifier_id IS NULL');
-        if ($res === FALSE) throw new ControllerException('Возникла ошибка при получении сообщений.<br/>Повторите действие позже', $this->db->last_error());
+        $res = $this->db->fetch('SELECT sections.title as section_title, data_folder, articles.id AS article_id, articles.title as article_title, users.id as user_id, login, DATE_FORMAT(pub_date, \'%e.%m.%Y %H:%i\') AS pub_date FROM articles INNER JOIN users ON articles.author_id=users.id INNER JOIN sections ON sections.id = articles.author_id WHERE verifier_id IS NULL');
         $this->data['messages'] = $res;
     }
 
@@ -44,12 +43,11 @@ class AdminController extends MenuController
 
         if ($this->data['user']['is_admin']) $fields['verifier_id'] = $this->data['user']['id'];
 
-        if (!$this->db->insert('articles', $fields))
-            throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $this->db->last_error());
-        $lid = $this->db->last_insert_id();
+        $this->db->insert('articles', $fields);
+        $lid = $this->db->lastInsertId();
 
         if (!($res = $this->db->fetch('SELECT data_folder FROM sections WHERE id=' . $_POST['section_id'])))
-            throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $this->db->last_error());
+            throw new ControllerException('Статья не существует.');
 
         $article_path = "{$_SERVER['DOCUMENT_ROOT']}/sections/{$res[0]['data_folder']}/$lid";
 
@@ -129,7 +127,7 @@ class AdminController extends MenuController
 
     function render(){
         if ($this->action == 'preview'){
-            echo $this->data['parsed_text'];
+            echo $this->data['parsed_text'] . '<div class="clearfix"></div>';
         }
         else if ($this->action == 'addarticle'){
             echo $this->data['article_path'];
@@ -139,7 +137,7 @@ class AdminController extends MenuController
         }
         else{
             $this->data['menu'] = parent::render();
-            $this->renderView('admin');
+            $this->renderView('admin_' . $this->action);
         }
     }
 }

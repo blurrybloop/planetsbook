@@ -1,4 +1,4 @@
-﻿<h1>Как редактировать комментарии?</h1>
+<h1>Как редактировать комментарии?</h1>
 <p>На нашем сайте поддерживаются комментарии в виде простого текста, а также некоторые возможности форматирования с помощью BB-кодов.</p>
 <h2>Что такое BB-коды?</h2>
 <p>BB-коды — это набор тегов форматирования, которые влияют на оформление (вид) текста. BB-коды принципиально похожи на HTML и аналогичны. Ниже представлен список доступных BB-кодов и пояснения по их применению.</p>
@@ -42,8 +42,8 @@
 <p>[img]http://planetsbook.pp.ua/img/logo.png[/img] выводит</p>
 <?php $this->parser->text = '[img]/img/logo.png[/img]'; echo $this->parser->parse();?>
 <p>Если вы хотите изменить ширину, высоту или позицию рисунка, добавить подпись, вложите тег "img" в тег "figure"</p>
-<p>[align=center]<br/>[figure width=400]<br/>[img]http://planetsbook.pp.ua/img/logo.png[/img]<br/>[figcaption=left]Тестовый рисунок[/figcaption]<br/>[/figure]<br/>[/align] выводит</p>
-<?php $this->parser->text = '[align=center][figure width=400][img]/img/logo.png[/img][figcaption=left]Тестовый рисунок[/figcaption][/figure][/align]'; echo $this->parser->parse();?>
+<p>[figure=center width=400]<br/>[img]http://planetsbook.pp.ua/img/logo.png[/img]<br/>[figcaption=left]Тестовый рисунок[/figcaption]<br/>[/figure] выводит</p>
+<?php $this->parser->text = '[figure=center width=400][img]/img/logo.png[/img][figcaption=left]Тестовый рисунок[/figcaption][/figure]'; echo $this->parser->parse();?>
 <h2>Разделители</h2>
 <p>Для вставки горизонтальной разделительной линии используйте тег "hr".</p>
 <p>[hr][/hr] выводит</p>

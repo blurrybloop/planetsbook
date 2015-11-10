@@ -1,5 +1,12 @@
 <?php
-if (empty($this->data['comments'])) return;
+if (!isset($this->data['comments'])) return;
+if (count($this->data['comments']) == 0){ ?>
+  <div class="nocontent"><div>Пока нет ни одного комментария.</div>
+  <?php if (isset($this->data['user'])) echo '<div>Станьте первым, кто оставит свой отзыв об этой статье.</div>' ?>
+
+    </div>
+<?php   
+}
 foreach ($this->data['comments'] as $comment) {?>
 <article class="comment" <?php if (isset($comment['id'])) echo "id='comm{$comment['id']}'" ?> >
         <div>
@@ -68,6 +75,7 @@ foreach ($this->data['comments'] as $comment) {?>
                             echo $this->parser->parse();
                       }
                 ?>
+                <div class="clearfix"></div>
             </div>
             <div class="comm_footer maximized <?php if ($this->outputMode == 1) echo 'nohide' ?>">
                 <?php if ($this->outputMode == 0) { ?>

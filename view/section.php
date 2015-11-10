@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 <?php require 'html_head.php' ?>
@@ -6,7 +6,9 @@
     <script src="/js/utils.js"></script>
 </head>
 <body>
+<?php if (is_file($_SERVER['DOCUMENT_ROOT'] . $this->data['section']['image'])) { ?>
 <img src="<?php echo $this->data['section']['image'] ?>"/>
+<?php } ?>
 <?php 
 echo $this->data['menu'];
 require 'msgbox.php' 
@@ -32,7 +34,7 @@ require 'msgbox.php'
                 <div class="updown_head">
 <div class='add_article'>
 <?php 
-if($this->data['section']['allow_user_articles']) echo '<a href=\'/admin/publicate?section=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
+if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) echo '<a href=\'/admin/publicate?section=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
 ?>
 </div>
                     <div>Сортировать по

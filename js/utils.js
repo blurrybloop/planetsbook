@@ -73,4 +73,4 @@ $.fn.makeFigure = function () { this.first().wrapSelected('\r\n[figure]\r\n[img]
 $.fn.makeLeft = function () { this.first().wrapSelected('\r\n[align=left]', '[/align]\r\n'); }
 $.fn.makeCenter = function () { this.first().wrapSelected('\r\n[align=center]', '[/align]\r\n'); }
 $.fn.makeRight = function () { this.first().wrapSelected('\r\n[align=right]', '[/align]\r\n'); }
-$.fn.makeJustify = function () { this.first().wrapSelected('\r\n[alignjustify]', '[/align]\r\n'); }
+$.fn.makeJustify = function () { this.first().wrapSelected('\r\n[align=justify]', '[/align]\r\n'); }

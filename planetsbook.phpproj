@@ -27,11 +27,16 @@
     <Compile Include="controller\CommentsController.php" />
     <Compile Include="controller\ErrorController.php" />
     <Compile Include="controller\UsersController.php" />
+    <Compile Include="include\config.php" />
     <Compile Include="include\ControllerException.php" />
+    <Compile Include="include\DatabaseException.php" />
     <Compile Include="include\GDExtensions.php" />
+    <Compile Include="include\HttpException.php" />
     <Compile Include="include\pulse.php" />
     <Compile Include="include\TagsParser.php" />
-    <Compile Include="view\admin.php" />
+    <Compile Include="view\admin_aside.php" />
+    <Compile Include="view\admin_messages.php" />
+    <Compile Include="view\admin_publicate.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
@@ -39,13 +44,12 @@
     <Compile Include="controller\MenuController.php" />
     <Compile Include="controller\SectionsController.php" />
     <Compile Include="include\app.php" />
-    <Compile Include="include\mysql.php" />
+    <Compile Include="include\database.php" />
     <Compile Include="index.php" />
     <Compile Include="view\bbhelp.php" />
     <Compile Include="view\comment.php" />
     <Compile Include="view\error.php" />
     <Compile Include="view\profile.php" />
-    <Compile Include="view\profile_edit.php" />
     <Compile Include="view\section.php" />
     <Compile Include="view\footer.php" />
     <Compile Include="view\html_head.php" />
@@ -141,6 +145,7 @@
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />
+    <Content Include="js\sticky.js" />
     <Content Include="js\utils.js" />
     <Content Include="js\planet_selector.js" />
   </ItemGroup>
