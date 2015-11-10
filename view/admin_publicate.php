@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/css/profile.css" />
     <link rel="stylesheet" href="/css/admin.css" />
     <script src="/js/utils.js"></script>
+    <script src="/js/image_uploader.js"></script>
 </head>
 <body>
 
@@ -24,76 +25,205 @@
                 <div>
                     <div class="read">
                         <div>
-                            
-                                <h1><?php echo ($this->data['user']['is_admin'] ? 'Опубликовать' : 'Добавить'); ?> статью</h1>
-                                <form name="pub_form" method="post">
-                                    <fieldset>
-                                        <legend>Оглавление</legend>
-                                        <label for="title">Название</label>
-                                        <input name="title" id="title" type="text" required maxlength="100" pattern="^.+$" />
-                                        <label for="description">Описание</label>
-                                        <textarea name="description" id="description" required pattern="^.+$"></textarea>
-                                        <label>Раздел</label>
-                                        <div class="combobox">
-                                            <div class="combohead">
-                                                <div></div>
-                                                <div class="arrow">
-                                                    <img src="/img/down_arrow.png" />
-                                                </div>
+
+                            <h1>
+                                <?php echo ($this->data['user']['is_admin'] ? 'Опубликовать' : 'Добавить'); ?> статью
+                            </h1>
+                            <form name="pub_form" method="post">
+                                <fieldset>
+                                    <legend>Оглавление</legend>
+                                    <label for="title">Название</label>
+                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" />
+                                    <label for="description">Описание</label>
+                                    <textarea name="description" id="description" required="" pattern="^.+$"></textarea>
+                                    <label>Раздел</label>
+                                    <div class="combobox">
+                                        <div class="combohead">
+                                            <div></div>
+                                            <div class="arrow">
+                                                <img src="/img/down_arrow.png" />
                                             </div>
-                                            <div class="options">
-                                                <?php if (!empty($this->data['sections'])) {
+                                        </div>
+                                        <div class="options">
+                                            <?php if (!empty($this->data['sections'])) {
                                                           foreach ($this->data['sections'] as $section) {
                                                               echo "<div id='section{$section['id']}'>{$section['title']}</div>";
-                                                          } 
+                                                          }
                                                       }?>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset id="edit_content">
+                                    <legend>Содержание</legend>
+
+                                    <div id="tools">
+                                        <div>
+                                            <img class='comm_bold' src='/img/bold.png' />
+                                            <div class='tip'>
+                                                Жирный
+                                                <br />
+                                                [b]Пример[/b]
                                             </div>
                                         </div>
-                                    </fieldset>
-                                    <fieldset id="edit_content">
-                                        <legend>Содержание</legend>
-                                        
-                                        <div id="tools">
-                                            <div><img class='comm_bold' src='/img/bold.png' /><div class='tip'>Жирный<br />[b]Пример[/b]</div></div>
-                                            <div><img class='comm_italic' src='/img/italic.png' /><div class='tip'>Курсив<br />[i]Пример[/i]</div></div>
-                                            <div><img class='comm_underline' src='/img/underline.png' /><div class='tip'>Подчеркнутый<br />[u]Пример[/u]</div></div>
-                                            <div><img class='comm_strike' src='/img/strike.png' /><div class='tip'>Зачеркнутый<br />[s]Пример[/s]</div></div>
-                                            <div><img class='comm_sup' src='/img/superscript.png' /><div class='tip'>Верхний индекс<br />[sup]Пример[/sup]</div></div>
-                                            <div><img class='comm_sub' src='/img/subscript.png' /><div class='tip'>Нижний индекс<br />[sub]Пример[/sub]</div></div>
-                                            <div><img class='comm_left_align' src='/img/left_align.png' /><div class='tip'>Выравнивание по левому краю<br />[align=left]Пример[/align]</div></div>
-                                            <div><img class='comm_center_align' src='/img/center_align.png' /><div class='tip'>Выравнивание по центру<br />[align=center]Пример[/align]</div></div>
-                                            <div><img class='comm_right_align' src='/img/right_align.png' /><div class='tip'>Выравнивание по правому краю<br />[align=right]Пример[/align]</div></div>
-                                            <div><img class='comm_justify_align' src='/img/justify_align.png' /><div class='tip'>Выравнивание по ширине<br />[align=justify]Пример[/align]</div></div>
-                                            <div><img class='comm_ul' src='/img/list_bullets.png' /><div class='tip'>Маркированый список<br />[list=*]<br />[*]Один[/*]<br />[*]Два[/*]<br />[*]Три[/*]<br />[/list]</div></div>
-                                            <div><img class='comm_ol' src='/img/list_num.png' /><div class='tip'>Нумерованый список<br />[list=(1|A|a|i|I)]<br />[1]Один[/1]<br />[2]Два[/2]<br />[3]Три[/3]<br />[/list]</div></div>
-                                            <div><img class='comm_url' src='/img/link.png' /><div class='tip'>Ссылка<br />[url]planetsbook.pp.ua[/url]<br />или<br />[url="planetsbook.pp.ua"]Пример[/url]</div></div>
-                                            <label for="hh"><img class='comm_img' src='/img/picture.png' /><span class='tip'>Рисунок с подписью<br />[figure=(left|center|right|float-left|float-right) width=# height=#]<br />[img]test.png[/img]<br />[figcaption=(left|center|right|justify)]Подпись[/figcaption]<br />[/figure]</span></label>
-                                            <div><img class='comm_preview' src='/img/eye.png' /><div class='tip'>Предпросмотр</div></div>
+                                        <div>
+                                            <img class='comm_italic' src='/img/italic.png' />
+                                            <div class='tip'>
+                                                Курсив
+                                                <br />
+                                                [i]Пример[/i]
+                                            </div>
                                         </div>
+                                        <div>
+                                            <img class='comm_underline' src='/img/underline.png' />
+                                            <div class='tip'>
+                                                Подчеркнутый
+                                                <br />
+                                                [u]Пример[/u]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_strike' src='/img/strike.png' />
+                                            <div class='tip'>
+                                                Зачеркнутый
+                                                <br />
+                                                [s]Пример[/s]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_sup' src='/img/superscript.png' />
+                                            <div class='tip'>
+                                                Верхний индекс
+                                                <br />
+                                                [sup]Пример[/sup]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_sub' src='/img/subscript.png' />
+                                            <div class='tip'>
+                                                Нижний индекс
+                                                <br />
+                                                [sub]Пример[/sub]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_left_align' src='/img/left_align.png' />
+                                            <div class='tip'>
+                                                Выравнивание по левому краю
+                                                <br />
+                                                [align=left]Пример[/align]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_center_align' src='/img/center_align.png' />
+                                            <div class='tip'>
+                                                Выравнивание по центру
+                                                <br />
+                                                [align=center]Пример[/align]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_right_align' src='/img/right_align.png' />
+                                            <div class='tip'>
+                                                Выравнивание по правому краю
+                                                <br />
+                                                [align=right]Пример[/align]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_justify_align' src='/img/justify_align.png' />
+                                            <div class='tip'>
+                                                Выравнивание по ширине
+                                                <br />
+                                                [align=justify]Пример[/align]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_ul' src='/img/list_bullets.png' />
+                                            <div class='tip'>
+                                                Маркированый список
+                                                <br />
+                                                [list=*]
+                                                <br />
+                                                [*]Один[/*]
+                                                <br />
+                                                [*]Два[/*]
+                                                <br />
+                                                [*]Три[/*]
+                                                <br />
+                                                [/list]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_ol' src='/img/list_num.png' />
+                                            <div class='tip'>
+                                                Нумерованый список
+                                                <br />
+                                                [list=(1|A|a|i|I)]
+                                                <br />
+                                                [1]Один[/1]
+                                                <br />
+                                                [2]Два[/2]
+                                                <br />
+                                                [3]Три[/3]
+                                                <br />
+                                                [/list]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_url' src='/img/link.png' />
+                                            <div class='tip'>
+                                                Ссылка
+                                                <br />
+                                                [url]planetsbook.pp.ua[/url]
+                                                <br />
+                                                или
+                                                <br />
+                                                [url="planetsbook.pp.ua"]Пример[/url]
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <img class='comm_img' src='/img/picture.png' />
+                                            <span class='tip'>
+                                                Рисунок с подписью
+                                                <br />
+                                                [figure=(left|center|right|float-left|float-right) width=# height=#]
+                                                <br />
+                                                [img]test.png[/img]
+                                                <br />
+                                                [figcaption=(left|center|right|justify)]Подпись[/figcaption]
+                                                <br />
+                                                [/figure]
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <img class='comm_preview' src='/img/eye.png' />
+                                            <div class='tip'>Предпросмотр</div>
+                                        </div>
+                                    </div>
 
-                                        <div id="article_content">
-                                            <textarea id="contents" name="contents" required></textarea>
-                                        </div>
-                                        <h2>Прикрепленные изображения</h2>
-                                        <div class="img_thumbs"></div>
-                                    </fieldset>
-                                    <input type="hidden" name="section_id" id="section_id"/>
-                                    <fieldset>
-                                        <input type="submit" name="pub_submit" id="pub_submit" value="<?php echo ($this->data['user']['is_admin'] ? 'Публиковать' : 'Предложить'); ?>"/>
-                                        <input type="reset" />
-                                    </fieldset>
-                                </form>
-                            <form name="images_form" target="superframe" method="post" enctype="multipart/form-data">
-                                <input type="file" name="images[]" id="hh" multiple />
+                                    <div id="article_content">
+                                        <textarea id="contents" name="contents" required=""></textarea>
+                                    </div>
+                                    <h2>Прикрепленные изображения</h2>
+                                    <div class="img_thumbs"></div>
+                                </fieldset>
+                                <input type="hidden" name="section_id" id="section_id" />
+                                <fieldset>
+                                    <input type="submit" name="pub_submit" id="pub_submit" value="<?php echo ($this->data['user']['is_admin'] ? 'Публиковать' : 'Предложить'); ?>" />
+                                    <input type="reset" />
+                                </fieldset>
                             </form>
-                            </div>
+                            <!--<form name="images_form" target="superframe" method="post" enctype="multipart/form-data">
+                                <input type="file" name="images[]" id="hh" multiple />
+                            </form>-->
                         </div>
                     </div>
-                <?php include('admin_aside.php'); ?>
                 </div>
-            <?php include('footer.php'); ?>
+                <?php include('admin_aside.php'); ?>
             </div>
+            <?php include('footer.php'); ?>
         </div>
+    </div>
 
 
 </body>
@@ -123,6 +253,31 @@
           else echo "$('.options > div:first-child').click()";
     ?>
 
+        var uploader = new ImageUploader(cont, true, false);
+
+     uploader.onStartUploading = function () {
+        lock = true;
+        //$('#upload_avatar').addClass('loading');
+    }
+
+    uploader.onUploaded = function (images) {
+        lock = false;
+        $('#upload_avatar').removeClass('loading');
+        for (var i = 0; i < images.length; i++) {
+            if (window.contents)
+                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + images[i] + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+            $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + images[i] + "' /> <div>" + images[i] + "</div></div>")
+        }
+    }
+
+    uploader.onError = function (err) {
+        messageBox('<p>Хьюстон, у нас проблемы!</p>' + err, 'left');
+    }
+
+    uploader.onDeleted = function (img) {
+        if (img) img.parent().remove();
+    }
+
     $('#tools').click(function (e) {
         var t = $(e.target);
         if (t.hasClass('comm_bold')) $(contents).makeBold();
@@ -138,6 +293,7 @@
         else if (t.hasClass('comm_ul')) $(contents).makeUL();
         else if (t.hasClass('comm_ol')) $(contents).makeOL();
         else if (t.hasClass('comm_url')) $(contents).makeURL();
+        else if (t.hasClass('comm_img')) uploader.upload();
         else if (t.hasClass('comm_help')) comments.help();
     });
 
@@ -203,35 +359,14 @@
         $('.thumb_action > div:nth-child(2)').click();
     });
 
-    var pid;
+    //var pid;
 
-    $(hh).change(function () {
-        if (lock) return;
-        lock = true;
-        $('#superframe').one('load', function () {
-            pid = $(this).contents().find('.page_id').html();
-            if (pid) {
-                 setInterval(function () { $.post('/pulse/', { 'page_id': pid }); }, 20000);
-            }
-            $(this).contents().find('.path').each(function () {
-                if (window.contents)
-                    $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + $(this).html() + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
-                $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + $(this).html() + "' /> <div>" + $(this).html() + "</div></div>")
-            });
-            lock = false;
-        });
-        $(images_form).attr('action', '/admin/uploadImg/?args=' + (pid ? pid : 0));
-        setTimeout(function () { $(images_form).submit(); }, 0);
-    });
+
 
     $('.img_thumbs').click(function (e) {
         var img = $(e.target).parent().next();
         if ($(e.target).is('.thumb_action > div:nth-child(2)')) {
-            var j = $.post('/admin/removeImg', { 'args': [img.attr('src')] }, function () {
-                img.parent().remove();
-            }).fail(function () {
-                messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
-            });
+            uploader.delete(img.attr('src'), img);
         }
         else if ($(e.target).is('.thumb_action > div:nth-child(1)')) {
             if (window.contents)

@@ -116,9 +116,10 @@ class UsersController extends MenuController
             foreach ($_POST as $key => $value){
                 if ($key != 'new_psw' && $key != 'email' && $key != 'real_name' && $key != 'skype' && $key != 'vk'  && $key != 'facebook' && $key != 'twitter' && $key != 'site' && $key != 'from_where' && $key != 'avatar_action') continue;
                 if ($key == 'avatar_action'){
-                    if ($value == 1){
-                        if (@rename($_SERVER['DOCUMENT_ROOT'] . '/tmp_avatar/' . $id . '.png', $_SERVER['DOCUMENT_ROOT'] . '/avatars/' . $id . '.png') === FALSE)
-                            throw new ControllerException('Произошла ошибка при изменении аватара.<br/>Попробуйте повторить действие позже.');
+                    if ($value == 1 && isset($_POST['avatar_path'])){
+                        require_once '/include/GDExtensions.php';
+                        if (!GDExtensions::fitToRect($_SERVER['DOCUMENT_ROOT'] . $_POST['avatar_path'], 100,100, $_SERVER['DOCUMENT_ROOT'] . '/avatars/' . $id . '.png'))
+                            throw new ControllerException('Произошла ошибка при изменении аватара.<br/>Попробуйте повторить действие позже.', GDExtensions::lastError());
                         $values['avatar'] = $id;
                     }
                     else if ($value == 2){
@@ -146,39 +147,39 @@ class UsersController extends MenuController
         }
     }
 
-    function uploadImg($id){
-        $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/tmp_avatar/';
+    //function uploadImg($id){
+    //    $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/tmp_avatar/';
 
-        $php_errors = [1 => 'Превышен максимальный размер файла, указанный в php.ini',
-                       2 => 'Превышен максимальный размер файла, указанный в форме HTML',
-                       3 => 'Была отправлена только часть файла',
-                       4 => 'Файл для отправки не был выбран.'];
+    //    $php_errors = [1 => 'Превышен максимальный размер файла, указанный в php.ini',
+    //                   2 => 'Превышен максимальный размер файла, указанный в форме HTML',
+    //                   3 => 'Была отправлена только часть файла',
+    //                   4 => 'Файл для отправки не был выбран.'];
         
-        if (!isset($_FILES['avatar']))
-            throw new ControllerException('Сервер не может получить выбранный вами файл.', trim($php_errors[4], '.') . ' или ' . $php_errors[1]);
+    //    if (!isset($_FILES['avatar']))
+    //        throw new ControllerException('Сервер не может получить выбранный вами файл.', trim($php_errors[4], '.') . ' или ' . $php_errors[1]);
 
-        if ($_FILES['avatar']['error'] != 0)
-            throw new ControllerException('Сервер не может получить выбранный вами файл.', $php_errors[$_FILES['avatar']['error']]);
+    //    if ($_FILES['avatar']['error'] != 0)
+    //        throw new ControllerException('Сервер не может получить выбранный вами файл.', $php_errors[$_FILES['avatar']['error']]);
 
-        if (!is_uploaded_file($_FILES['avatar']['tmp_name']))
-            throw new ControllerException("Файл не является загруженным.", $php_errors[$_FILES['avatar']['name']]);
+    //    if (!is_uploaded_file($_FILES['avatar']['tmp_name']))
+    //        throw new ControllerException("Файл не является загруженным.", $php_errors[$_FILES['avatar']['name']]);
 
-        if (!getimagesize($_FILES['avatar']['tmp_name']))
-            throw new ControllerException("Вы выбрали файл, который не является изображением.", $_FILES['avatar']['name'] . ' не является настоящим файлом изображения.');
+    //    if (!getimagesize($_FILES['avatar']['tmp_name']))
+    //        throw new ControllerException("Вы выбрали файл, который не является изображением.", $_FILES['avatar']['name'] . ' не является настоящим файлом изображения.');
 
-        $upload_filename = $upload_dir . $id;
+    //    $upload_filename = $upload_dir . $id;
 
-        require_once '/include/GDExtensions.php';
+    //    require_once '/include/GDExtensions.php';
 
-        if (($path = GDExtensions::fitToRect($_FILES['avatar']['tmp_name'], 100, 100, $upload_filename, TRUE)) === FALSE)
-            throw new ControllerException('Возникла проблема сохранения вашего изображения.', GDExtensions::lastError());
+    //    if (($path = GDExtensions::fitToRect($_FILES['avatar']['tmp_name'], 100, 100, $upload_filename, TRUE)) === FALSE)
+    //        throw new ControllerException('Возникла проблема сохранения вашего изображения.', GDExtensions::lastError());
 
-        echo '<div id="path">' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $path) . '</div>';
-    }
+    //    echo '<div id="path">' . str_replace($_SERVER['DOCUMENT_ROOT'], '', $path) . '</div>';
+    //}
 
     function process(){
         $action = strtolower($_REQUEST['param1']);
-        if ($action == 'profile' || $action == 'edit' || $action == 'uploadimg'){
+        if ($action == 'profile' || $action == 'edit'){
             if (!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id'])) throw new ControllerException('Неправильные параметры запроса');
             if ($action == 'edit' && isset($_REQUEST['update']) && $_REQUEST['update']==1)
                 $this->$action($_REQUEST['id'], TRUE);

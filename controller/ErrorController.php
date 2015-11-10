@@ -57,7 +57,7 @@ class ErrorController extends MenuController
             $this->renderView('error');
         }
         else{
-            echo $this->data['error'];
+            echo '<div class="error">' . $this->data['error'] . '</div>';
         }
     }
 }

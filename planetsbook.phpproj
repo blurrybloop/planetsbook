@@ -26,6 +26,7 @@
     <Compile Include="controller\AdminController.php" />
     <Compile Include="controller\CommentsController.php" />
     <Compile Include="controller\ErrorController.php" />
+    <Compile Include="controller\ImageController.php" />
     <Compile Include="controller\UsersController.php" />
     <Compile Include="include\config.php" />
     <Compile Include="include\ControllerException.php" />
@@ -142,6 +143,7 @@
     <Content Include="img\user2.png" />
     <Content Include="img\wrench.png" />
     <Content Include="js\comments.js" />
+    <Content Include="js\image_uploader.js" />
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />

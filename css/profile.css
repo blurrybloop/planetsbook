@@ -155,32 +155,29 @@ fieldset > legend{
     font-size: 1.3em;
 }
 
-form[name=edit_avatar] input{
-    display: none;
-}
-
-form[name=edit_avatar] label{
-    display: block;
+.edit_avatar label{
+    display: block !important;
     margin: 10px 0;
+    width:auto !important;
 }
 
-form[name=edit_avatar] > fieldset > div{
+.edit_avatar > div{
     display: table;
     width:100%;
     height: 200px;
 }
 
-form[name=edit_avatar] > fieldset > div > div{
+.edit_avatar > div > div{
     display: table-cell;
     vertical-align: middle;
 }
 
-form[name=edit_avatar] > fieldset > div > div:first-child{
+.edit_avatar > div > div:first-child{
     width:20%;
     text-align: center;
 }
 
-form[name=edit_avatar] > fieldset > div > div:first-child > img{
+.edit_avatar > div > div:first-child > img{
     width:100px;
 }
 
@@ -190,13 +187,13 @@ form[name=edit_avatar] > fieldset > div > div:first-child > img{
     padding-left: 30px;
 }
 
-label[for=avatar]{
+#upload_avatar{
     background: url(/img/upload.png) left center no-repeat;
     background-size: auto 100%;
     padding-left: 30px;
 }
 
-label[for=avatar].loading{
+#upload_avatar.loading{
     background: url(/img/loading.gif) left center no-repeat;
     background-size: auto 100%;
 }

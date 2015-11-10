@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/css/article.css" />
     <link rel="stylesheet" href="/css/profile.css" />
     <script src="/js/utils.js"></script>
+    <script src="/js/image_uploader.js"></script>
 </head>
 <body>
 
@@ -74,27 +75,21 @@ require 'msgbox.php'
                                 </section>
                                 <?php } else if ($this->mode == 2) {?>
                                 <h1><?php echo $this->data['profile']['login']?></h1>
-                                <iframe id="superframe" name="superframe">
-
-                                </iframe>
-                                <form name="edit_avatar" method="post" target="superframe" enctype="multipart/form-data" action="/users/uploadImg/?id=<?php echo $this->data['profile']['id'] ?>">
-                                    <fieldset>
+                                <form name="edit_profile" method="post">
+                                    <fieldset class="edit_avatar">
                                         <legend>Аватар</legend>
                                         <div>
                                             <div>
-                                                <img src="<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>" />
+                                                <img id="avatar_img" style="max-width:100px; max-height:100px;" src="<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>" />
                                             </div>
                                             <div>
-                                                
-                                                <label for="avatar">Загрузить изображение</label>
-                                                <input type="file" name="avatar" id="avatar" />
+
+                                                <label id="upload_avatar">Загрузить изображение</label>
                                                 <label id="remove_avatar">Удалить аватар</label>
                                                 <label id="reset_avatar">Отменить</label>
                                             </div>
                                         </div>
                                     </fieldset>
-                                </form>
-                                <form name="edit_profile" method="post">
                                     <fieldset>
                                         <legend>Смена пароля</legend>
                                         <div>
@@ -142,6 +137,7 @@ require 'msgbox.php'
                                         </div>
                                     </fieldset>
                                     <input type="hidden" name="avatar_action" value="0" />
+                                    <input type="hidden" name="avatar_path" />
                                     <fieldset>
                                         <input type="submit" id="edit_submit" value="Отправить" />
                                         <input type="reset" />
@@ -200,7 +196,30 @@ require 'msgbox.php'
             });
         });
 
-    var avatar = $('form[name=edit_avatar] > fieldset > div > div:first-child > img');
+    var avatar = $('#avatar_img');
+    var uploader = new ImageUploader(cont, false, true);
+
+    uploader.onStartUploading = function () {
+        lock = true;
+        $('#upload_avatar').addClass('loading');
+    }
+
+    uploader.onUploaded = function (images) {
+        lock = false;
+        $('#upload_avatar').removeClass('loading');
+        if (images.length) {
+            $('input[name=avatar_action]').attr('value', 1);
+            $('input[name=avatar_path]').attr('value', images[0]);
+            var d = new Date();
+            avatar.attr('src', images[0] + '?' + d.getTime());
+        }
+    }
+
+    uploader.onError = function (err) {
+        $('input[name=avatar_action]').attr('value', 0);
+        $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + err).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
+        setTimeout(function () { $('#edit_log').css('height', 0); }, 5000);
+    }
 
     $('#reset_avatar').click(function(){
         if (lock) return;
@@ -209,29 +228,21 @@ require 'msgbox.php'
         avatar.attr('src', '<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>' + '?' + d.getTime());
     });
 
-    $('#remove_avatar').click(function(){
+    $('#remove_avatar').click(function () {
         if (lock) return;
         $('input[name=avatar_action]').attr('value', 2);
         avatar.attr('src', '<?php echo '/avatars/0.png'?>');
+
     });
 
-        $('#avatar').change(function(){
-            if (lock) return;
-            lock = true;
-            $('label[for=avatar]').addClass('loading');
-            $('#superframe').one('load', function(){
-                $('label[for=avatar]').removeClass('loading');
-                $('input[name=avatar_action]').attr('value', 1);
-                if (!superframe.path){
-                    $('input[name=avatar_action]').attr('value', 0);
-                    $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + $('#superframe').contents().find('body').html()).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
-                    setTimeout(function () { $('#edit_log').css('height', 0); }, 5000);
-                }
-                lock = false;
-                var d = new Date();
-                avatar.attr('src', superframe.path.innerHTML + '?' + d.getTime());
-            });
-            $(edit_avatar).submit();
+    uploader.onDeleted = function(){
+       $('input[name=avatar_action]').attr('value', 2);
+        avatar.attr('src', '<?php echo '/avatars/0.png'?>');
+    }
+
+    $('#upload_avatar').click(function () {
+        if (lock) return;
+        uploader.upload();
     });
 
     <?php } ?>
