@@ -289,6 +289,11 @@ input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover{
     margin: 0;
 }
 
+.log_message p{
+    position: relative;
+    margin:0;
+}
+
 .log_message .details:before{
     content: 'Подробнее: ';
 }
@@ -514,79 +519,7 @@ footer > div {
     top: 1em;
 }
 
-.combobox{
-    text-align: left;
-    position: relative;
-    cursor: pointer;
-    display: inline-block;
-    background-color: rgb(42, 40, 40);
-    vertical-align: bottom;
-}
 
-.combohead{
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-
-.combobox > .options{
-    width: 100%;
-    position: absolute;
-    margin-top: -1em;
-    visibility: hidden;
-    opacity: 0;
-    transition: margin-top .2s, visibility .2s, opacity .2s;
-    overflow: hidden;
-    background-color: inherit;
-    z-index: 100500;
-}
-
-.combobox > .options > *{
-    display: block;
-     transition: background-color .3s;
-}
-
-.combobox > .options > *:hover{
-    background-color: rgb(33, 30, 30);
-}
-
-.combobox.expanded .options{
-    margin-top: 0;
-    visibility: visible;
-    opacity: 1;
-}
-
-.combobox > div > *{
-    padding:  .1em .5em;
-}
-
-.combobox > div> .arrow{
-    cursor: pointer;
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 1em;
-    background-color: #282727;
-}
-
-.combobox a{
-    color: inherit;
-    border: none;
-}
-
-.combobox a:hover{
-    color: inherit;
-}
-
-.arrow > img{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    margin-top: auto; 
-    margin-bottom: auto;
-    width: 1em;
-}
 
 img.wheel_tip{
     position: absolute; 

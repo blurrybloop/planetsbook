@@ -1,0 +1,77 @@
+﻿.js-combobox{
+    text-align: left;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    background-color: rgb(42, 40, 40);
+    vertical-align: bottom;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.js-combobox-head{
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+
+.js-combobox > .js-combobox-options{
+    width: 100%;
+    position: absolute;
+    margin-top: -1em;
+    visibility: hidden;
+    opacity: 0;
+    transition: margin-top .2s, visibility .2s, opacity .2s;
+    overflow: hidden;
+    background-color: inherit;
+    z-index: 100500;
+}
+
+.js-combobox-options > *{
+    display: block;
+     transition: background-color .3s;
+}
+
+.js-combobox-options > *:hover{
+    background-color: rgb(33, 30, 30);
+}
+
+.js-combobox.js-combobox-expanded .js-combobox-options{
+    margin-top: 0;
+    visibility: visible;
+    opacity: 1;
+}
+
+.js-combobox > div > *{
+    padding:  .1em .5em;
+}
+
+.js-combobox-arrow{
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1em;
+    background-color: #282727;
+}
+
+.js-combobox a{
+    color: inherit;
+    border: none;
+}
+
+.js-combobox a:hover{
+    color: inherit;
+}
+
+.js-combobox-arrow > img{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin-top: auto; 
+    margin-bottom: auto;
+    width: 1em;
+}

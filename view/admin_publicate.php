@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/css/article.css" />
     <link rel="stylesheet" href="/css/profile.css" />
     <link rel="stylesheet" href="/css/admin.css" />
+    <link rel="stylesheet" href="/css/combobox.css" />
     <script src="/js/utils.js"></script>
     <script src="/js/image_uploader.js"></script>
 </head>
@@ -37,20 +38,12 @@
                                     <label for="description">Описание</label>
                                     <textarea name="description" id="description" required="" pattern="^.+$"></textarea>
                                     <label>Раздел</label>
-                                    <div class="combobox">
-                                        <div class="combohead">
-                                            <div></div>
-                                            <div class="arrow">
-                                                <img src="/img/down_arrow.png" />
-                                            </div>
-                                        </div>
-                                        <div class="options">
-                                            <?php if (!empty($this->data['sections'])) {
+                                    <div class="js-combobox" id="section_combo">
+                                        <?php if (!empty($this->data['sections'])) {
                                                           foreach ($this->data['sections'] as $section) {
-                                                              echo "<div id='section{$section['id']}'>{$section['title']}</div>";
+                                                              echo "<div js-combobox-option='{$section['id']}'>{$section['title']}</div>";
                                                           }
                                                       }?>
-                                        </div>
                                     </div>
                                 </fieldset>
                                 <fieldset id="edit_content">
@@ -213,9 +206,6 @@
                                     <input type="reset" />
                                 </fieldset>
                             </form>
-                            <!--<form name="images_form" target="superframe" method="post" enctype="multipart/form-data">
-                                <input type="file" name="images[]" id="hh" multiple />
-                            </form>-->
                         </div>
                     </div>
                 </div>
@@ -230,34 +220,26 @@
 </html>
 <script src="/js/sticky.js"></script>
 <script>
-    $('.read').append('<iframe id="superframe" name="superframe"></iframe>');
+            $('#section_combo').change(function () {
+                $('#section_id').attr('value', $(this).attr('js-combobox-selected'));
+        });
+        
+    <?php if (isset($_REQUEST['section'])) { ?>
+    $('#section_combo').attr('js-combobox-selected', '<?php echo $_REQUEST['section']; ?>');
+    $('#section_combo').change();
+     <?php     }
+     ?>
+
+</script>
+<script src="/js/combobox.js"></script>
+<script>
     var lock = false;
 
-        $('#main').click(function (e) {
-            if ($(e.target).parents('.combobox').length && $(e.target).parents('.options').length == 0) return;
-            $('.combobox').removeClass('expanded');
-        });
-
-        $('.combobox .options > *').click(function () {
-            $('#section_id').attr('value', $(this).attr('id').replace('section', ''));
-            $(this).parent().siblings('.combohead').children('div:first-child').html($(this).html());
-        });
-
-        $('.combohead').click(function () {
-            $(this).parent().toggleClass('expanded');
-        })
-
-    <?php if (isset($_REQUEST['section'])) {
-              echo "if ($('#section{$_REQUEST['section']}').length != 0) $('#section{$_REQUEST['section']}').click(); else $('.options > div:first-child').click()";
-          }
-          else echo "$('.options > div:first-child').click()";
-    ?>
 
         var uploader = new ImageUploader(cont, true, false);
 
      uploader.onStartUploading = function () {
         lock = true;
-        //$('#upload_avatar').addClass('loading');
     }
 
     uploader.onUploaded = function (images) {
@@ -358,10 +340,6 @@
     $(pub_form).on('reset', function () {
         $('.thumb_action > div:nth-child(2)').click();
     });
-
-    //var pid;
-
-
 
     $('.img_thumbs').click(function (e) {
         var img = $(e.target).parent().next();

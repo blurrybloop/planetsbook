@@ -181,24 +181,24 @@ fieldset > legend{
     width:100px;
 }
 
-#remove_avatar{
+#remove_avatar, .remove{
     background: url(/img/delete.png) left center no-repeat;
     background-size: auto 100%;
     padding-left: 30px;
 }
 
-#upload_avatar{
+#upload_avatar, .upload{
     background: url(/img/upload.png) left center no-repeat;
     background-size: auto 100%;
     padding-left: 30px;
 }
 
-#upload_avatar.loading{
+#upload_avatar.loading, .upload.loading{
     background: url(/img/loading.gif) left center no-repeat;
     background-size: auto 100%;
 }
 
-#reset_avatar{
+#reset_avatar, .reset{
     background: url(/img/cancel.png) left center no-repeat;
     background-size: auto 100%;
     padding-left: 30px;

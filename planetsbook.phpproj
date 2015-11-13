@@ -38,6 +38,7 @@
     <Compile Include="view\admin_aside.php" />
     <Compile Include="view\admin_messages.php" />
     <Compile Include="view\admin_publicate.php" />
+    <Compile Include="view\admin_sections.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
@@ -69,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\article.css" />
+    <Content Include="css\combobox.css" />
     <Content Include="css\main.css" />
     <Content Include="css\planet_selector.css" />
     <Content Include="css\admin.css" />
@@ -142,6 +144,7 @@
     <Content Include="img\user.png" />
     <Content Include="img\user2.png" />
     <Content Include="img\wrench.png" />
+    <Content Include="js\combobox.js" />
     <Content Include="js\comments.js" />
     <Content Include="js\image_uploader.js" />
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />

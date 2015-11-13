@@ -2,12 +2,12 @@
     top:1em;
 }
 
-form[name=pub_form] label{
+.read form label{
     width: 20%;
     display: inline-block;
 }
 
-form[name=pub_form] input, form[name=pub_form] textarea, form[name=pub_form] .combobox{
+.read form input, .read form textarea, .read form .js-combobox{
     width: 70%;
     margin:.5em;
     background-color: #1E1C1C;
@@ -18,11 +18,11 @@ label[for=description]{
     vertical-align: top;
 }
 
-form[name=pub_form] textarea{
+.read form textarea{
     resize:vertical;
 }
 
-form[name=pub_form] input[type=submit], form[name=pub_form] input[type=reset]{
+.read form input[type=submit], .read form input[type=reset]{
     cursor: pointer;
     width: 9em;
     margin-right: 1em;
@@ -30,9 +30,17 @@ form[name=pub_form] input[type=submit], form[name=pub_form] input[type=reset]{
     font-size: 1em;
 }
 
-form[name=pub_form] > fieldset:last-child{
+.read form > fieldset:last-child{
     text-align: center;
     border: none;
+}
+
+.read form input[type=checkbox]{
+   width:auto;
+}
+
+label{
+    vertical-align: middle;
 }
 
 #contents{
@@ -138,6 +146,61 @@ form[name=pub_form] > fieldset:last-child{
 
 form[name=images_form]{
     display: none;
+}
+
+.section_images > div{
+    display: table;
+    width: 100%;
+}
+
+.section_images > div > div{
+    display: table-row;
+}
+
+.section_images > div > div > div{
+    display: table-cell;
+    padding: 1em;
+    vertical-align: middle;
+}
+
+.section_images > div > div > div:first-child{
+    text-align: center;
+    width: 30%;
+}
+
+.section_images > div > div > div:first-child > div{
+    border: 1px dashed;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+
+}
+
+.section_images > div > div > div:first-child > div:before{
+    content: "";
+    padding-top: 100%;
+    float: left;
+}
+
+#small_image > div:first-child > div{
+    width: 30%;
+}
+
+.section_images img{
+    width:100%;
+}
+
+.buttons > label{
+    display: block !important;
+    width:auto !important;
+    white-space: nowrap;
+    margin: .5em 0;
+}
+
+#big_image .tip, #small_image .tip{
+    left: 50%;
+    top: 50%;
+    white-space: nowrap;
 }
 
 

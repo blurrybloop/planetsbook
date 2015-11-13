@@ -40,7 +40,7 @@
 }
 
 article{
-    padding: 0 3em 3em !important;
+    padding: 0 3em 4em !important;
     text-align: justify;
 }
 
@@ -88,6 +88,8 @@ aside{
     position: absolute;
     transition: top .5s;
     padding: 0 !important;
+    right: 1%;
+    top: 0;
 }
 
 aside > h1{
@@ -408,7 +410,7 @@ background-position: left center;
     text-align: right;
 }
 
-.read .combobox{
+.read .js-combobox{
     width: 50%; 
 }
 

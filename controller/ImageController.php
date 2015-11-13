@@ -82,6 +82,9 @@ class ImageController extends ControllerBase
             if (!preg_match('#^\d+(?=_\d+$)#', $info['filename'], $match))
                 throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
 
+            if (!$this->db->fetch('SELECT id FROM temp_pages WHERE id=' . $match[0] . ' AND user_id=' . $this->data['user']['id']))
+                throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
+
             $path = $_SERVER['DOCUMENT_ROOT'] . $path;
             if (!@unlink($path))
                 throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
