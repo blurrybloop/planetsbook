@@ -27,8 +27,9 @@
     <Compile Include="controller\CommentsController.php" />
     <Compile Include="controller\ErrorController.php" />
     <Compile Include="controller\ImageController.php" />
+    <Compile Include="controller\PulseController.php" />
     <Compile Include="controller\UsersController.php" />
-    <Compile Include="include\config.php" />
+    <Compile Include="config.php" />
     <Compile Include="include\ControllerException.php" />
     <Compile Include="include\DatabaseException.php" />
     <Compile Include="include\GDExtensions.php" />
@@ -37,7 +38,7 @@
     <Compile Include="include\TagsParser.php" />
     <Compile Include="view\admin_aside.php" />
     <Compile Include="view\admin_messages.php" />
-    <Compile Include="view\admin_publicate.php" />
+    <Compile Include="view\admin_articles.php" />
     <Compile Include="view\admin_sections.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />

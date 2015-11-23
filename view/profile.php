@@ -25,9 +25,9 @@ require 'msgbox.php'
                         <div class="read">
                             <div id="edit_log" class="log_message"><div></div></div>
                             <div>
-                                <?php if ($this->mode == 1) { ?>
+                                <?php if ($this->outputMode == OUT_SHOW_PROFILE) { ?>
                                 <section>
-                                    <img src="<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>" />
+                                    <img src="<?php echo $this->app->config['path']['avatar'] . $this->data['profile']['avatar'] . '.png'?>" />
                                 </section>
                                 <section class="user_info">
                                     <section>
@@ -73,14 +73,14 @@ require 'msgbox.php'
                                         <?php } ?>
                                     </section>
                                 </section>
-                                <?php } else if ($this->mode == 2) {?>
+                                <?php } else if ($this->outputMode == OUT_EDIT_PROFILE) {?>
                                 <h1><?php echo $this->data['profile']['login']?></h1>
                                 <form name="edit_profile" method="post">
                                     <fieldset class="edit_avatar">
                                         <legend>Аватар</legend>
                                         <div>
                                             <div>
-                                                <img id="avatar_img" style="max-width:100px; max-height:100px;" src="<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>" />
+                                                <img id="avatar_img" src="<?php echo $this->app->config['path']['avatar'] . $this->data['profile']['avatar'] . '.png'?>" />
                                             </div>
                                             <div>
 
@@ -101,7 +101,7 @@ require 'msgbox.php'
                                             <input type="password" name="new_psw" />
                                         </div>
                                     </fieldset>
-                                    <fieldset style="border: none; border-top: 1px dashed;">
+                                    <fieldset>
                                         <legend>Контакты</legend>
                                         <div>
                                             <label for="mail">E-mail</label>
@@ -113,19 +113,19 @@ require 'msgbox.php'
                                         </div>
                                         <div>
                                             <label for="skype">Skype</label>
-                                            <input type="text" name="skype" maxlength="50" pattern="^[\w]{1,50}$" value="<?php if (!empty($this->data['profile']['skype'])) echo $this->data['profile']['skype']?>"/>
+                                            <input type="text" name="skype" maxlength="50" pattern="^[A-Za-z0-9_]{1,50}$" value="<?php if (!empty($this->data['profile']['skype'])) echo $this->data['profile']['skype']?>"/>
                                         </div>
                                         <div>
                                             <label for="vk">ВКонтакте</label>
-                                            <input type="text" name="vk" maxlength="100" pattern="^[\w]{1,100}$" value="<?php if (!empty($this->data['profile']['vk'])) echo $this->data['profile']['vk']?>"/>
+                                            <input type="text" name="vk" maxlength="100" pattern="^[A-Za-z0-9_]{1,100}$" value="<?php if (!empty($this->data['profile']['vk'])) echo $this->data['profile']['vk']?>"/>
                                         </div>
                                         <div>
                                             <label for="facebook">Facebook</label>
-                                            <input type="text" name="facebook" maxlength="100" pattern="^[\w]{1,100}$" value="<?php if (!empty($this->data['profile']['facebook'])) echo $this->data['profile']['facebook']?>"/>
+                                            <input type="text" name="facebook" maxlength="100" pattern="^[A-Za-z0-9_]{1,100}$" value="<?php if (!empty($this->data['profile']['facebook'])) echo $this->data['profile']['facebook']?>"/>
                                         </div>
                                         <div>
                                             <label for="twitter">Twitter</label>
-                                            <input type="text" name="twitter" maxlength="100" pattern="^[\w]{1,100}$" value="<?php if (!empty($this->data['profile']['twitter'])) echo $this->data['profile']['twitter']?>"/>
+                                            <input type="text" name="twitter" maxlength="100" pattern="^[A-Za-z0-9_]{1,100}$" value="<?php if (!empty($this->data['profile']['twitter'])) echo $this->data['profile']['twitter']?>"/>
                                         </div>
                                         <div>
                                             <label for="site">Сайт</label>
@@ -151,8 +151,8 @@ require 'msgbox.php'
                     <aside>
                         <div class="sticky">
                             <div>
-                                <div class="section <?php if ($this->mode == 1) echo 'selected' ?>"><div><a href="/users/profile/?id=<?php echo $this->data['profile']['id'] ?>">Просмотр</a></div></div>
-                                <?php if (isset($this->data['user']['id']) && $this->data['user']['id'] == $this->data['profile']['id']) { ?><div class="section <?php if ($this->mode == 2) echo 'selected' ?>"><div><a href="/users/edit/?id=<?php echo $this->data['profile']['id'] ?>">Изменить</a></div></div> <?php } ?>
+                                <div class="section <?php if ($this->outputMode == OUT_SHOW_PROFILE) echo 'selected' ?>"><div><a href="/users/profile/?id=<?php echo $this->data['profile']['id'] ?>">Просмотр</a></div></div>
+                                <?php if (isset($this->data['user']['id']) && $this->data['user']['id'] == $this->data['profile']['id']) { ?><div class="section <?php if ($this->outputMode == OUT_EDIT_PROFILE) echo 'selected' ?>"><div><a href="/users/edit/?id=<?php echo $this->data['profile']['id'] ?>">Изменить</a></div></div> <?php } ?>
                             </div>
                         </div>
                     </aside>
@@ -176,13 +176,14 @@ require 'msgbox.php'
     $(window).resize(function () { sticky.width(sticky.parent().width()) });
     $(window).resize();
 
-    <?php if ($this->mode == 2) { ?>
+    <?php if ($this->outputMode == OUT_EDIT_PROFILE) { ?>
 
         var lock = false;
 
         $(edit_profile).submit(function (e) {
             e.preventDefault();
             if (lock) return;
+            lock = true;
             $('#edit_submit').addClass('loading');
             var j = $.post('/users/edit/?update=1&id=<?php echo $this->data['profile']['id'] ?>', $(this).serialize(), function(){
                 $('#edit_log > div').html('<p>Все изменения были успешно внесены.</p>').parent().removeClass('fail').addClass('success').css('height', $('#edit_log > *').outerHeight(true));
@@ -191,13 +192,14 @@ require 'msgbox.php'
                  $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + j.responseText).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
                  setTimeout(function () { $('#edit_log').css('height', 0); }, 5000);
             }).always(function(){
+                lock = false;
                 $('#edit_submit').removeClass('loading');
                 location.assign('#edit_log');
             });
         });
 
     var avatar = $('#avatar_img');
-    var uploader = new ImageUploader(cont, false, true);
+    var uploader = new ImageUploader(cont, false, true, <?php echo $this->app->config['pulse']['frequency'] * 1000; ?>);
 
     uploader.onStartUploading = function () {
         lock = true;
@@ -225,19 +227,20 @@ require 'msgbox.php'
         if (lock) return;
         $('input[name=avatar_action]').attr('value', 0);
         var d = new Date();
-        avatar.attr('src', '<?php echo '/avatars/' . $this->data['profile']['avatar'] . '.png'?>' + '?' + d.getTime());
+        avatar.attr('src', '<?php echo $this->app->config['path']['avatar'] . $this->data['profile']['avatar'] . '.png'?>' + '?' + d.getTime());
     });
 
     $('#remove_avatar').click(function () {
         if (lock) return;
+        if (uploader.getUploaded().length) uploader.delete(uploader.getUploaded()[0]);
         $('input[name=avatar_action]').attr('value', 2);
-        avatar.attr('src', '<?php echo '/avatars/0.png'?>');
+        avatar.attr('src', '<?php echo $this->app->config['path']['avatar'] . '0.png'?>');
 
     });
 
     uploader.onDeleted = function(){
        $('input[name=avatar_action]').attr('value', 2);
-        avatar.attr('src', '<?php echo '/avatars/0.png'?>');
+        avatar.attr('src', '<?php echo $this->app->config['path']['avatar'] . '0.png'?>');
     }
 
     $('#upload_avatar').click(function () {

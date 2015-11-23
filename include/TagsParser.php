@@ -11,7 +11,7 @@ class TagsParser{
         $this->matches = new SplStack();
     }
 
-    function parse(){
+    function parse(callable $imageTransformer = NULL){
         $pos = 0;
         $this->matches->push([['', -1], ['', -1]]);
         while (true){
@@ -77,7 +77,9 @@ class TagsParser{
                             $closeTag = 'a';
                             break;
                         case 'img':
-                            $openTag = 'img src="' . substr($this->text, $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0])) . '"/';
+			    $src = substr($this->text, $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0]));
+			    if ($imageTransformer !== NULL) $src = $imageTransformer($src);
+                            $openTag = 'img src="' . $src . '"/';
                             $this->text = substr_replace($this->text, '', $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0]));
                             $match[0][1] -= $match[0][1] - $current[0][1] - strlen($current[0][0]);
                             $closeTag = '';

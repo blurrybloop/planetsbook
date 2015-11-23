@@ -203,4 +203,43 @@ form[name=images_form]{
     white-space: nowrap;
 }
 
+.sections .updown_content{
+    background: none;
+    overflow: hidden;
+    padding: 0 !important;
+    padding-left: 5% !important;
+
+}
+
+.sections .updown_content label{
+    margin-right: 0 !important;
+}
+
+.sections .updown >input + div>label{
+    background: none;
+}
+
+.sections .updown >input + div>label > div{
+    padding-bottom: 1em;
+    display: inline-block;
+}
+
+.sections .updown >input + div>label > .info{
+    display: inline-block;
+}
+
+.updown_action{
+    display: block;
+    text-align: right;
+}
+
+.updown_action > *{
+    margin-right: 15px;
+}
+
+#section_split{
+    width: 2em;
+    vertical-align: middle;
+}
+
 

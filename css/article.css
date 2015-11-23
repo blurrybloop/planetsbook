@@ -271,10 +271,14 @@ textarea#edit_field{
     width:100%; 
     line-height: 1.5em;
     resize: none; 
-    background: none;
+    background: none !important;
     border: none;
     font-size: 1em;
     height: 400px;
+}
+
+textarea#edit_field:focus{
+    box-shadow: none !important;
 }
 
 .comments > div:last-child{
@@ -331,6 +335,10 @@ textarea#edit_field{
 .desc{
 	white-space: normal; 
 	margin: 2em 1em 2em;
+}
+
+.updown img{
+    vertical-align: middle;
 }
 
 .updown label > img {

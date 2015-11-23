@@ -7,7 +7,8 @@
     <script src="/js/utils.js"></script>
 </head>
 <body>
-    <?php if (is_file($_SERVER['DOCUMENT_ROOT'] . $this->data['section']['image'])) { ?>
+    <?php
+          if (isset($this->data['section']['image'])) { ?>
     <img src="<?php echo $this->data['section']['image'] ?>" />
     <?php } ?>
     <?php
@@ -37,7 +38,7 @@ require 'msgbox.php'
                             <div class="updown_head">
                                 <div class='add_article'>
                                     <?php
-if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) echo '<a href=\'/admin/publicate?section=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
+if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) echo '<a href=\'/admin/articles/add?args=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
                                     ?>
                                 </div>
                                 <div>
@@ -58,7 +59,7 @@ foreach ($this->data['articles'] as $val){ ?>
                                 <div>
                                     <label for="article<?php echo $val['article_id'] ?>">
                                         <img src="/img/down_arrow.png" />
-                                        <a href=<?php echo "/sections/{$this->data['section']['data_folder']}/{$val['article_id']}/" ?>>
+                                        <a href=<?php echo $val['href'] ?>>
                                             <?php echo $val['title'] ?>
                                         </a>
                                         <span class="info">
@@ -76,7 +77,7 @@ foreach ($this->data['articles'] as $val){ ?>
                                     </label>
                                     <div class="updown_content">
                                         <?php
-    echo file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/sections/{$this->data['section']['data_folder']}/{$val['article_id']}/description.txt");
+                                            echo $val['description'];
                                         ?>
                                     </div>
                                 </div>

@@ -7,9 +7,11 @@
     <script src="/js/comments.js"></script>
 </head>
 <body>
-<?php if (is_file($_SERVER['DOCUMENT_ROOT'] . $this->data['section']['image'])) { ?>
-<img src="<?php echo $this->data['section']['image'] ?>"/>
-<?php } ?>
+<?php
+if (isset($this->data['section']['image'])) { ?>
+    <img src="<?php echo $this->data['section']['image'] ?>" />
+    <?php } ?>
+
     <?php
     echo $this->data['menu'];
     require 'msgbox.php'
@@ -25,7 +27,7 @@
                 <div>
                     <div class="read">
                         <?php if (empty($this->data['article']['verifier_id'])) { ?>
-                        <div id="verify_log" class="log_message success"><div><p>Эта статья еще не проверена, и поэтому невидима для обычных пользователей.</p><p><span id="pub">Опубликовать.</span> Статья станет доступна всем без исключения.</p><p><span id="dismiss">Отклонить.</span> Статья будет уничтожена абсолютно и безповоротно.</p></div></div>
+                        <div id="verify_log" class="log_message success"><div><p>Эта статья еще не проверена, и поэтому невидима для обычных пользователей. <a href="/admin/articles/edit/?args=<?php echo $this->data['article']['article_id']; ?>">Проверить</a></p></div></div>
                         <?php } ?>
                         <article>
                             <header>
@@ -46,7 +48,8 @@
                                 </div>
                             </header>
                             <?php
-                    echo file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/sections/{$this->data['section']['data_folder']}/{$this->data['article']['article_id']}/text.txt");
+
+                            echo $this->data['article']['contents'];
                             ?>
                             <div class="clearfix"></div>
 
@@ -152,22 +155,4 @@
          iconSize(); sticky.width(sticky.parent().width());
      });
      $(window).resize();
-
-     $('#verify_log').click(function(e){
-         if ($(e.target).is('#pub')){
-             var j = $.get('?action=pub', {}, function(){
-                 messageBox(j.responseText + '<p>Ура! Статья опубликована!</p>', 'left');
-             }).fail(function(){
-                 messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
-             });
-         }
-         else if ($(e.target).is('#dismiss')){
-             var j = $.get('?action=dismiss', {}, function(){
-                 messageBox('<p>Статья удалена!</p>', 'left');
-             }).fail(function(){
-                 messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
-             });
-         }
-     });
-
 </script>

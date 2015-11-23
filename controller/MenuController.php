@@ -4,15 +4,18 @@ require_once 'ControllerBase.php';
 
 class MenuController extends ControllerBase
 {
-	function process(){
+    function setActions(){
+        $this->actions = [];
+    }
+
+	function process($action){
         try { $res = $this->db->fetch('SELECT * FROM sections'); }
         catch (DatabaseException $ex){ return; }
-            foreach ($res as &$val) {
-                $val['image'] = '/sections/' . $val['data_folder'] . '/main.png';
-                $val['href'] = '/sections/' . $val['data_folder'] . '/';
-            }
-            unset($val);
-            $this->data['menu'] = $res;
+        foreach ($res as &$val) {
+            $val['href'] = $this->app->config['path']['section'] . $val['data_folder'] . '/';
+        }
+        unset($val);
+        $this->data['menu'] = $res;
 	}
 
     function render($suppressOutput = TRUE){

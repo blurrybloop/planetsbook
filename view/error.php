@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <?php require 'html_head.php' ?>
 <style>
     #content > div{
-        white-space: nowrap; 
+
         top: 40px; 
         left: 40px; 
         position: relative; 
@@ -15,13 +15,14 @@
     #content > div > img{
         position: relative; 
         left: -20px; 
-        vertical-align:middle; 
         margin-right: 30px;
+        vertical-align: top;
     }
 
     #content > div > div{
         text-align:left; 
         display:inline-block;
+        max-width: 50%;
     }
 
 </style>

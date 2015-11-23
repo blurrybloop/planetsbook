@@ -15,18 +15,18 @@ function Comments(parent, articleID, allowAdd) {
     this.fetch = function () {
             if (lockFetch) return;
             lockFetch = true;
-            var j  = $.post("/comments/fetch/", { args: [_article, curPage++, 10] }, function (data) {
+            var j  = $.post("/comments/fetch/", { 'article_id': _article, 'page' : curPage++, 'page_size' : 10 }, function (data) {
                 var el = $(data);
                 el.addClass('invisible');
                 el.insertBefore(nextPage);
                 setTimeout(function () { el.removeClass('invisible'); }, 0);
                 if (self.onUpdateComment) self.onUpdateComment.call(el);
                 lockFetch = false;
-            }).fail(function () { messageBox(j.responseText);});
+            }).fail(function () {  messageBox(j.responseText);});
     }
 
     this.help = function () {
-        var j = $.post("/comments/help/", { args: [0] }, function (data) {
+        var j = $.post("/comments/help/", { }, function (data) {
             messageBox(data, 'left', '60%');
         }).fail(function () { messsageBox(j.responseText); });
 
@@ -71,7 +71,7 @@ function Comments(parent, articleID, allowAdd) {
             comment.replaceWith(d);
             updateUserInfo(d.children('div:first-child'));
             return d;
-        }, val > 0 ? 'like' : 'dislike', { args: [$(comment).attr('id').replace('comm', '')] }, true);
+        }, 'rate', { 'comment_id': $(comment).attr('id').replace('comm', ''), 'value' : val }, true);
     }
 
     this.send = function (comment, target) {
@@ -84,7 +84,7 @@ function Comments(parent, articleID, allowAdd) {
             if (isAdd) updateUserInfo(d.children('div:first-child'));
             _parent.find('.nocontent').remove();
             return isAdd ? $([d, add]) : d;
-        }, isAdd ? "add" : "edit", { args: isAdd ? [_article, edit.find('#edit_field').val()] : [$(comment).attr('id').replace('comm', ''), edit.find('#edit_field').val()] });
+        }, isAdd ? "add" : "edit", isAdd ? { 'article_id': _article, 'text' : edit.find('#edit_field').val() } : { 'comment_id' : $(comment).attr('id').replace('comm', ''), 'text' : edit.find('#edit_field').val() });
     }
 
     this.delete = function (comment, target) {
@@ -94,7 +94,7 @@ function Comments(parent, articleID, allowAdd) {
         this.performAction(comment, target, function (data) {
             comment.remove();
             updateUserInfo(u);
-        }, "delete", { args: [$(comment).attr('id').replace('comm', '')] });
+        }, "delete", { 'comment_id': $(comment).attr('id').replace('comm', '') });
     }
 
     this.apply = function (comment, target) {
@@ -104,7 +104,7 @@ function Comments(parent, articleID, allowAdd) {
             var d = isAdd ? $(data).addClass('add') : $(data).attr('id', i);
             edit = comment.replaceWith(d);
             return d;
-        }, "preview", { args: [$(edit_field).val()] });
+        }, "preview", { 'text': $(edit_field).val() });
     }
 
     this.cancelApply = function (comment, target) {
@@ -121,7 +121,7 @@ function Comments(parent, articleID, allowAdd) {
                 comment.replaceWith(d);
                 lock = false;
                 return d;
-        }, "html", isAdd ? null : { args: [$(comment).attr('id').replace('comm', '')] });
+        }, "html", isAdd ? null : { 'comment_id': $(comment).attr('id').replace('comm', '') });
         }
 
     this.edit = function (comment, target) {
@@ -135,7 +135,7 @@ function Comments(parent, articleID, allowAdd) {
                 comment.replaceWith(d);
                 edit = d;
                 return d;
-            }, "text", { args: isAdd ? [0] : [$(comment).attr('id').replace('comm', '')] });
+            }, "text", { 'comment_id': isAdd ? 0 : $(comment).attr('id').replace('comm', '') });
         }
 
     function updateUserInfo(updatedUserInfo) {

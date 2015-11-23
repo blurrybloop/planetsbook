@@ -1,66 +1,55 @@
 <?php
-
 require_once 'ControllerException.php';
 require_once 'HttpException.php';
+require_once 'Database.php';
 
 class Application
 {
     public $config;
+    public $db = NULL;
+    public $controller = NULL;
 
     public function __construct($config){
         $this->config = $config;
     }
 
-    function cleanUp($db){
-        if ($res = $db->fetch('SELECT id FROM temp_pages WHERE TIMESTAMPDIFF(SECOND, last_access, NOW()) > 30')){
-            foreach ($res as $val){
-                $db->delete('temp_pages', ['id' => $val['id']]);
-                $tmp_files = glob($_SERVER['DOCUMENT_ROOT'] . '/res/' . $val['id'] . '_*.*', GLOB_NOSORT);
-                foreach ($tmp_files as $file)
-                    @unlink($file);
-            }
+    public function callController($name, $data = NULL){
+        if (!is_file(PATH_CONTROLLER . $name . 'Controller.php'))
+            throw new HttpException(404);
+
+        include(PATH_CONTROLLER . $name . 'Controller.php');
+        $class= strtolower($name) . 'Controller';
+
+        if (!class_exists($class))
+            throw new HttpException(404);
+
+        if (!$this->db){
+            $this->db=new Database($this->config['db']);
+            $this->db->connect();
         }
+        $this->controller = new $class($this, $this->db, $data);
+        $this->controller->show();
     }
 
 	function Run()
 	{
-        session_start();
+        session_start();$c = NULL;
         try
         {
             $menu='main';
             if (isset($_REQUEST['menu'])) $menu = $_REQUEST['menu'];
-            if (!empty($_REQUEST['param2']) && $menu == 'sections') $menu='article';
+            if ($menu == 'error') 
+                throw new HttpException(isset($_REQUEST['param1']) ? (int)$_REQUEST['param1'] : 500);
 
-            if ($menu == 'error') throw new HttpException(isset($_REQUEST['param1']) ? $_REQUEST['param1'] : 500);
-
-            if ($menu != 'pulse'){
-                if (!is_file(PATH_CONTROLLER . $menu . 'Controller.php'))
-                    throw new HttpException(404);
-
-                include(PATH_CONTROLLER.$menu.'Controller.php');
-                $class=strtolower($menu).'Controller';
-
-                if (!class_exists($class))
-                    throw new HttpException(404);
-            }
-
-            $db=new Database($this->config['db']);
-            $db->connect();
-            $this->cleanUp($db);
-
-            if ($menu == 'pulse') include 'pulse.php';
-
-            if ($menu != 'pulse'){
-                $c=new $class($db);
-                $c->show();
-            }
+            $this->callController('pulse');
+            $this->callController($menu);
         }
-
         catch (Exception $ex) {
-            require_once (PATH_CONTROLLER . 'ErrorController.php');
-            $ec = new ErrorController(isset($db) ? $db : NULL, $ex);
-            $ec->showErrorPage = isset($c) ? $c->showErrorPage : TRUE;
-            $ec->show();
+
+            $this->callController('error', [
+                'exception'     =>  $ex, 
+                'showErrorPage' =>  empty($this->controller) ? TRUE : $this->controller->showErrorPage,
+                ]);
             return;
         }
 

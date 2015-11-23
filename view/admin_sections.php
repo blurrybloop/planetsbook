@@ -26,17 +26,106 @@
                 <div>
                     <div class="read">
                         <div>
+                            <div class="sections">
+                            <?php if (empty($this->data['subaction'])) { ?>
                             <h1>
-                                Добавить раздел
+                                Разделы
+                            </h1>
+                                <div style="text-align: center;"><div class="add"><a href="/admin/sections/add/">Новый раздел</a> </div></div>
+                                <div class="updown">
+                                    <?php
+                                      foreach ($this->data['sections'] as $section){
+                                    ?>
+                                   <input name="item" id="section<?php echo $section['id'] ?>" type="checkbox" />
+                                    
+                                    <div>
+                                        
+                                        <label for="section<?php echo $section['id'] ?>">
+                                            
+                                            <?php if (!empty($section['children'])) { ?>
+                                            <img src="/img/down_arrow.png" />
+                                            <?php } ?>
+                                            <div>
+                                                <img src="<?php echo $section['data_folder'] . '/main_small.png'; ?>" />
+                                                <?php echo $section['title'] ?>
+                                            </div>
+                                            <span class="info">
+                                                <span class="date">
+                                                    <?php echo $section['creation_date'] ?>
+                                                </span>
+                                                <span class="user">
+                                                    <?php echo $section['login'] ?>
+                                                </span>
+                                                
+                                            </span>
+                                            <span class="updown_action">
+                                                <span class="edit">
+                                                    <a href="/admin/sections/edit/?args=<?php echo $section['id']; ?>">Редактировать</a>
+                                                </span>
+                                                <span class="remove">
+                                                    <a href="/admin/sections/delete/?args=<?php echo $section['id']; ?>">Удалить</a>
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <div class="updown_content">
+                                            <?php if (!empty($section['children'])) { ?>
+                                            <div class="updown">
+                                                <?php
+                                                      foreach ($section['children'] as $child){
+                                                ?>
+                                                <input name="item" id="section<?php echo $child['id'] ?>" type="checkbox" />
+                                                <div>
+
+                                                    <label for="section<?php echo $child['id'] ?>">
+
+                                                        <div>
+                                                            <img src="<?php echo $child['data_folder'] . '/main_small.png'; ?>" />
+                                                            <?php echo $child['title'] ?>
+                                                        </div>
+                                                        <span class="info">
+                                                            <span class="date">
+                                                                <?php echo $child['creation_date'] ?>
+                                                            </span>
+                                                            <span class="user">
+                                                                <?php echo $child['login'] ?>
+                                                            </span>
+                                                        </span>
+                                                        <span class="updown_action">
+                                                            <span class="edit">
+                                                                <a href="/admin/sections/edit/?args=<?php echo $section['id']; ?>">Редактировать</a>
+                                                            </span>
+                                                            <span class="remove">
+                                                                <a href="/admin/sections/delete/?args=<?php echo $section['id']; ?>">Удалить</a>
+                                                            </span>
+                                                        </span>
+                                                    </label>
+                                                    <div class="updown_content"></div>
+                                                        <?php
+                                                        ?>
+                                                    </div>
+                                            </div>
+                                            <?php }} ?>
+                                        </div>
+                                </div>
+                                    <?php } ?>
+</div>
+                                </div>
+                           
+                            <?php }
+                                  else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') {
+                            ?>
+                                </div>
+                            <h1>
+                                <?php echo $this->data['subaction'] == 'add' ? 'Добавить раздел' : 'Редактировать раздел'?>
                             </h1>
                             <form name="section_form" method="post">
                                 <fieldset>
                                     <label for="title">Название</label>
-                                    <input name="title" id="title" type="text" required="" maxlength="50" pattern="^.+$" />
+                                    <input name="title" id="title" type="text" required="" maxlength="50" pattern="^.+$" value="<?php if (!empty($this->data['section']['title'])) echo $this->data['section']['title']; ?>" />
                                     <label for="description">Описание</label>
-                                    <textarea name="description" id="description" required="" pattern="^.+$"></textarea>
+                                    <textarea name="description" id="description" required="" pattern="^.+$"><?php if (!empty($this->data['section']['description'])) echo $this->data['section']['description']; ?></textarea>
                                     <label>Категория</label>
-                                    <div class="js-combobox" js-combobox-selected="0" id="cat_combo">
+                                    <div class="js-combobox" js-combobox-selected="<?php if (isset($this->data['section']['type'])) echo $this->data['section']['type']; ?>" id="cat_combo">
                                         <div js-combobox-option="0">Солнце и Солнечная система</div>
                                         <div js-combobox-option="1">Планеты</div>
                                         <div js-combobox-option="2">Спутники</div>
@@ -44,7 +133,7 @@
                                     </div>
                                     <div style="display: none;">
                                         <label>Планета</label>
-                                        <div class="js-combobox" id="planet_combo">
+                                        <div class="js-combobox" js-combobox-selected="<?php if (isset($this->data['section']['parent_id'])) echo $this->data['section']['parent_id']; ?>" id="planet_combo">
                                             <?php foreach ($this->data['planets'] as $planet) {
                                                       echo "<div js-combobox-option={$planet['id']}>{$planet['title']}</div>";
                                                   } ?>
@@ -53,12 +142,12 @@
                                     </div>
 
                                     <label for="data_folder">Папка с данными</label>
-                                    <input name="data_folder" id="data_folder" type="text" required="" maxlength="255" pattern="^[A-Za-z0-9_]{1,255}$" />
+                                    <input name="data_folder" id="data_folder" type="text" required="" maxlength="255" pattern="^[A-Za-z0-9_]{1,255}$" value="<?php if (!empty($this->data['section']['data_folder'])) echo $this->data['section']['data_folder']; ?>" />
                                     <label for="allow_user_articles">Разрешить пользователям предлагать публикации</label>
-                                    <input name="allow_user_articles" id="allow_user_articles" type="checkbox" />
+                                    <input name="allow_user_articles" id="allow_user_articles" type="checkbox" <?php if (!empty($this->data['section']['allow_user_articles'])) echo 'checked'; ?> />
                                     <br />
                                     <label for="show_main">Отображать на главной</label>
-                                    <input name="show_main" id="show_main" type="checkbox" />
+                                    <input name="show_main" id="show_main" type="checkbox" <?php if (!empty($this->data['section']['show_main'])) echo 'checked'; ?>/>
                                 </fieldset>
 
                                 <fieldset class="section_images">
@@ -67,7 +156,11 @@
                                         <div id="big_image">
                                             <div>
                                                 <div>
-                                                    <img src="/img/nophoto.png" />
+                                                    <img src="<?php 
+                                                                  $df;
+                                                                  if (!empty($this->data['section']['data_folder']))
+                                                                  $df = '/sections/' . $this->data['section']['data_folder'];
+                                                                  if (!empty($df) && file_exists($_SERVER['DOCUMENT_ROOT'] . $df . '/main.png')) echo $df . '/main.png'; else echo '/img/nophoto.png';?>" />
                                                     <div class="tip">
                                                         Большое изображение.
                                                         <br />
@@ -85,7 +178,7 @@
                                         <div id="small_image">
                                             <div>
                                                 <div>
-                                                    <img src="/img/nophoto.png" />
+                                                    <img src="<?php if (!empty($df) && file_exists($_SERVER['DOCUMENT_ROOT'] . $df . '/main_small.png')) echo $df . '/main_small.png'; else echo '/img/nophoto.png';?>" />
                                                     <div class="tip">
                                                         Маленькое изображение.
                                                         <br />
@@ -109,12 +202,16 @@
                                 <input type="hidden" name="big_image_path" />
                                 <input type="hidden" name="small_image_action" value="0" />
                                 <input type="hidden" name="small_image_path" />
-
+                                <input type="hidden" name="section_action" value="<?php echo $this->data['subaction']; ?>" />
+                                <?php if ($this->data['subaction'] == 'edit') { ?>
+                                <input type="hidden" name="section_id" value="<?php echo $this->data['section']['id']; ?>" />
+                                <?php } ?>
                                 <fieldset>
-                                    <input type="submit" name="section_submit" id="section_submit" value="Добавить" />
+                                    <input type="submit" name="section_submit" id="section_submit" value="ОК" />
                                     <input type="reset" />
                                 </fieldset>
                             </form>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -144,6 +241,19 @@
 </script>
 <script src="/js/combobox.js"></script>
 <script>
+
+    $('input[name=item]').change(function () {
+        var u = $(this).next().find('.updown_content');
+        var ch = $(this).is(':checked');
+        if (ch) {
+            var h = u.children().height();
+ 
+            u.height(h==null ? 0 : h);
+        }
+        else u.height(0);
+    });
+
+    <?php if (!empty($this->data['subaction'])) { ?>
 
     var lock = false;
 
@@ -212,14 +322,14 @@
         if (lock) return;
         $('input[name=big_image_action]').attr('value', 0);
         bigUploader.delete($('#big_image img').attr('src'));
-        $('#big_image img').attr('src', '/img/nophoto.png');
+        $('#big_image img').attr('src', '<?php if (!empty($df) && file_exists($_SERVER['DOCUMENT_ROOT'] . $df . '/main.png')) echo $df . '/main.png'; else echo '/img/nophoto.png';?>');
     });
 
     $('#small_image .reset').click(function () {
         if (lock) return;
         $('input[name=big_image_action]').attr('value', 0);
         bigUploader.delete($('#small_image img').attr('src'));
-        $('#small_image img').attr('src', '/img/nophoto.png');
+        $('#small_image img').attr('src', '<?php if (!empty($df) && file_exists($_SERVER['DOCUMENT_ROOT'] . $df . '/main_small.png')) echo $df . '/main_small.png'; else echo '/img/nophoto.png';?>');
     });
 
     $(section_form).submit(function (e) {
@@ -227,8 +337,12 @@
         lock = true;
         e.preventDefault();
             $('#section_submit').addClass('loading');
-            var j = $.post('/admin/addsection/', $(this).serialize(), function(){
+            var j = $.post('/admin/addsection/', $(this).serialize(), function () {
+                <?php if ($this->data['subaction'] == 'add') { ?>
                 messageBox('<p>Раздел добавлен!</p><a href="' + j.responseText + '">Добавить публикацию</a>', 'left');
+                <?php } else if ($this->data['subaction'] == 'edit') { ?>
+                messageBox('<p>Все изменения успешно внесены!</a>', 'left');
+                <?php } ?>
            }).fail(function(){
                 messageBox(j.responseText, 'left');
            }).always(function () {
@@ -236,5 +350,5 @@
                 $('#section_submit').removeClass('loading');
            });
     });
-
+    <?php } ?>
 </script>

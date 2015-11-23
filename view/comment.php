@@ -15,7 +15,7 @@ foreach ($this->data['comments'] as $comment) {?>
                 <?php if (isset($comment['user_id'])) { ?>
                 <a href="<?php echo '/users/profile?id=' . $comment['user_id'] ?>">
                     <?php } ?>
-                    <img src="<?php if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/avatars/' . $comment['avatar'] . '.png')) echo '/avatars/' . $comment['avatar'] . '.png';  ?>" style="width: 50%" />
+                    <img src="<?php if (file_exists(PATH_AVATAR . $comment['avatar'] . '.png')) echo $this->app->config['path']['avatar'] . $comment['avatar'] . '.png';  ?>" style="width: 50%" />
                 <?php if (isset($comment['user_id'])) { ?>
                 </a>
                 <?php } ?>
@@ -36,7 +36,7 @@ foreach ($this->data['comments'] as $comment) {?>
         </div>
         <div>
             <div class="comm_header">
-                <?php if ($this->outputMode == 1) { ?>
+                <?php if ($this->outputMode == OUT_TEXT) { ?>
                 <div><img class='comm_bold' src='/img/bold.png' /><div class='tip'>Жирный<br />[b]Пример[/b]</div></div>
                 <div><img class='comm_italic' src='/img/italic.png' /><div class='tip'>Курсив<br/>[i]Пример[/i]</div></div>
                 <div><img class='comm_underline' src='/img/underline.png' /><div class='tip'>Подчеркнутый<br />[u]Пример[/u]</div></div>
@@ -56,17 +56,17 @@ foreach ($this->data['comments'] as $comment) {?>
  }
                       else {
                 ?>
-                <time><?php echo $comment['add_date'] ?></time><div class="rate"><div ><img class="comm_like" src="/img/like.png" /><div class="tip">Нравится</div></div>
+                <time><?php echo $comment['date_add'] ?></time><div class="rate"><?php if (isset($this->data['user'])) { ?><div><img class="comm_like" src="/img/like.png" /><div class="tip">Нравится</div></div> <?php } ?>
                 <?php $rate =  isset($comment['rate']) ? $comment['rate'] : 0;
                       if ($rate > 0) echo "<span style='color: green;'>+$rate</span>";
                       else if ($rate == 0) echo "<span style='color: white;'>$rate</span>";
                       else echo "<span style='color: red;'>$rate</span>";
                 ?>
-                <div ><img  class="comm_dislike" src="/img/dislike.png" /><div class="tip">Не нравится</div></div></div>
+                <?php if (isset($this->data['user'])) { ?><div ><img  class="comm_dislike" src="/img/dislike.png" /><div class="tip">Не нравится</div></div><?php } ?></div>
                 <?php } ?>
             </div>
             <div class="comm_body">
-                <?php if ($this->outputMode == 1) { ?>
+                <?php if ($this->outputMode == OUT_TEXT) { ?>
                 <textarea id='edit_field' placeholder='Введите ваш комментарий...'><?php if (isset($comment['comm_text'])) echo $comment['comm_text'] ?></textarea>
                 <?php
                       }
@@ -77,16 +77,16 @@ foreach ($this->data['comments'] as $comment) {?>
                 ?>
                 <div class="clearfix"></div>
             </div>
-            <div class="comm_footer maximized <?php if ($this->outputMode == 1) echo 'nohide' ?>">
-                <?php if ($this->outputMode == 0) { ?>
+            <div class="comm_footer maximized <?php if ($this->outputMode == OUT_TEXT) echo 'nohide' ?>">
+                <?php if ($this->outputMode == OUT_NORMAL) { ?>
                 <?php if ($this->validateRights([USER_ADMIN], $comment['id'], FALSE)) { ?><div class="comm_delete">&nbsp;</div><?php } ?>
                 <?php
                   if ($this->validateRights(NULL, $comment['id'], FALSE)) {?>
                 <div class="comm_edit">&nbsp;</div>
                 <?php } ?>
-                <?php } else if ($this->outputMode ==1) { ?>
+                <?php } else if ($this->outputMode == OUT_TEXT) { ?>
                 <div class='comm_send'>&nbsp;</div><div class='comm_cancel'>&nbsp;</div><div class='comm_apply'>&nbsp;</div>
-                <?php } else if ($this->outputMode == 2) {?>
+                <?php } else if ($this->outputMode == OUT_PREVIEW) {?>
                 <div class='comm_cancelApply'>&nbsp;</div><div class='comm_cancel'>&nbsp;</div><div class='comm_send'>&nbsp;</div>
                 <?php } ?>
             </div>

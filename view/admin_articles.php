@@ -26,19 +26,93 @@
                 <div>
                     <div class="read">
                         <div>
-
+                            <?php if (empty($this->data['subaction'])) { ?>
                             <h1>
-                                <?php echo ($this->data['user']['is_admin'] ? 'Опубликовать' : 'Добавить'); ?> статью
+                                Публикации
+                            </h1>
+                            <div style="text-align: center;"><div class="add"><a href="/admin/articles/add/">Новая статья</a> </div></div>
+                            <div class="updown_head">
+                                <div>
+                                    Сортировка
+                                    <div class="js-combobox" js-combobox-selected="<?php echo isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 0?>" id="cat_combo">
+                                        <a js-combobox-option="0" href="?sort=0<?php if ($this->data['split']) echo '&split=1'; ?>">Дата добавления</a>
+                                        <a js-combobox-option="1" href="?sort=1<?php if ($this->data['split']) echo '&split=1'; ?>">Популярность</a>
+                                        <a js-combobox-option="2" href="?sort=2<?php if ($this->data['split']) echo '&split=1'; ?>">Алфавит</a>
+                                        <a js-combobox-option="3" href="?sort=3<?php if ($this->data['split']) echo '&split=1'; ?>">Сначала непроверенные</a>
+
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="section_split">Разбить по разделам</label>
+                                    <input type="checkbox" id="section_split" name="section_split" <?php if (!empty($this->data['split'])) echo 'checked' ?> />
+                                </div>
+                            </div>
+                            <div class="updown">
+                                <?php
+                                  $old_section = '';
+                                foreach ($this->data['articles'] as $article) {  ?>
+                                <?php if (!empty($this->data['split']) && $old_section != $article['section_title']) { ?>
+                                <h1>
+                                    <?php echo $article['section_title'] ?>
+                                </h1>
+                                <?php
+                                          $old_section = $article['section_title'];
+                                      } ?>
+                                <input name="item" id="article<?php echo $article['article_id'] ?>" type="checkbox" />
+                                <div>
+                                    <label for="article<?php echo $article['article_id'] ?>">
+                                        <img src="/img/down_arrow.png" />
+                                        <a href=<?php echo "/sections/{$article['data_folder']}/{$article['article_id']}/" ?>>
+                                            <?php echo $article['title'] ?>
+                                        </a>
+                                        <span class="info">
+                                            <span class="date">
+                                                <?php echo $article['pub_date'] ?>
+                                            </span>
+                                            <span class="user">
+                                                <?php echo $article['login'] ?>
+                                            </span>
+                                            <span class="views">
+                                                <?php echo $article['views'] ?>
+                                            </span>
+                                            <?php if (!$this->data['split']) { ?>
+                                            <span class="a_section">
+                                                <?php echo $article['section_title'] ?>
+                                            </span>
+                                            <?php } ?>
+                                        </span>
+                                        <span class="updown_action">
+                                            <span class="edit">
+                                                <a href="/admin/articles/edit/?args=<?php echo $article['article_id']; ?>"><?php echo (!empty($article['verifier_id']) ?  'Редактировать' : 'Проверить'); ?></a>
+                                            </span>
+                                            <span class="remove">
+                                                <a href="javascript:void(0)">Удалить</a>
+                                            </span>
+                                        </span>
+                                    </label>
+                                    <div class="updown_content">
+                                        <?php
+                                      echo file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/sections/{$article['data_folder']}/{$article['article_id']}/description.txt");
+                                        ?>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                            </div>
+                            <?php } else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') { ?>
+                            <h1>
+                                <?php if ($this->data['subaction'] == 'edit') echo 'Редактировать';
+                                      else if ($this->data['user']['is_admin']) echo 'Опубликовать';
+                                      else echo 'Добавить'; ?> статью
                             </h1>
                             <form name="pub_form" method="post">
                                 <fieldset>
                                     <legend>Оглавление</legend>
                                     <label for="title">Название</label>
-                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" />
+                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" value="<?php if (!empty($this->data['article']['title'])) echo $this->data['article']['title']; ?>"/>
                                     <label for="description">Описание</label>
-                                    <textarea name="description" id="description" required="" pattern="^.+$"></textarea>
+                                    <textarea name="description" id="description" required="" pattern="^.+$"><?php  if (!empty($this->data['article']['description'])) echo $this->data['article']['description']; ?></textarea>
                                     <label>Раздел</label>
-                                    <div class="js-combobox" id="section_combo">
+                                    <div class="js-combobox" id="section_combo" js-combobox-selected="<?php if (!empty($this->data['article']['section_id'])) echo $this->data['article']['section_id']; else if (isset($_GET['section']) && is_numeric($_GET['section'])) echo $_GET['section']; ?>">
                                         <?php if (!empty($this->data['sections'])) {
                                                           foreach ($this->data['sections'] as $section) {
                                                               echo "<div js-combobox-option='{$section['id']}'>{$section['title']}</div>";
@@ -195,17 +269,36 @@
                                     </div>
 
                                     <div id="article_content">
-                                        <textarea id="contents" name="contents" required=""></textarea>
+                                        <textarea id="contents" name="contents" required=""><?php if (!empty($this->data['article']['contents'])) echo $this->data['article']['contents']; ?></textarea>
                                     </div>
                                     <h2>Прикрепленные изображения</h2>
-                                    <div class="img_thumbs"></div>
+                                    <div class="img_thumbs">
+                                        <?php if (!empty($this->data['article']['images'])) {
+                                            foreach ($this->data['article']['images'] as $img) {
+                                            ?>
+                                        <div>
+                                            <div class='thumb_action'>
+                                                <div>
+                                                    <div class='tip'>Вставить ВВ-код</div>
+                                                </div>
+                                                <div>
+                                                    <div class='tip'>Удалить</div>
+                                                </div>
+                                            </div>
+                                            <img src='<?php echo $img; ?>' /> <div><?php echo substr(strrchr($img, "/"), 1);; ?></div>
+                                        </div>
+                                        <?php }} ?>
+                                    </div>
                                 </fieldset>
                                 <input type="hidden" name="section_id" id="section_id" />
+				<?php if (!empty($this->data['article']['id'])) { ?> <input type="hidden" name="article_id" id="article_id" value="<?php echo $this->data['article']['id']; ?>"/> <?php } ?>
+				<input type="hidden" name="article_action" id="article_action" value="<?php echo $this->data['subaction']; ?>"/>
                                 <fieldset>
-                                    <input type="submit" name="pub_submit" id="pub_submit" value="<?php echo ($this->data['user']['is_admin'] ? 'Публиковать' : 'Предложить'); ?>" />
+                                    <input type="submit" name="pub_submit" id="pub_submit" value="ОК" />
                                     <input type="reset" />
                                 </fieldset>
                             </form>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -223,7 +316,7 @@
             $('#section_combo').change(function () {
                 $('#section_id').attr('value', $(this).attr('js-combobox-selected'));
         });
-        
+
     <?php if (isset($_REQUEST['section'])) { ?>
     $('#section_combo').attr('js-combobox-selected', '<?php echo $_REQUEST['section']; ?>');
     $('#section_combo').change();
@@ -233,12 +326,31 @@
 </script>
 <script src="/js/combobox.js"></script>
 <script>
+
+<?php if (isset($this->data['splitter_href'])) { ?>
+    $('#section_split').change(function () {
+        location.assign('<?php echo $this->data['splitter_href']; ?>');
+    });
+<?php } ?>
+    
+    <?php if (empty($this->data['subaction'])) { ?>
+    $('.remove > a').click(function () {
+        var j = $.get('/admin/articles/delete/?args=' + $(this).closest('label').attr('for').replace('article', ''), {}, function () {
+            location.reload();
+        }).fail(function () {
+            messageBox(j.responseText, 'left');
+        });
+    });
+    <?php } ?>
+
+    <?php if (!empty($this->data['subaction']) && ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit')) { ?>
+
     var lock = false;
 
 
-        var uploader = new ImageUploader(cont, true, false);
+    var uploader = new ImageUploader(cont, true, false);
 
-     uploader.onStartUploading = function () {
+    uploader.onStartUploading = function () {
         lock = true;
     }
 
@@ -246,9 +358,14 @@
         lock = false;
         $('#upload_avatar').removeClass('loading');
         for (var i = 0; i < images.length; i++) {
+            var s;
+            var ii = images[i].lastIndexOf('/');
+            if (ii != -1 && ii < images[i].length - 1)
+                s = images[i].substr(ii + 1);
+            else s = images[i];
             if (window.contents)
-                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + images[i] + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
-            $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + images[i] + "' /> <div>" + images[i] + "</div></div>")
+                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + s + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+            $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + images[i] + "' /> <div>" + s + "</div></div>")
         }
     }
 
@@ -326,15 +443,27 @@
         if (lock) return;
         lock = true;
         e.preventDefault();
-            $('#pub_submit').addClass('loading');
-            var j = $.post('/admin/addarticle/', $(this).serialize(), function(){
-                messageBox('<?php if ($this->data['user']['is_admin']) echo '<p>Спасибо за публикацию!</p><p>Ваша статья теперь доступна для просмотра <a href="\' + j.responseText + \'">здесь</a></p>'; else echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>' ?>', 'left');
-           }).fail(function(){
-                messageBox(j.responseText, 'left');
-           }).always(function () {
-               lock = false;
-                $('#pub_submit').removeClass('loading');
-           });
+        $('#pub_submit').addClass('loading');
+        var j = $.post('/admin/addarticle/', $(this).serialize(), function () {
+            messageBox('<?php if ($this->data['subaction'] == 'add') {
+                                  if ($this->data['user']['is_admin'])
+                                      echo '<p>Спасибо за публикацию!</p><p>Ваша статья теперь доступна для просмотра <a href="\' + j.responseText + \'">здесь</a></p>';
+                                  else
+                                      echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>'; 
+                              }
+                            else if ($this->data['subaction'] == 'edit'){
+                                 if (!empty($this->data['article']['verifier_id']))
+                                     echo  '<p>Все изменения успешно внесены.</p>'; 
+                                 else
+                                     echo  '<p>Спасибо! Теперь эта статья доступна для просмотра всем пользователям.</p>'; 
+                              } 
+                                  ?>', 'left');
+        }).fail(function () {
+            messageBox(j.responseText, 'left');
+        }).always(function () {
+            lock = false;
+            $('#pub_submit').removeClass('loading');
+        });
     });
 
     $(pub_form).on('reset', function () {
@@ -344,7 +473,17 @@
     $('.img_thumbs').click(function (e) {
         var img = $(e.target).parent().next();
         if ($(e.target).is('.thumb_action > div:nth-child(2)')) {
-            uploader.delete(img.attr('src'), img);
+<?php if (isset($this->data['subaction']) && $this->data['subaction'] == 'edit') { ?>
+            var s;
+            var ii = img.attr('src').lastIndexOf('/');
+            if (ii != -1 && ii < img.attr('src').length - 1)
+                s = img.attr('src').substr(ii + 1);
+            else s = img.attr('src');
+            var j = $.post('/admin/articles/deleteimg/?args=<?php echo $this->data['article']['id']; ?>', { 'img': s }).always(function () {
+<?php } ?>
+                uploader.delete(img.attr('src'), img);
+          <?php if (isset($this->data['subaction']) && $this->data['subaction'] == 'edit') { ?>});<?php } ?>
+
         }
         else if ($(e.target).is('.thumb_action > div:nth-child(1)')) {
             if (window.contents)
@@ -352,6 +491,6 @@
         }
     });
 
-
+    <?php } ?>
 
 </script>

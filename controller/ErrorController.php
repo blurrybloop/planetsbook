@@ -6,23 +6,32 @@ class ErrorController extends MenuController
 {
     private $exception;
 
-    function __construct($db, $exception = NULL, array $data = NULL){
-        parent::__construct($db, $data);
-        $this->exception = $exception;
-        $this->showErrorPage = TRUE;
+    function __construct($app, $db, array $data = NULL){
+        parent::__construct($app, $db, $data);
+        $this->exception = isset($data['exception']) && 
+                           is_subclass_of($data['exception'], 'Exception') ? 
+                                $data['exception'] : 
+                                new Exception('Неизвестная ошибка');
+
+        $this->showErrorPage = isset($data['showErrorPage']) ? $data['showErrorPage'] : FALSE;
     }
 
-    function process(){
+    function setActions(){
+        $this->actions = [];
+    }
+
+    function process($action){
        
-        if ($this->db) parent::process();
+        if ($this->db) parent::process($action);
+        $this->data['error'] = 'Нам очень жаль, но что то пошло не так!<br/>Единственное, что мы можем сказать:<br/>';
         switch (get_class($this->exception)){
             case 'ControllerException':
-                $this->data['error'] = '<p>' . $this->exception . '</p>';
+                $this->data['error'] .= $this->exception;
                 if ($d = trim($this->exception->getDetails())) $this->data['error'] .= '<p class="details">' . $d . '</p>';
                 http_response_code(500);
                 break;
             case 'DatabaseException':
-                $this->data['error'] = '<p>' . $this->exception . '</p>';
+                $this->data['error'] .= $this->exception;
                 http_response_code(500);
                 break;
 
@@ -45,7 +54,7 @@ class ErrorController extends MenuController
                 break;
 
             default:
-                $this->data['error'] = '<p>' . $this->exception . '</p>';
+                $this->data['error'] .= 'Произошла неизвестная ошибка';
                 http_response_code(500);
                 break;
         }

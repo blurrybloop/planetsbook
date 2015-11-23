@@ -17,13 +17,7 @@
                     <?php
                     foreach ($this->data['menu'] as $val){
                             if ($val['type'] == 0)
-                            {
-                                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
-                                    $sf = '/sections/' . $val['data_folder'] . '/main_small.png';
-                                else 
-                                    $sf = $val['image'];
-                                echo "<a href='{$val['href']}'><img src='{$sf}' /><p>{$val['title']}</p></a>";
-                            }
+                                echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
                         }
                     ?>
                     <div id="planets_item">
@@ -46,7 +40,10 @@
                         <img src="/img/movie.png" /><p>Видео</p>
                     </div>
                     <div id="user_item">
-                        <img src="/img/user.png" /><p>[<?php echo (isset($this->data['user']) ? $this->data['user']['login'] : 'Гость')  ?>]</p>
+                        <img src="<?php 
+                                      if (!empty($this->data['user']['avatar'])) echo $this->app->config['path']['avatar'] . $this->data['user']['avatar'] . '.png' ; 
+                                      else echo $this->app->config['path']['avatar'] . '0.png'; ?>" />
+                        <p>[<?php echo (isset($this->data['user']) ? $this->data['user']['login'] : 'Гость')  ?>]</p>
                     </div>
                 </div>
             </div>
@@ -65,13 +62,8 @@
                 <div class="vtop">
                     <?php
                     foreach ($this->data['menu'] as $val){
-                        if ($val['type'] == 1) {
-                            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
-                                $sf = '/sections/' . $val['data_folder'] . '/main_small.png';
-                            else 
-                                $sf = $val['image'];
-                            echo "<a href='{$val['href']}'><img src='{$sf}' /><p>{$val['title']}</p></a>";
-                        }
+                        if ($val['type'] == 1) 
+                            echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
                     }
                     ?>
                 </div>
@@ -91,13 +83,7 @@
                     <?php
                     foreach ($this->data['menu'] as $val)
                             if ($val['type'] == 2)
-                            {
-                                if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/sections/' . $val['data_folder'] . '/main_small.png'))
-                                    $sf = '/sections/' . $val['data_folder'] . '/main_small.png';
-                                else 
-                                    $sf = $val['image'];
-                                echo "<a href='{$val['href']}'><img src='{$sf}' /><p>{$val['title']}</p></a>";
-                            }
+                                echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
                     ?>
                 </div>
             </div>
@@ -174,7 +160,7 @@
                         <label for="login">
                                 <span class="tip"><b>Ваше уникальное имя пользователя.</b><br />Используйте значение, которое вы указали при регистрации.</span>Логин
                         </label>
-                        <input id="login" type="text" name="login" required pattern="^[\w]{5,100}$" maxlength="100"/>
+                        <input id="login" type="text" name="login" required pattern="^[A-Za-z0-9_]{5,100}$" maxlength="100"/>
                         <br />
 
                     </div>
@@ -182,7 +168,7 @@
                         <label for="psw">
                             <span class="tip"><b>Ваш секретный код.</b><br />Используйте значение, которое вы указали при регистрации.</span>Пароль
                         </label>
-                        <input id="psw" type="password" name="password" required pattern="^[\w\<\>\!\~\@\#\$\%\^\&\*\(\)\+\=\-_\?\:\;\,\.\/\\]{6,}$"/>
+                        <input id="psw" type="password" name="password" required pattern="^[A-Za-z0-9_\<\>\!\~\@\#\$\%\^\&\*\(\)\+\=\-_\?\:\;\,\.\/\\]{6,}$"/>
                         <br />
                     </div>
                     <div>
@@ -210,7 +196,7 @@
                         <label for="login">
                                 <span class="tip"><b>Ваше уникальное имя пользователя.</b><br />Обязательное поле.<br />Может содержать буквы латинского алфавита, цифры и символ подчеркивания.<br />Допустимая длина: 5 - 100 символов.<br /></span>Логин
                         </label>
-                        <input id="login" type="text" name="login" required pattern="^[\w]{5,100}$" maxlength="100" />
+                        <input id="login" type="text" name="login" required pattern="^[A-Za-z0-9_]{5,100}$" maxlength="100" />
                         <br />
 
                     </div>
@@ -218,7 +204,7 @@
                         <label for="psw">
                                 <span class="tip"><b>Ваш секретный код.</b><br />Обязательное поле.<br />Может содержать буквы латинского алфавита, цифры, а также символы !~<>@#$%^&*()+=-_?:;,./\<br />Минимальная длина: 6 символов.<br /><b>Помните: для лучшей безопасности используйте длинные пароли с как можно большим количеством не-буквенных символов.</b></span>Пароль
                         </label>
-                        <input id="psw" type="password" name="password" required pattern="^[\w\<\>\!\~\@\#\$\%\^\&\*\(\)\+\=\-_\?\:\;\,\.\/\\]{6,}$"/>
+                        <input id="psw" type="password" name="password" required pattern="^[A-Za-z0-9_\<\>\!\~\@\#\$\%\^\&\*\(\)\+\=\-_\?\:\;\,\.\/\\]{6,}$"/>
                         <br />
                     </div>
                     <div>
