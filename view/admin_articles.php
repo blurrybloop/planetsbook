@@ -26,7 +26,7 @@
                 <div>
                     <div class="read">
                         <div>
-                            <?php if (empty($this->data['subaction'])) { ?>
+                            <?php if (empty($this->data['subaction'])) { //список публикаций ?>
                             <h1>
                                 Публикации
                             </h1>
@@ -39,7 +39,6 @@
                                         <a js-combobox-option="1" href="?sort=1<?php if ($this->data['split']) echo '&split=1'; ?>">Популярность</a>
                                         <a js-combobox-option="2" href="?sort=2<?php if ($this->data['split']) echo '&split=1'; ?>">Алфавит</a>
                                         <a js-combobox-option="3" href="?sort=3<?php if ($this->data['split']) echo '&split=1'; ?>">Сначала непроверенные</a>
-
                                     </div>
                                 </div>
                                 <div>
@@ -62,7 +61,7 @@
                                 <div>
                                     <label for="article<?php echo $article['article_id'] ?>">
                                         <img src="/img/down_arrow.png" />
-                                        <a href=<?php echo "/sections/{$article['data_folder']}/{$article['article_id']}/" ?>>
+                                        <a href=<?php echo $article['href']?>>
                                             <?php echo $article['title'] ?>
                                         </a>
                                         <span class="info">
@@ -83,22 +82,21 @@
                                         </span>
                                         <span class="updown_action">
                                             <span class="edit">
-                                                <a href="/admin/articles/edit/?args=<?php echo $article['article_id']; ?>"><?php echo (!empty($article['verifier_id']) ?  'Редактировать' : 'Проверить'); ?></a>
+                                                <a href="/admin/articles/edit/?article_id=<?php echo $article['article_id']; ?>"><?php echo (!empty($article['verifier_id']) ?  'Редактировать' : 'Проверить'); ?></a>
                                             </span>
                                             <span class="remove">
                                                 <a href="javascript:void(0)">Удалить</a>
                                             </span>
                                         </span>
                                     </label>
-                                    <div class="updown_content">
-                                        <?php
-                                      echo file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/sections/{$article['data_folder']}/{$article['article_id']}/description.txt");
-                                        ?>
-                                    </div>
+                                    <div class="updown_content"><?php echo $article['description'];?></div>
                                 </div>
                                 <?php } ?>
+                                <div id="pages">
+                                    <a href="<?php echo $this->data['page_href'] . '&'?>page=2"><<</a><a href="<?php echo $this->data['page_href'] . '&' ?>page=<?php echo $this->data['page'] - 1; ?>"><</a><?php for ($i = $this->data['left_page']; $i<=$this->data['right_page']; $i++) echo "<a " .  ($i == $this->data['page']? "class='active'" : "") . " href='" . $this->data['page_href'] . "&page=$i'>$i</a>";  ?><a href="<?php echo $this->data['page_href'] . '&' ?>page=<?php echo $this->data['page'] + 1; ?>">></a><a href="<?php echo $this->data['page_href'] . '&' ?>page=<?php echo $this->data['count_page']; ?>">>></a>
+                                </div>
                             </div>
-                            <?php } else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') { ?>
+                            <?php } else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') { //форма для добавления/редактирования ?>
                             <h1>
                                 <?php if ($this->data['subaction'] == 'edit') echo 'Редактировать';
                                       else if ($this->data['user']['is_admin']) echo 'Опубликовать';
@@ -124,144 +122,7 @@
                                     <legend>Содержание</legend>
 
                                     <div id="tools">
-                                        <div>
-                                            <img class='comm_bold' src='/img/bold.png' />
-                                            <div class='tip'>
-                                                Жирный
-                                                <br />
-                                                [b]Пример[/b]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_italic' src='/img/italic.png' />
-                                            <div class='tip'>
-                                                Курсив
-                                                <br />
-                                                [i]Пример[/i]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_underline' src='/img/underline.png' />
-                                            <div class='tip'>
-                                                Подчеркнутый
-                                                <br />
-                                                [u]Пример[/u]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_strike' src='/img/strike.png' />
-                                            <div class='tip'>
-                                                Зачеркнутый
-                                                <br />
-                                                [s]Пример[/s]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_sup' src='/img/superscript.png' />
-                                            <div class='tip'>
-                                                Верхний индекс
-                                                <br />
-                                                [sup]Пример[/sup]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_sub' src='/img/subscript.png' />
-                                            <div class='tip'>
-                                                Нижний индекс
-                                                <br />
-                                                [sub]Пример[/sub]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_left_align' src='/img/left_align.png' />
-                                            <div class='tip'>
-                                                Выравнивание по левому краю
-                                                <br />
-                                                [align=left]Пример[/align]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_center_align' src='/img/center_align.png' />
-                                            <div class='tip'>
-                                                Выравнивание по центру
-                                                <br />
-                                                [align=center]Пример[/align]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_right_align' src='/img/right_align.png' />
-                                            <div class='tip'>
-                                                Выравнивание по правому краю
-                                                <br />
-                                                [align=right]Пример[/align]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_justify_align' src='/img/justify_align.png' />
-                                            <div class='tip'>
-                                                Выравнивание по ширине
-                                                <br />
-                                                [align=justify]Пример[/align]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_ul' src='/img/list_bullets.png' />
-                                            <div class='tip'>
-                                                Маркированый список
-                                                <br />
-                                                [list=*]
-                                                <br />
-                                                [*]Один[/*]
-                                                <br />
-                                                [*]Два[/*]
-                                                <br />
-                                                [*]Три[/*]
-                                                <br />
-                                                [/list]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_ol' src='/img/list_num.png' />
-                                            <div class='tip'>
-                                                Нумерованый список
-                                                <br />
-                                                [list=(1|A|a|i|I)]
-                                                <br />
-                                                [1]Один[/1]
-                                                <br />
-                                                [2]Два[/2]
-                                                <br />
-                                                [3]Три[/3]
-                                                <br />
-                                                [/list]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_url' src='/img/link.png' />
-                                            <div class='tip'>
-                                                Ссылка
-                                                <br />
-                                                [url]planetsbook.pp.ua[/url]
-                                                <br />
-                                                или
-                                                <br />
-                                                [url="planetsbook.pp.ua"]Пример[/url]
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <img class='comm_img' src='/img/picture.png' />
-                                            <span class='tip'>
-                                                Рисунок с подписью
-                                                <br />
-                                                [figure=(left|center|right|float-left|float-right) width=# height=#]
-                                                <br />
-                                                [img]test.png[/img]
-                                                <br />
-                                                [figcaption=(left|center|right|justify)]Подпись[/figcaption]
-                                                <br />
-                                                [/figure]
-                                            </span>
-                                        </div>
+                                        <?php include 'bbtools.php' ?>
                                         <div>
                                             <img class='comm_preview' src='/img/eye.png' />
                                             <div class='tip'>Предпросмотр</div>
@@ -285,14 +146,12 @@
                                                     <div class='tip'>Удалить</div>
                                                 </div>
                                             </div>
-                                            <img src='<?php echo $img; ?>' /> <div><?php echo substr(strrchr($img, "/"), 1);; ?></div>
+                                            <img src='<?php echo $img; ?>' /> <div><?php echo pathinfo($img, PATHINFO_BASENAME); ?></div>
                                         </div>
                                         <?php }} ?>
                                     </div>
                                 </fieldset>
                                 <input type="hidden" name="section_id" id="section_id" />
-				<?php if (!empty($this->data['article']['id'])) { ?> <input type="hidden" name="article_id" id="article_id" value="<?php echo $this->data['article']['id']; ?>"/> <?php } ?>
-				<input type="hidden" name="article_action" id="article_action" value="<?php echo $this->data['subaction']; ?>"/>
                                 <fieldset>
                                     <input type="submit" name="pub_submit" id="pub_submit" value="ОК" />
                                     <input type="reset" />
@@ -313,42 +172,47 @@
 </html>
 <script src="/js/sticky.js"></script>
 <script>
-            $('#section_combo').change(function () {
-                $('#section_id').attr('value', $(this).attr('js-combobox-selected'));
-        });
+
+    <?php if (!empty($this->data['subaction']) && ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit')) { ?>
+
+    $('#section_combo').change(function () {
+        $('#section_id').attr('value', $(this).attr('js-combobox-selected'));
+    });
 
     <?php if (isset($_REQUEST['section'])) { ?>
     $('#section_combo').attr('js-combobox-selected', '<?php echo $_REQUEST['section']; ?>');
     $('#section_combo').change();
-     <?php     }
-     ?>
+     <?php }} ?>
 
 </script>
 <script src="/js/combobox.js"></script>
 <script>
 
-<?php if (isset($this->data['splitter_href'])) { ?>
+    <?php if (empty($this->data['subaction'])) { ?>
+
+
+    <?php if (isset($this->data['splitter_href'])) { ?>
     $('#section_split').change(function () {
         location.assign('<?php echo $this->data['splitter_href']; ?>');
     });
-<?php } ?>
-    
-    <?php if (empty($this->data['subaction'])) { ?>
+    <?php } ?>
+
     $('.remove > a').click(function () {
-        var j = $.get('/admin/articles/delete/?args=' + $(this).closest('label').attr('for').replace('article', ''), {}, function () {
+        var j = $.get('/admin/articles/delete/?article_id=' + $(this).closest('label').attr('for').replace('article', ''), {}, function () {
             location.reload();
         }).fail(function () {
             messageBox(j.responseText, 'left');
         });
     });
-    <?php } ?>
-
-    <?php if (!empty($this->data['subaction']) && ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit')) { ?>
+<?php } 
+          
+          
+    
+    
+     else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') { ?>
 
     var lock = false;
-
-
-    var uploader = new ImageUploader(cont, true, false);
+    var uploader = new ImageUploader(cont, true, false, <?php echo $this->app->config['pulse']['frequency'] * 1000 ?>);
 
     uploader.onStartUploading = function () {
         lock = true;
@@ -358,13 +222,9 @@
         lock = false;
         $('#upload_avatar').removeClass('loading');
         for (var i = 0; i < images.length; i++) {
-            var s;
-            var ii = images[i].lastIndexOf('/');
-            if (ii != -1 && ii < images[i].length - 1)
-                s = images[i].substr(ii + 1);
-            else s = images[i];
+            var s = images[i].substr(images[i].lastIndexOf('/') + 1);
             if (window.contents)
-                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + s + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+                $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + s + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
             $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + images[i] + "' /> <div>" + s + "</div></div>")
         }
     }
@@ -392,8 +252,14 @@
         else if (t.hasClass('comm_ul')) $(contents).makeUL();
         else if (t.hasClass('comm_ol')) $(contents).makeOL();
         else if (t.hasClass('comm_url')) $(contents).makeURL();
-        else if (t.hasClass('comm_img')) uploader.upload();
-        else if (t.hasClass('comm_help')) comments.help();
+        else if (t.hasClass('comm_img')) { if (lock) return; uploader.upload();}
+        else if (t.hasClass('comm_help')) {
+            var j = $.get('/comments/help/', {}, function(){
+                messageBox(j.responseText, 'left', '60%');
+            }).fail(function(){
+                messageBox('Хьюстон, у нас проблемы!' + j.responseText, 'left');
+            })
+        }
     });
 
     var preview = false;
@@ -435,7 +301,14 @@
             callback();
         }
         else {
-            var j = $.post('/admin/preview/', { args: [$(contents).val()] }, callback).fail(function () { $('.comm_preview').removeClass('loading'); messageBox(j.responseText, 'center'); });
+            var ii = [0];
+        $('.img_thumbs img').each(function(){
+            ii.push($(this).attr('src'));    
+        });
+        var j = $.post('/admin/preview/', { text: $(contents).val(), images: ii }, callback).fail(function () { messageBox(j.responseText, 'center'); }).always(function(){
+            $('.comm_preview').attr('src', preview ? '/img/eye.png' : '/img/edit.png');
+            lock = false;
+        });
         }
     });
 
@@ -444,19 +317,19 @@
         lock = true;
         e.preventDefault();
         $('#pub_submit').addClass('loading');
-        var j = $.post('/admin/addarticle/', $(this).serialize(), function () {
+        var j = $.post('?<?php if ($this->data['subaction'] == 'edit') echo 'article_id=' . $this->data['article']['id'] . '&'; ?>save=1', $(this).serialize(), function () {
             messageBox('<?php if ($this->data['subaction'] == 'add') {
                                   if ($this->data['user']['is_admin'])
                                       echo '<p>Спасибо за публикацию!</p><p>Ваша статья теперь доступна для просмотра <a href="\' + j.responseText + \'">здесь</a></p>';
                                   else
-                                      echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>'; 
+                                      echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>';
                               }
                             else if ($this->data['subaction'] == 'edit'){
                                  if (!empty($this->data['article']['verifier_id']))
-                                     echo  '<p>Все изменения успешно внесены.</p>'; 
+                                     echo  '<p>Все изменения успешно внесены.</p>';
                                  else
-                                     echo  '<p>Спасибо! Теперь эта статья доступна для просмотра всем пользователям.</p>'; 
-                              } 
+                                     echo  '<p>Спасибо! Теперь эта статья доступна для просмотра всем пользователям.</p>';
+                              }
                                   ?>', 'left');
         }).fail(function () {
             messageBox(j.responseText, 'left');
@@ -474,12 +347,7 @@
         var img = $(e.target).parent().next();
         if ($(e.target).is('.thumb_action > div:nth-child(2)')) {
 <?php if (isset($this->data['subaction']) && $this->data['subaction'] == 'edit') { ?>
-            var s;
-            var ii = img.attr('src').lastIndexOf('/');
-            if (ii != -1 && ii < img.attr('src').length - 1)
-                s = img.attr('src').substr(ii + 1);
-            else s = img.attr('src');
-            var j = $.post('/admin/articles/deleteimg/?args=<?php echo $this->data['article']['id']; ?>', { 'img': s }).always(function () {
+            var j = $.post('/admin/articles/deleteimg/?article_id=<?php echo $this->data['article']['id']; ?>&image_path=' + img.attr('src')).always(function () {
 <?php } ?>
                 uploader.delete(img.attr('src'), img);
           <?php if (isset($this->data['subaction']) && $this->data['subaction'] == 'edit') { ?>});<?php } ?>
@@ -487,7 +355,7 @@
         }
         else if ($(e.target).is('.thumb_action > div:nth-child(1)')) {
             if (window.contents)
-                $(contents).first().wrapSelected('\r\n[figure width=100]\r\n[img]' + img.attr('src') + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+                $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + img.attr('src') + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
         }
     });
 

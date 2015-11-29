@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 require_once 'config.php';
 
 header('Content-type: text/html; charset=' . $config['page_charset']);

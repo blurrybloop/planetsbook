@@ -3,6 +3,13 @@ require_once 'ControllerException.php';
 require_once 'HttpException.php';
 require_once 'Database.php';
 
+function exception_error_handler($errno, $errstr, $errfile, $errline) {
+    if (!(error_reporting() & $errno)) {
+        return;
+    }
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+}
+
 class Application
 {
     public $config;
@@ -27,13 +34,15 @@ class Application
             $this->db=new Database($this->config['db']);
             $this->db->connect();
         }
+
         $this->controller = new $class($this, $this->db, $data);
         $this->controller->show();
     }
 
 	function Run()
 	{
-        session_start();$c = NULL;
+        set_error_handler('exception_error_handler');
+        session_start();
         try
         {
             $menu='main';
@@ -45,7 +54,6 @@ class Application
             $this->callController($menu);
         }
         catch (Exception $ex) {
-
             $this->callController('error', [
                 'exception'     =>  $ex, 
                 'showErrorPage' =>  empty($this->controller) ? TRUE : $this->controller->showErrorPage,

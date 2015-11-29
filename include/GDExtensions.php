@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 class GDExtensions{
     static private $error;
@@ -62,7 +62,7 @@ class GDExtensions{
             return FALSE;
         }
 
-        $savefile = $autoExtension ? $pinfo['dirname'] . '/' . $pinfo['filename'] . '.png' : $destination;
+        $savefile = $autoExtension ? ($pinfo['dirname'] . '/' . $pinfo['filename'] . '.png') : $destination;
 
         if (@imagepng($thumb, $savefile) === FALSE) {
             self::$error = 'Не удалось сохранить изображение.';

@@ -28,6 +28,7 @@
     this.onError = null;
 
     $('#image_uploader_images' + i).change(function () {
+        var newUploaded = [];
         if (replace) _uploaded = [];
         if (self.onStartUploading) self.onStartUploading.call(self);
         _uploadFrame.one('load', function () {
@@ -39,17 +40,18 @@
                 setInterval(function () {$.post('/pulse/', { 'page_id': pid });}, pulseFrequency);
             }
             $(this).contents().find('.path').each(function () {
-                _uploaded.push($(this).html());
+                newUploaded.push($(this).html());
             });
-
-            if (self.onUploaded) self.onUploaded.call(self, _uploaded);
+            _uploaded.push(newUploaded);
+            if (self.onUploaded) self.onUploaded.call(self, newUploaded);
             if (self.onError && err.length) self.onError.call(self, err.html());
 
         });
 
         $('#page_id' + i).attr('value', pid == undefined ? 0 : pid);
+
         _uploadForm.attr('action', '/image/upload/');
-        setTimeout(function () {_uploadForm.submit(); }, 0);
+        setTimeout(function () { _uploadForm.submit(); }, 0);
     });
 
 
@@ -73,7 +75,7 @@
 
         $('#image_path' + i).attr('value', path);
         _uploadForm.attr('action', '/image/delete/');
-        setTimeout(function () { alert($(_uploadForm).serialize()); _uploadForm.submit(); }, 0);
+        setTimeout(function () {_uploadForm.submit(); }, 0);
     }
 
     this.getUploaded = function(){

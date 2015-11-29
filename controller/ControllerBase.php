@@ -67,17 +67,41 @@ abstract class ControllerBase
 		include(PATH_VIEW . $view . '.php');
     }
 
+    function splitPages($count, $page){
+        $page_size = $this->app->config['section']['page_size'];
+        $count_page=(int)(($count-1)/$page_size)+1;
+
+        if ($page <= 0) $page=1;
+        if ($page>$count_page) $page = $count_page;
+
+        $pages_per_page = $this->app->config['section']['pages_per_page'];
+        if (($left_page = $page - (int)($pages_per_page/2)) < 1) $left_page = 1;
+        if (($right_page = $left_page + $pages_per_page-1) > $count_page) $right_page = $count_page;
+        if ($count_page >= $pages_per_page){
+            $left_page = $right_page - $pages_per_page + 1;
+            if ($left_page < 1) $left_page = 1;
+        }
+
+        return compact('page', 'count_page', 'left_page', 'right_page', 'page_size');
+    }
+
     //запуск контроллера
     function show() {
         try{
+            $this->db->transactionStart();
+
             $action = isset($_REQUEST['param1']) ? strtolower($_REQUEST['param1']) : '';
             if (!empty($action) && !empty($this->actions) && !in_array($action, $this->actions))
                 throw new ControllerException('Неправильные параметры запроса.');
-
             $ret = $this->process($action);
+
+            $this->db->transactionCommit();
         }
-        catch (DatabaseException $ex){
-            throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $ex);
+        catch (Exception $ex){
+            $this->db->transactionRollback();
+            if ($ex instanceof DatabaseException)
+                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $ex);
+            else throw $ex;
         }
         if ($ret !== FALSE) $this->render();
     }

@@ -31,7 +31,6 @@ if (isset($this->data['section']['image'])) { ?>
                         <?php } ?>
                         <article>
                             <header>
-
                                 <h1>
                                     <?php echo $this->data['article']['title'] ?>
                                 </h1>
@@ -65,22 +64,18 @@ if (isset($this->data['section']['image'])) { ?>
                         <div>
                             <h1>Смотрите также</h1>
                             <ul>
+                                <?php foreach ($this->data['see_also'] as $sa) {?>
                                 <li>
-                                    <a href="/article_temp.php">Изменяется ли светимость Солнца?</a>
+                                    <a href="<?php echo $sa['href']?>"><?php echo $sa['title']?></a>
                                 </li>
-                                <li>
-                                    <a href="/article_temp.php">Солнечная активность</a>
-                                </li>
-                                <li>
-                                    <a href="/article_temp.php">Солнечная активность и атмосфера Солнца</a>
-                                </li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div>
                 </aside>
             </div>
         </div>
-        <?php include("view/footer.php"); ?>
+        <?php include("footer.php"); ?>
     </div>
 </body>
 </html>

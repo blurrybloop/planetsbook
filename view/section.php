@@ -43,10 +43,10 @@ if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) 
                                 </div>
                                 <div>
                                     Сортировать по
-                                    <div class="js-combobox" js-combobox-selected="<?php echo isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 0?>" id="cat_combo">
-                                        <a js-combobox-option="0" href="?sort=0">дате публикации</a>
-                                        <a js-combobox-option="1" href="?sort=1">популярности</a>
-                                        <a js-combobox-option="2" href="?sort=2">алфавиту</a>
+                                    <div class="js-combobox" js-combobox-selected="<?php echo isset($this->data['sort']) ? $this->data['sort'] : 0?>" id="cat_combo">
+                                        <a js-combobox-option="0" href="?sort=0&page=<?php echo $this->data['page'] ?>">дате публикации</a>
+                                        <a js-combobox-option="1" href="?sort=1&page=<?php echo $this->data['page'] ?>">популярности</a>
+                                        <a js-combobox-option="2" href="?sort=2&page=<?php echo $this->data['page'] ?>">алфавиту</a>
                                     </div>
                                 </div>
                             </div>
@@ -59,7 +59,7 @@ foreach ($this->data['articles'] as $val){ ?>
                                 <div>
                                     <label for="article<?php echo $val['article_id'] ?>">
                                         <img src="/img/down_arrow.png" />
-                                        <a href=<?php echo $val['href'] ?>>
+                                        <a href="<?php echo $val['href'] ?>">
                                             <?php echo $val['title'] ?>
                                         </a>
                                         <span class="info">
@@ -83,6 +83,9 @@ foreach ($this->data['articles'] as $val){ ?>
                                 </div>
                                 <?php } ?>
                             </div>
+                            <div id="pages">
+                                <a href="<?php echo $this->data['page_href'] . '&'?>page=1"><<</a><a href="<?php echo $this->data['page_href'] . '&' ?>page=<?php echo $this->data['page'] - 1; ?>"><</a><?php for ($i = $this->data['left_page']; $i<=$this->data['right_page']; $i++) echo "<a " .  ($i == $this->data['page']? "class='active'" : "") . " href='" . $this->data['page_href'] . "&page=$i'>$i</a>";  ?><a href="<?php echo $this->data['page_href'] . '&' ?>page=<?php echo $this->data['page'] + 1; ?>">></a><a href="<?php echo $this->data['page_href'] . '&' ?>page=<?php echo $this->data['count_page']; ?>">>></a>
+                            </div>
                         </article>
                     </div>
                 </div>
@@ -93,21 +96,19 @@ foreach ($this->data['articles'] as $val){ ?>
                     <div>
                         <h1>Смотрите также</h1>
                         <ul>
+                            <?php foreach($this->data['see_also'] as $sa) { ?>
                             <li>
-                                <a href="/article_temp.php">Земля</a>
+                                <a href="<?php echo $sa['href']?>">
+                                    <?php echo $sa['title']?>
+                                </a>
                             </li>
-                            <li>
-                                <a href="/article_temp.php">Марс</a>
-                            </li>
-                            <li>
-                                <a href="/article_temp.php">Луна</a>
-                            </li>
+                            <?php } ?>
                         </ul>
                     </div>
                 </div>
             </aside>
         </div>
-        <?php include("view/footer.php"); ?>
+        <?php include("footer.php"); ?>
     </div>
 
 

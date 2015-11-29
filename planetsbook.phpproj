@@ -50,6 +50,7 @@
     <Compile Include="include\database.php" />
     <Compile Include="index.php" />
     <Compile Include="view\bbhelp.php" />
+    <Compile Include="view\bbtools.php" />
     <Compile Include="view\comment.php" />
     <Compile Include="view\error.php" />
     <Compile Include="view\profile.php" />

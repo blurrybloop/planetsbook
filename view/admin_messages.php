@@ -34,7 +34,7 @@ foreach ($this->data['messages'] as $val){
                                 <div>
                                     <label for="article<?php echo $val['article_id'] ?>">
                                         <img src="/img/down_arrow.png" />
-                                        <a href=<?php echo "/sections/{$val['data_folder']}/{$val['article_id']}/" ?>>
+                                        <a href=<?php echo $val['href'] ?>>
                                             <?php echo $val['article_title'] ?>
                                         </a>
                                         <span class="info">
@@ -50,11 +50,7 @@ foreach ($this->data['messages'] as $val){
                                         </span>
 
                                     </label>
-                                    <div class="updown_content">
-                                        <?php
-    echo @file_get_contents("{$_SERVER['DOCUMENT_ROOT']}/sections/{$val['data_folder']}/{$val['article_id']}/description.txt");
-                                        ?>
-                                    </div>
+                                    <div class="updown_content"><?php echo $val['description'] ?></div>
                                 </div>
                                 <?php } ?>
 

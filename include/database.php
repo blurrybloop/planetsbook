@@ -121,5 +121,17 @@ class Database
         return strcasecmp($str, 'NULL') == 0 || $str === NULL ? 'NULL' : '\'' . mysqli_real_escape_string($this->con, $str) . '\'';
     }
 
+    function transactionStart(){
+        $this->query('START TRANSACTION');
+    }
+
+    function transactionCommit(){
+        $this->query('COMMIT');
+    }
+
+    function transactionRollback(){
+        $this->query('ROLLBACK');
+    }
+
 }
 ?>

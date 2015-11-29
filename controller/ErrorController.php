@@ -23,15 +23,15 @@ class ErrorController extends MenuController
     function process($action){
        
         if ($this->db) parent::process($action);
-        $this->data['error'] = 'Нам очень жаль, но что то пошло не так!<br/>Единственное, что мы можем сказать:<br/>';
+        $this->data['error'] = '<p>Нам очень жаль, но что то пошло не так!</p>';
         switch (get_class($this->exception)){
             case 'ControllerException':
-                $this->data['error'] .= $this->exception;
-                if ($d = trim($this->exception->getDetails())) $this->data['error'] .= '<p class="details">' . $d . '</p>';
+                $this->data['error'] .= '<p>' . $this->exception . '</p>';
+                if ($d = trim($this->exception->getDetails())) $this->data['error'] .= '<div class="details">' . $d . '</div>';
                 http_response_code(500);
                 break;
             case 'DatabaseException':
-                $this->data['error'] .= $this->exception;
+                $this->data['error'] .= '<p>' . $this->exception . '</p>';
                 http_response_code(500);
                 break;
 
@@ -53,8 +53,13 @@ class ErrorController extends MenuController
                 http_response_code($this->exception->getCode());
                 break;
 
+            case 'ErrorException':
+                $this->data['error'] .= '<p>File: ' . $this->exception->getFile() . '<br/>Line: ' . $this->exception->getLine() . '<br/>Message: ' . $this->exception->getMessage() . '</p>';
+                http_response_code(500);
+                break;
+
             default:
-                $this->data['error'] .= 'Произошла неизвестная ошибка';
+                $this->data['error'] .= '<p>Произошла неизвестная ошибка</p>';
                 http_response_code(500);
                 break;
         }

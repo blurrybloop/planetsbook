@@ -37,6 +37,13 @@ class ArticleController extends MenuController
         require_once PATH_INCLUDE . 'TagsParser.php';
         $parser = new TagsParser(file_get_contents(PATH_SECTION . "{$this->data['section']['data_folder']}/{$this->data['article']['article_id']}/text.txt"));
         $this->data['article']['contents'] = $parser->parse();
+
+        $res = $this->db->fetch("SELECT articles.id AS article_id, articles.title AS title, data_folder FROM articles INNER JOIN sections ON articles.section_id=sections.id ORDER BY views LIMIT 5");
+        foreach ($res as &$r){
+            $r['href'] = $this->app->config['path']['section'] . $r['data_folder'] . '/' . $r['article_id'];
+        }
+        unset($r);
+        $this->data['see_also'] = $res;
     }
 
     function render(){
