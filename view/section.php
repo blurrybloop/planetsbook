@@ -38,7 +38,7 @@ require 'msgbox.php'
                             <div class="updown_head">
                                 <div class='add_article'>
                                     <?php
-if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) echo '<a href=\'/admin/articles/add?args=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
+if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) echo '<a href=\'/admin/articles/add?section=' . $this->data['section']['id'] . '\'>' . (empty($this->data['user']['is_admin']) ? 'Предложить статью для публикации' : 'Опубликовать статью') . '</a>';
                                     ?>
                                 </div>
                                 <div>

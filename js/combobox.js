@@ -16,7 +16,6 @@ $('.js-combobox').each(function () {
 
 });
 
-
 $(window).click(function (e) {
     var clicked = $(e.target).closest('.js-combobox');
     $('.js-combobox').not(clicked).removeClass('js-combobox-expanded');

@@ -326,16 +326,49 @@
         $('#small_image img').attr('src', '<?php if (!empty($this->data['section']['data_folder']) && file_exists(PATH_SECTION . $this->data['section']['data_folder'] . '/main_small.png')) echo $df . '/main_small.png'; else echo '/img/nophoto.png';?>');
     });
 
+    $(section_form).on('reset', function () {
+        $('#big_image .reset').click();
+        $('#small_image .reset').click();
+    });
+
     $(section_form).submit(function (e) {
         e.preventDefault();
         if (lock) return;
         lock = true;
             $('#section_submit').addClass('loading');
             var j = $.post('?<?php if (isset($this->data['section']['id'])) echo 'section_id=' . $this->data['section']['id'] . '&' ?>save=1', $(this).serialize(), function () {
-                <?php if ($this->data['subaction'] == 'add') { ?>
-                messageBox('<p>Раздел добавлен!</p><a href="' + j.responseText + '">Добавить публикацию</a>', 'left');
-                <?php } else if ($this->data['subaction'] == 'edit') { ?>
-                messageBox('<p>Все изменения успешно внесены!</a>', 'left');
+                var r = JSON.parse(j.responseText);
+                bigUploader.reset();
+                smallUploader.reset();
+            <?php if ($this->data['subaction'] == 'add') { ?>
+                lock = false;
+                $(section_form)[0].reset();
+
+                messageBox('<?php
+                          echo '<p>Раздел добавлен!</p>';
+                          echo '<p>Что вы хотите сделать?</p><ul>';
+                          echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
+                          echo '<li><a href="javascript: msgboxClose()">Добавить еще один раздел</a></li>';
+                          echo '<li><a href="\' + r["pub_path"] + \'">Опубликовать статью в этом разделе</a></li>';
+                          echo '</ul>'; ?>', 'left');
+                    <?php } else if ($this->data['subaction'] == 'edit') { ?>
+                                 var d = new Date();
+
+                $('input[name=big_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
+                $('input[name=big_image_path]').attr('value', r["images_path"][0]);
+                $('#big_image img').attr('src', r["images_path"][0] + '?' + d.getTime());
+
+                $('input[name=small_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
+                $('input[name=small_image_path]').attr('value', r["images_path"][1]);
+                $('#small_image img').attr('src', r["images_path"][1] + '?' + d.getTime());
+
+                messageBox('<?php
+                          echo '<p>Все изменения успешно внесены!</p>';
+                          echo '<p>Что вы хотите сделать?</p><ul>';
+                          echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
+                          echo '<li><a href="javascript: msgboxClose()">Продолжить редактирование раздела</a></li>';
+                          echo '<li><a href="\' + r["pub_path"] + \'">Опубликовать статью в этом разделе</a></li>';
+                          echo '</ul>'; ?>', 'left');
                 <?php } ?>
            }).fail(function(){
                messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');

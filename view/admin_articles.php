@@ -172,7 +172,7 @@
 </html>
 <script src="/js/sticky.js"></script>
 <script>
-
+    
     <?php if (!empty($this->data['subaction']) && ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit')) { ?>
 
     $('#section_combo').change(function () {
@@ -204,11 +204,11 @@
             messageBox(j.responseText, 'left');
         });
     });
-<?php } 
-          
-          
-    
-    
+<?php }
+
+
+
+
      else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') { ?>
 
     var lock = false;
@@ -303,7 +303,7 @@
         else {
             var ii = [0];
         $('.img_thumbs img').each(function(){
-            ii.push($(this).attr('src'));    
+            ii.push($(this).attr('src'));
         });
         var j = $.post('/admin/preview/', { text: $(contents).val(), images: ii }, callback).fail(function () { messageBox(j.responseText, 'center'); }).always(function(){
             $('.comm_preview').attr('src', preview ? '/img/eye.png' : '/img/edit.png');
@@ -318,17 +318,38 @@
         e.preventDefault();
         $('#pub_submit').addClass('loading');
         var j = $.post('?<?php if ($this->data['subaction'] == 'edit') echo 'article_id=' . $this->data['article']['id'] . '&'; ?>save=1', $(this).serialize(), function () {
+            var r = JSON.parse(j.responseText);
+            uploader.reset();
+            <?php if ($this->data['subaction'] == 'edit') { ?>
+            $('#edit_content > .img_thumbs').html("");
+            for(var ii=0; ii<r["res"].length; ii++){
+                var s = r["res"][ii].substr(r["res"][ii].lastIndexOf('/') + 1);
+                $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + r["res"][ii] + "' /> <div>" + s + "</div></div>");
+            }
+            <?php } else if ($this->data['subaction'] == 'add') { ?>
+            $(pub_form)[0].reset();
+            <?php } ?>
             messageBox('<?php if ($this->data['subaction'] == 'add') {
                                   if ($this->data['user']['is_admin'])
-                                      echo '<p>Спасибо за публикацию!</p><p>Ваша статья теперь доступна для просмотра <a href="\' + j.responseText + \'">здесь</a></p>';
+                                      echo '<p>Спасибо за публикацию!</p>';
                                   else
                                       echo  '<p>Большое спасибо за предложенную статью!</p>В ближайшее время мы проверим и опубликуем ее.</p>';
+                                  echo '<p>Что вы хотите сделать?</p><ul>';
+                                  echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
+                                  echo '<li><a href="javascript: msgboxClose()">Добавить еще одну публикацию</a></li>';
+                                  if ($this->data['user']['is_admin']) echo '<li><a href="\' + r["article_path"] + \'">Перейти на страницу опубликованной статьи</a></li>';
+                                  echo '</ul>';
                               }
                             else if ($this->data['subaction'] == 'edit'){
                                  if (!empty($this->data['article']['verifier_id']))
                                      echo  '<p>Все изменения успешно внесены.</p>';
                                  else
                                      echo  '<p>Спасибо! Теперь эта статья доступна для просмотра всем пользователям.</p>';
+                                 echo '<p>Что вы хотите сделать?</p><ul>';
+                                 echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
+                                 echo '<li><a href="javascript: msgboxClose()">Продолжить редактирование этой статьи</a></li>';
+                                 echo '<li><a href="\' + r["article_path"] + \'">Перейти на страницу опубликованной статьи</a></li>';
+                                 echo '</ul>';
                               }
                                   ?>', 'left');
         }).fail(function () {

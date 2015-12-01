@@ -14,6 +14,7 @@
 
     var _parent = $(parent);
     var _uploaded = [];
+    var tmr;
 
     _parent.append(_uploadFrame);
     _parent.append(_uploadForm);
@@ -37,7 +38,7 @@
             var err = $(this).contents().find('.error');
             if (tmp_pid) {
                 pid = tmp_pid;
-                setInterval(function () {$.post('/pulse/', { 'page_id': pid });}, pulseFrequency);
+                tmr = setInterval(function () {$.post('/pulse/', { 'page_id': pid });}, pulseFrequency);
             }
             $(this).contents().find('.path').each(function () {
                 newUploaded.push($(this).html());
@@ -80,6 +81,12 @@
 
     this.getUploaded = function(){
         return _uploaded;
+    }
+
+    this.reset = function () {
+        _uploaded = [];
+        if (tmr != undefined) clearInterval(tmr);
+        $('#page_id' + i).attr('value', 0);
     }
 
 }

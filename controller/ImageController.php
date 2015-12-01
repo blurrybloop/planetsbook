@@ -45,6 +45,11 @@ class ImageController extends ControllerBase
                 throw new ControllerException('Неправильный идентификатор страницы.');
         }
 
+        $temp_files = glob(PATH_TEMP . $page_id . '_*.*', GLOB_NOSORT);
+        $total_size = 0;
+        foreach ($temp_files as $tmp) 
+            $total_size += filesize($tmp);
+
         $now = time();
 
         foreach ($_FILES['images']['name'] as $i => $name){
@@ -53,19 +58,26 @@ class ImageController extends ControllerBase
                 if (!array_key_exists($_FILES['images']['error'][$i], $this->img_errors)) $k = 0;
                 else $k = $_FILES['images']['error'][$i];
 
-                $this->errors[] =  $this->img_errors[$k];
+                $this->errors[] =  $name . ' - ' . $this->img_errors[$k];
                 continue;
             }
 
             if (!is_uploaded_file($_FILES['images']['tmp_name'][$i])){
-                $this->errors[] = 'Выбранный файл не является загруженным.';
+                $this->errors[] = $name . ' - Выбранный файл не является загруженным.';
                 continue;
             }
 
             if (!getimagesize($_FILES['images']['tmp_name'][$i])){
-                $this->errors[] = 'Выбранный файл не является допустимым форматом изображения.';
+                $this->errors[] = $name . ' - Выбранный файл не является допустимым форматом изображения.';
                 continue;
             }
+
+            if (filesize($_FILES['images']['tmp_name'][$i]) + $total_size > $this->app->config['temp']['max_user_upload']*1024*1024){
+                $this->errors[] = $name . ' - Превышен маскимальный объем загружаемых файлов (' . $this->app->config['temp']['max_user_upload'] . 'МБ).';
+                continue;
+            }
+            $total_size += filesize($_FILES['images']['tmp_name'][$i]);
+
             do $now++;
             while (file_exists($upload_filename = PATH_TEMP . $this->page_id . '_' .  $now . '.png'));
 
@@ -77,11 +89,11 @@ class ImageController extends ControllerBase
     }
 
     function upload(){
-        file_put_contents('dump.txt', '123', FILE_APPEND);
         $page_id = !empty($_REQUEST['page_id']) && is_numeric($_REQUEST['page_id']) ? $_REQUEST['page_id'] : 0;
         $replace = !empty($_REQUEST['image_replace']);
 
         $names = $this->processImages($page_id, $replace);
+
         foreach ($names as $img){
             if (move_uploaded_file($img['temp_name'], $img['permanent_name']))
                 $this->uploaded[] = $img['permanent_name'];
@@ -100,8 +112,6 @@ class ImageController extends ControllerBase
         $path = $_REQUEST['image_path'];
 
         if (is_string($path)){
-            //if ($info['dirname'] . '/' != str_replace($_SERVER['DOCUMENT_ROOT'], '', PATH_TEMP))
-            //    throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
             if (!preg_match('#^\d+(?=_\d+$)#', pathinfo($path, PATHINFO_FILENAME), $match))
                 throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
 

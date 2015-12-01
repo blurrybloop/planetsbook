@@ -14,7 +14,10 @@
 </div>
 
 <script>
-    var sub = $('.msgbox_container > div > div').click
+    function msgboxClose() {
+        $('.msgbox > div:first-child > div').click();
+    }
+
     $('.msgbox > div:first-child > div').click(function () {
         $(this).closest('.msgbox_container').removeClass('showed');
     });

@@ -81,86 +81,119 @@ class AdminController extends MenuController
      */
     function saveArticle($id = 0){
         $this->showErrorPage = FALSE;
-	    if ($id) $this->validateRights([USER_ADMIN]);
+        try {
+            if ($id) $this->validateRights([USER_ADMIN]);
 
-        $this->validateArgs($_POST, [['section_id', 'numeric'], ['title'], ['description'], ['contents']]);
+            //торжественно клянусь, что замышляю только шалость!
+            $this->validateArgs($_POST, [['section_id', 'numeric'], ['title'], ['description'], ['contents']]);
 
-        //для начала проверим, в какой раздел лезет пользователь
-        if (!$this->db->fetch('SELECT id FROM sections WHERE id=' . $_POST['section_id'] . (empty($this->data['user']['is_admin']) ? ' AND allow_user_articles=1' : '')))
-            throw new ControllerException('Невозможно создать/изменить статью в этом разделе.<br/>Возможно, он не существует, или у вас нет прав на публикацию в нем.');
+            //для начала проверим, в какой раздел лезет пользователь
+            if (!$this->db->fetch('SELECT id FROM sections WHERE id=' . $_POST['section_id'] . (empty($this->data['user']['is_admin']) ? ' AND allow_user_articles=1' : '')))
+                throw new ControllerException('Невозможно создать/изменить статью в этом разделе.<br/>Возможно, он не существует, или у вас нет прав на публикацию в нем.');
 
-        //проверка формата
-        if (!preg_match('#^.{1,100}$#', $_POST['title'])) throw new ControllerException('Неправильный формат заголовка.');
-        if (!preg_match('#^.+$#m', $_POST['description'])) throw new ControllerException('Неправильный формат описания.');
-        if (!preg_match('#^.+$#m', $_POST['contents'])) throw new ControllerException('Неправильный формат содержания.');
-
-        $text = strip_tags(trim($_POST['contents'])); //это нам еще понадобится в конце
-
-        //для редактирования нам нужно запомнить старую папку
-        if ($id){
-            if (!($res = $this->db->fetch('SELECT data_folder FROM articles INNER JOIN sections ON articles.section_id = sections.id WHERE articles.id=' . $id)))
-                throw new ControllerException('Раздел не существует.');
-            $old_folder = PATH_SECTION . $res[0]['data_folder'] . '/' . $id . '/';
-        }
-
-        $fields = [
-                'section_id' => $_POST['section_id'],
-                'title' => strip_tags($_POST['title']),
-                'verifier_id' => $this->data['user']['is_admin'] ? $this->data['user']['id'] : NULL, //если проверка админом
-            ];
-
-        if (!$id) $fields['author_id'] = $this->data['user']['id'];
-
-        //путь к папке новго раздела
-        if (!($res = $this->db->fetch('SELECT data_folder FROM sections WHERE id=' . $_POST['section_id'])))
-            throw new ControllerException('Раздел не существует.');
-
-        if (!$id){
-        	$this->db->insert('articles', $fields);
-            $article_path = PATH_SECTION . $res[0]['data_folder'] . '/' . $this->db->lastInsertId() . '/';
-            if (!file_exists($article_path)){
-                if (!@mkdir($article_path))
-                    throw new ControllerException('Не удалось создать папку с данными.<br/>Повторите действие позже.');
+            //проверим, не слишком ли много непроверенных публикаций наспамил пользователь 
+            if (empty($this->data['user']['is_admin'])) {
+                if ($this->db->fetch('SELECT COUNT(*) AS c FROM articles WHERE author_id=' . $this->data['user']['id'] . ' AND verifier_id IS NULL', 1)[0]['c'] >= $this->app->config['article']['max_unverified_articles'])
+                    throw new ControllerException('Вы не можете предолжить статью, так как мы еще не проверили ваши предыдущие публикации.<br/>Повторите попытку позже.');
             }
-            //в базу добавили, новую папку получили
-        }
-        else {
-            $article_path = PATH_SECTION . $res[0]['data_folder'] . '/' . $id . '/';
-            if (!@rename($old_folder, $article_path))
-                throw new ControllerException('Не удалось изменить папку с данными.<br/>Повторите действие позже.');
 
-            $this->db->update('articles', $fields, ['id' => $id]); //базу обновили, папку переместили
-        }
+            //проверка формата
+            if (!preg_match('#^.{1,100}$#', $_POST['title'])) throw new ControllerException('Неправильный формат заголовка.');
+            if (!preg_match('#^.+$#m', $_POST['description'])) throw new ControllerException('Неправильный формат описания.');
+            if (!preg_match('#^.+$#m', $_POST['contents'])) throw new ControllerException('Неправильный формат содержания.');
 
-        file_put_contents($article_path . 'description.txt' , preg_replace('#^(.+)$#m', '<p>$1</p>', strip_tags(trim($_POST['description']))));
-        file_put_contents($article_path . 'text.txt', $text);
+            $text = strip_tags(trim($_POST['contents'])); //это нам еще понадобится в конце
 
-        //избавляемся от загруженных, но неиспользованных картинок
-        $used = [];
-        if (preg_match_all('#(\[img(?:=[\'"\w\.:\/\\\\&\?\#\-\+\=\*]*)?(?:\swidth=\d+)?(?:\sheight=\d+)?\]\s*)(\d+_\d+\.\w+)(\s*\[\/img\])#', $text, $match)){
-            foreach ($match[0] as $i => $m){
-                if (!@getimagesize($oldfile = $article_path . '/' . $match[2][$i])) {
-                    if (!@getimagesize($oldfile = PATH_TEMP . $match[2][$i])){
-                        continue; //картинки нет ни во временных файлах, ни в папке со статьей
+            //для редактирования нам нужно запомнить старую папку
+            if ($id){
+                if (!($res = $this->db->fetch('SELECT data_folder FROM articles INNER JOIN sections ON articles.section_id = sections.id WHERE articles.id=' . $id)))
+                    throw new ControllerException('Раздел не существует.');
+                $old_folder = PATH_SECTION . $res[0]['data_folder'] . '/' . $id . '/';
+            }
+
+            $fields = [
+                    'section_id' => $_POST['section_id'],
+                    'title' => strip_tags($_POST['title']),
+                    'verifier_id' => $this->data['user']['is_admin'] ? $this->data['user']['id'] : NULL, //если проверка админом
+                ];
+
+            if (!$id) $fields['author_id'] = $this->data['user']['id'];
+
+            //путь к папке новго раздела
+            if (!($res = $this->db->fetch('SELECT data_folder FROM sections WHERE id=' . $_POST['section_id'])))
+                throw new ControllerException('Раздел не существует.');
+
+            if (!$id){
+                $this->db->insert('articles', $fields);
+                $article_path = PATH_SECTION . $res[0]['data_folder'] . '/' . $this->db->lastInsertId() . '/';
+                $article_path_root = $this->app->config['path']['section'] . $res[0]['data_folder'] . '/' . $this->db->lastInsertId() . '/';
+                if (!@mkdir($article_path)){
+                    unset($article_path);
+                    throw new ControllerException('Не удалось создать папку с данными.<br/>Повторите действие позже.');
+                }
+                //в базу добавили, новую папку получили
+            }
+            else {
+                $article_path = PATH_SECTION . $res[0]['data_folder'] . '/' . $id . '/';
+                $article_path_root = $this->app->config['path']['section'] . $res[0]['data_folder'] . '/' . $id . '/';
+                if (strcasecmp($old_folder, $article_path) != 0){
+                    if (!@$this->copyTree($old_folder, $article_path)){
+                        unset($article_path);
+                        throw new ControllerException('Не удалось изменить папку с данными.<br/>Повторите действие позже.');
                     }
                 }
-                $newfile = $article_path . '/' . $match[2][$i];
-                rename($oldfile, $newfile); //перемещаем временную картинку в постоянное место хранения
-                $used[] = $match[2][$i]; //да, она использована
+                $this->db->update('articles', $fields, ['id' => $id]); //базу обновили, папку переместили
             }
+
+            $total_size = 0;
+
+            //избавляемся от загруженных, но неиспользованных картинок
+            $used = [];
+            $p = [];
+            if (preg_match_all('#(\[img(?:=[\'"\w\.:\/\\\\&\?\#\-\+\=\*]*)?(?:\swidth=\d+)?(?:\sheight=\d+)?\]\s*)(\d+_\d+\.\w+)(\s*\[\/img\])#', $text, $match)){
+                foreach ($match[0] as $i => $m){
+                    if (!@getimagesize($oldfile = $article_path . '/' . $match[2][$i])) {
+                        if (!@getimagesize($oldfile = PATH_TEMP . $match[2][$i])){
+                            continue; //картинки нет ни во временных файлах, ни в папке со статьей
+                        }
+                    }
+                    $total_size += filesize($oldfile);
+                    if ($total_size > $this->app->config['article']['max_resources']*1024*1024)
+                        throw new ControllerException("Превышен максимальный размер, выделенный для ресурсов этой статьи ({$this->app->config['article']['max_resources']}МБ}).<br/>Попробуйте удалить несколько прикрепленных файлов.");
+                    $p[] = $oldfile;
+                    $used[] = $match[2][$i]; //да, она использована
+                }
+            }
+
+            for($i = 0; $i < count($p); $i++){
+                copy($p[$i], $article_path . '/' . $used[$i]);
+            }
+
+            //очищаем папку статьи от ненужного хлама
+            $unused = array_diff(scandir($article_path), $used, ['.', '..']);
+            foreach ($unused as $u){
+                if (@getimagesize($article_path . '/' . $u)){
+                    @unlink($article_path . '/' . $u);
+                }
+            }
+
+            file_put_contents($article_path . 'description.txt' , preg_replace('#^(.+)$#m', '<p>$1</p>', strip_tags(trim($_POST['description']))));
+            file_put_contents($article_path . 'text.txt', $text);
+
+            if (isset($old_folder) && strcasecmp($article_path, $old_folder) !=0) @$this->delTree($old_folder);
+
+            //шалость удалась!
+            $this->data['res'] = $used;
+            $this->data['article_path'] = $article_path_root;
+        }
+        catch (Exception $ex){
+            if (isset($article_path)){
+                if (!isset($old_folder) || (isset($old_folder) && strcasecmp($article_path, $old_folder) !=0))
+                    @$this->delTree($article_path);
+            }
+            throw $ex;
         }
 
-        //очищаем папку статьи от ненужного хлама
-        $unused = array_diff(scandir($article_path), $used, ['.', '..']);
-        foreach ($unused as $u){
-            if (@getimagesize($article_path . '/' . $u)){
-                @unlink($article_path . '/' . $u);
-            }
-        }
-
-        //готово!
-
-        $this->data['article_path'] = str_replace($_SERVER['DOCUMENT_ROOT'], '', $article_path) . '/';
     }
 
     function saveSection($id = 0){
@@ -284,6 +317,10 @@ class AdminController extends MenuController
             }
             throw $ex;
         }
+        $this->data['images_path'] = [
+            $this->app->config['path']['section'] . $_POST['data_folder'] . '/main.png', 
+            $this->app->config['path']['section'] . $_POST['data_folder'] . '/main_small.png'
+            ];
     }
 
     function sections(){
@@ -468,10 +505,18 @@ class AdminController extends MenuController
             echo $this->data['parsed_text'] . '<div class="clearfix"></div>';
         }
         else if ($this->action == 'addarticle'){
-            echo $this->data['article_path'];
+            $j = [];
+            if (isset($this->data['res'])){
+                foreach ($this->data['res'] as $r){
+                    $j['res'][] = $this->data['article_path'] . $r;
+                }
+            }
+            $j['article_path'] = $this->data['article_path'];
+            echo json_encode($j);
         }
         else if ($this->action == 'addsection'){
-            echo '/admin/publicate/?section=' . $this->data['section_id'];
+            $j = ['pub_path' => '/admin/articles/add/?section=' . $this->data['section_id'], 'images_path' => $this->data['images_path']];
+            echo json_encode($j);
         }
         else if (isset($this->data['subaction']) && ($this->data['subaction'] == 'deleteimg' || $this->data['subaction'] == 'delete')){
         }

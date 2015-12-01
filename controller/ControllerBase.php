@@ -50,7 +50,7 @@ abstract class ControllerBase
         foreach ($required as $arg){
             if (!isset($args[$arg[0]]) ||
                 (isset($arg[1]) && !@call_user_func('is_' . $arg[1], $args[$arg[0]]))) {
-                if ($throw) throw new ControllerException($arg[0] . 'Неправильные параметры запроса.');
+                if ($throw) throw new ControllerException('Неправильные параметры запроса.');
                 else return FALSE;
             }
         }
