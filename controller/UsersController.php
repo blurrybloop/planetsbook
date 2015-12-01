@@ -86,8 +86,9 @@ class UsersController extends MenuController
 
         try {$this->db->query('UPDATE users SET last_visit=now() WHERE id=' . $id);}
         catch (DatabaseException $ex) {} 
-
+        
         $_SESSION['user_id'] = $id;
+        $_SESSION['user_ip'] = $_SERVER['REMOTE_ADDR'];
         $_SESSION['login_success'] = 1;
     }
 
@@ -97,6 +98,7 @@ class UsersController extends MenuController
             catch (DatabaseException $ex) {} 
         }
         unset($_SESSION['user_id']);
+        unset($_SESSION['user_ip']);
         $_SESSION['logout_success'] = 1;
     }
 

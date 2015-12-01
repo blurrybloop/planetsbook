@@ -24,7 +24,7 @@ abstract class ControllerBase
         $this->setActions();
         
         //контроллеры должны обращатся к $data['user'] вместо $_SESSION['user_id']
-        if (isset($_SESSION['user_id']))
+        if (isset($_SESSION['user_id']) && isset($_SESSION['user_ip']) && $_SERVER['REMOTE_ADDR'] == $_SESSION['user_ip'])
             if ($res = $this->db->fetch('SELECT id, login, is_admin, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt FROM users WHERE id=' . $_SESSION['user_id']))
                 $this->data['user'] = $res[0];
     }
