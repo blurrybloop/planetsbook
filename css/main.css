@@ -195,7 +195,7 @@ li{
 form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
 
 .items  .search_container{
-     background: linear-gradient(#353535, #4b4747, #353535);
+
      margin: 1em 1em 1em 1em;
      border-radius: .2em;
      border: #4A4848 solid .1em;
@@ -230,6 +230,7 @@ input, textarea{
     font-size:1em;
     width: 12em;
     padding: .5em;
+    outline: none;
 }
 
 input:focus, textarea:focus{
@@ -256,7 +257,7 @@ input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover{
     padding: 0;
     overflow: hidden;
     transition: height .3s, padding .3s;
-    white-space: normal;
+    white-space: normal !important;
     width: 320px;
 }
 
@@ -292,6 +293,7 @@ input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover{
 .log_message p{
     position: relative;
     margin:0;
+    white-space: normal;
 }
 
 .log_message .details:before{
@@ -416,6 +418,7 @@ footer > div {
     right:0;
     margin-left: auto;
     margin-right: auto;
+    display: inline-block;
 }
 
 .msgbox figure{
@@ -438,6 +441,7 @@ footer > div {
 
 .msgbox > div:first-child > div{
     cursor: pointer;
+    display: inline-block;
 }
 
 .msgbox > div:first-child + div{
@@ -452,14 +456,14 @@ footer > div {
     text-align: left !important;
 }
 
-.msgbox label{
+.msgbox label[for=details_check]{
     font-size: .8em;
     border-top: 1px dashed #D4CECE;
     display: block;
     padding-top: 5px;
 }
 
-.msgbox label > img{
+.msgbox label[for=details_check] > img{
     height: .5em;
     width: .8em;
     margin-left: 5px;

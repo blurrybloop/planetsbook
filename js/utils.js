@@ -42,6 +42,7 @@ $.fn.transitionEnd = function (callback, timeout) {
             }
         }, timeout, this);
     }
+    return this;
 }
 
 $.fn.transitionDuration = function(){
@@ -74,3 +75,67 @@ $.fn.makeLeft = function () { this.first().wrapSelected('\r\n[align=left]', '[/a
 $.fn.makeCenter = function () { this.first().wrapSelected('\r\n[align=center]', '[/align]\r\n'); }
 $.fn.makeRight = function () { this.first().wrapSelected('\r\n[align=right]', '[/align]\r\n'); }
 $.fn.makeJustify = function () { this.first().wrapSelected('\r\n[align=justify]', '[/align]\r\n'); }
+
+function formatError(obj) {
+alert(obj);
+    var formatted = "";
+    if (obj && obj.error) {
+        if (arguments.length == 1) {
+            for (var prop in obj.error) {
+                if (obj.error.hasOwnProperty(prop))
+                    formatted += "<div class='" + prop + "'>" + obj.error[prop] + "</div>";
+            }
+        }
+        else {
+            for (var i = 1; i < arguments.length; i++) {
+                if (obj.error[arguments[i]]) formatted += "<div class='" + arguments[i] + "'>" + obj.error[arguments[i]] + "</div>";
+            }
+        }
+    }
+    if (!formatted.length) formatted = "Неизвестная ошибка";
+    return formatted;
+}
+
+
+function ArrayDictonary() {
+    this.keys = [];
+    this.values = [];
+}
+
+ArrayDictonary.prototype.set = function (key, val) {
+    var pos = $.inArray(key, this.keys);
+    if (~pos) {
+        if (val != undefined) this.values[pos] = val;
+        else this.values.splice(pos, 1);
+    }
+    else {
+        if (val != undefined) {
+            this.keys.push(key);
+            this.values.push(val);
+        }
+    }
+}
+
+ArrayDictonary.prototype.get = function (key) {
+    var pos = $.inArray(key, this.keys);
+    if (~pos) return this.values[pos];
+    else return undefined;
+}
+
+ArrayDictonary.prototype.keyAt = function (index) { return this.keys[index]; }
+ArrayDictonary.prototype.valueAt = function (index) { return this.values[index]; }
+
+ArrayDictonary.prototype.remove = function (key) {
+    var pos = $.inArray(key, this.keys);
+    if (~pos) {
+        this.keys.splice(pos, 1);
+        this.values.splice(pos, 1);
+    }
+}
+
+ArrayDictonary.prototype.length = function () { return this.keys.length; }
+
+ArrayDictonary.prototype.clear = function () {
+    this.keys.splice(0, this.keys.length);
+    this.values.splice(0, this.values.length);
+}

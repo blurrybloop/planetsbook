@@ -133,5 +133,7 @@ class Database
         $this->query('ROLLBACK');
     }
 
+    function isConnected(){ return $this->con ? TRUE: FALSE; }
+
 }
 ?>

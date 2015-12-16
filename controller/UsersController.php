@@ -10,7 +10,8 @@ class UsersController extends MenuController
 {
     public $outputMode = OUT_NONE;
 
-    function setActions(){
+    function __construct($app, $db, array $data = NULL){
+        parent::__construct($app, $db, $data);
         $this->actions = ['register', 'login', 'logout', 'profile', 'edit'];
     }
 
@@ -185,5 +186,6 @@ class UsersController extends MenuController
             $this->data['menu'] = parent::render();
             $this->renderView('profile');
         }
+        else echo json_encode([]);
     }
 }

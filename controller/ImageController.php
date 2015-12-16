@@ -17,9 +17,6 @@ class ImageController extends ControllerBase
     function __construct($app, $db, array $data = NULL){
         parent::__construct($app, $db, $data);
         $this->validateRights([USER_REGISTERED]);
-    }
-
-    function setActions(){
         $this->actions = ['upload', 'delete'];
     }
 
@@ -108,19 +105,7 @@ class ImageController extends ControllerBase
 
     function delete(){
 
-        $this->validateArgs($_REQUEST, [['image_path']]);
-        $path = $_REQUEST['image_path'];
-
-        if (is_string($path)){
-            if (!preg_match('#^\d+(?=_\d+$)#', pathinfo($path, PATHINFO_FILENAME), $match))
-                throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
-
-            if (!$this->db->fetch('SELECT id FROM temp_pages WHERE id=' . $match[0] . ' AND user_id=' . $this->data['user']['id']))
-                throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
-
-            if (!@unlink(PATH_TEMP . pathinfo($path, PATHINFO_BASENAME)))
-                throw new ControllerException('Не удалось удалить изображение</br>Повторите действие позже');
-        }
+       
     }
 
     function throwErrors(){

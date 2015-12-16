@@ -51,12 +51,13 @@ class Application
                 throw new HttpException(isset($_REQUEST['param1']) ? (int)$_REQUEST['param1'] : 500);
 
             $this->callController('pulse');
+            $this->controller = NULL;
             $this->callController($menu);
         }
         catch (Exception $ex) {
             $this->callController('error', [
                 'exception'     =>  $ex, 
-                'showErrorPage' =>  empty($this->controller) ? TRUE : $this->controller->showErrorPage,
+                'controller' =>  $this->controller,
                 ]);
             return;
         }

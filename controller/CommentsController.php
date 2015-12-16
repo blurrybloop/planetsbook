@@ -18,9 +18,6 @@ class CommentsController extends ControllerBase
         parent::__construct($app, $db, $data);
         $this->showErrorPage = FALSE;
         $this->parser = new TagsParser;
-    }
-
-    function setActions(){
         $this->actions = ['fetch', 'add', 'edit', 'delete', 'preview', 'html', 'text', 'rate', 'help'];
     }
 
@@ -40,24 +37,24 @@ class CommentsController extends ControllerBase
     //получение списка комментариев
     function fetch(){
         $this->validateRights([USER_ANY]);
-        $this->validateArgs($_POST, [['article_id', 'numeric'], ['page', 'numeric'], ['page_size', 'numeric']]);
+        $this->validateArgs($_GET, [['article_id', 'numeric'], ['page', 'numeric'], ['page_size', 'numeric']]);
 
-        $count = $this->db->fetch('SELECT COUNT(*) AS c FROM comments WHERE article_id=' . $_POST['article_id'], 1)[0]['c'];
+        $count = $this->db->fetch('SELECT COUNT(*) AS c FROM comments WHERE article_id=' . $_GET['article_id'], 1)[0]['c'];
 
-        $count_page=(int)(($count-1)/$_POST['page_size'])+1;
-        if ($_POST['page']>$count_page) return;
-        if ($_POST['page']==0) $_POST['page']=1;
+        $count_page=(int)(($count-1)/$_GET['page_size'])+1;
+        if ($_GET['page']>$count_page) return;
+        if ($_GET['page']==0) $_GET['page']=1;
 
-        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.article_id = " . $_POST['article_id'] . " GROUP BY comments.id ORDER BY add_date DESC LIMIT " . (($_POST['page']-1)*$_POST['page_size']) . ",{$_POST['page_size']}");
+        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.article_id = " . $_GET['article_id'] . " GROUP BY comments.id ORDER BY add_date DESC LIMIT " . (($_GET['page']-1)*$_GET['page_size']) . ",{$_GET['page_size']}");
         $this->data['comments'] = $res;
     }
 
     //добавление
     function add(){
-        $this->validateArgs($_POST, [['article_id', 'numeric'], ['text']]);
+        $this->validateArgs($_GET, [['article_id', 'numeric'], ['text']]);
 
-        $article = $_POST['article_id'];
-        $text = $_POST['text'];
+        $article = $_GET['article_id'];
+        $text = $_GET['text'];
 
         $this->validateRights([USER_REGISTERED]);
         $this->db->insert('comments', [
@@ -65,16 +62,16 @@ class CommentsController extends ControllerBase
                 'user_id'       =>      $this->data['user']['id'],
                 'comm_text'     =>      strip_tags($text),
             ]);
-        $_POST['comment_id'] = $this->db->lastInsertId();
+        $_GET['comment_id'] = $this->db->lastInsertId();
         $this->html();
     }
 
     //редактирование
     function edit(){
-        $this->validateArgs($_POST, [['comment_id', 'numeric'], ['text']]);
+        $this->validateArgs($_GET, [['comment_id', 'numeric'], ['text']]);
 
-        $id = $_POST['comment_id'];
-        $text = $_POST['text'];
+        $id = $_GET['comment_id'];
+        $text = $_GET['text'];
 
         $this->validateRights(NULL, $id);
         $this->db->update('comments', ['comm_text' => strip_tags($text)], ['id' => $id]);
@@ -83,17 +80,17 @@ class CommentsController extends ControllerBase
 
     //удаление
     function delete(){
-        $this->validateArgs($_POST, [['comment_id', 'numeric']]);
-        $id = $_POST['comment_id'];
+        $this->validateArgs($_GET, [['comment_id', 'numeric']]);
+        $id = $_GET['comment_id'];
         $this->validateRights([USER_ADMIN], $id);
         $this->db->delete('comments', ['id' => $id]);
     }
  
     //предпросмотр
     function preview(){
-        $this->validateArgs($_POST, [['text']]);
+        $this->validateArgs($_GET, [['text']]);
 
-        $text = $_POST['text'];
+        $text = $_GET['text'];
         $this->validateRights([USER_REGISTERED]);
         $this->data['comments'][0] = $this->data['user'];
         $this->parser->text = strip_tags($text);
@@ -104,10 +101,10 @@ class CommentsController extends ControllerBase
 
     //html комментария
     function html(){
-        $this->validateArgs($_POST, [['comment_id', 'numeric']]);
+        $this->validateArgs($_GET, [['comment_id', 'numeric']]);
         $this->validateRights([USER_ANY]);
 
-        if (!($res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.id = " . $_POST['comment_id'])))
+        if (!($res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.id = " . $_GET['comment_id'])))
             throw new ControllerException('Комментарий не существует.');
 
         $this->data['comments'][0] = $res[0];
@@ -115,8 +112,8 @@ class CommentsController extends ControllerBase
 
     //текст комментария с bb-кодами
     function text(){
-        $this->validateArgs($_POST, [['comment_id', 'numeric']]);
-        $id = $_POST['comment_id'];
+        $this->validateArgs($_GET, [['comment_id', 'numeric']]);
+        $id = $_GET['comment_id'];
 
         if ($id == 0){
             $this->validateRights([USER_REGISTERED]);
@@ -135,10 +132,10 @@ class CommentsController extends ControllerBase
 
     //оценка
     function rate(){
-        $this->validateArgs($_POST, [['comment_id', 'numeric'], ['value', 'numeric']]);
+        $this->validateArgs($_GET, [['comment_id', 'numeric'], ['value', 'numeric']]);
 
-        $id = $_POST['comment_id'];
-        $val = $_POST['value'];
+        $id = $_GET['comment_id'];
+        $val = $_GET['value'];
 
         if ($val != 0){
             $this->validateRights([USER_REGISTERED]);
@@ -169,9 +166,33 @@ class CommentsController extends ControllerBase
     }
 
     function render(){
-        if ($this->outputMode == OUT_HELP)
+        if ($this->outputMode == OUT_HELP) {
+            ob_start();
             $this->renderView('bbhelp');
-        else
-            $this->renderView('comment');
+            echo json_encode(['help' => ob_get_clean()]);
+        }
+        else{
+            if (isset($this->data['comments'])){
+                foreach ($this->data['comments'] as &$c){
+                    if (!isset($c['rate'])) $c['rate']=0;
+                    if (!isset($c['comm_text'])) $c['comm_text'] = "";
+
+                    $c['status'] = $c['is_admin'] ? 'Администратор' : 'Пользователь';
+                    $c['avatar'] = $this->app->config['path']['avatar'] . $c['avatar'] . '.png';
+
+                    if ($this->outputMode == OUT_NORMAL){
+                        $this->parser->text = $c['comm_text'];
+                        $c['comm_text'] = $this->parser->parse();
+                    }
+
+                    $c['allow_rate'] = isset($this->data['user']);
+                    $c['allow_edit'] = $this->validateRights(NULL, $c['id'], FALSE);
+                    $c['allow_delete'] = $this->validateRights([USER_ADMIN], $c['id'], FALSE);
+                }
+                unset($c);
+                echo json_encode(['mode' => $this->outputMode,  'comments' => $this->data['comments']]);
+            }
+            else echo json_encode([]);
+        }
     }
 }

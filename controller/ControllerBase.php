@@ -10,27 +10,27 @@ const USER_ADMIN = -2;
 
 abstract class ControllerBase
 {
-    public $app;
-	public $db;
-	public $data = [];
-    public $showErrorPage = FALSE;
-    public $actions = [];
+    protected $app;
+	protected $db;
+	protected $data = [];
+
+    protected $showErrorPage = FALSE;
+    protected $actions = [];
+    protected $useTransactions = TRUE;
 
     function __construct($app, $db, array $data = NULL) {
         $this->app = $app;
         $this->db = $db;
         $this->data =$data;
-        $this->showErrorPage = isset($data['showErrorPage']) ? $data['showErrorPage'] : TRUE;
-        $this->setActions();
-        
+
         //контроллеры должны обращатся к $data['user'] вместо $_SESSION['user_id']
-        if (isset($_SESSION['user_id']) && isset($_SESSION['user_ip']) && $_SERVER['REMOTE_ADDR'] == $_SESSION['user_ip'])
+        if ($this->db && isset($_SESSION['user_id']) && isset($_SESSION['user_ip']) && $_SERVER['REMOTE_ADDR'] == $_SESSION['user_ip'])
             if ($res = $this->db->fetch('SELECT id, login, is_admin, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt FROM users WHERE id=' . $_SESSION['user_id']))
                 $this->data['user'] = $res[0];
     }
 
     //проверка посетителя на соответствие указанной группе пользователей
-    function validateRights(array $users = NULL, $throw = TRUE){
+    protected function validateRights(array $users = NULL, $throw = TRUE){
         if ($users === NULL) $users = [];
         foreach ($users as $user){
             if ($user == USER_ANY) return TRUE; //любой пользователь
@@ -46,7 +46,7 @@ abstract class ControllerBase
         else return FALSE;
     }
 
-    function validateArgs(array $args, array $required, $throw = TRUE){
+    protected function validateArgs(array $args, array $required, $throw = TRUE){
         foreach ($required as $arg){
             if (!isset($args[$arg[0]]) ||
                 (isset($arg[1]) && !@call_user_func('is_' . $arg[1], $args[$arg[0]]))) {
@@ -58,16 +58,15 @@ abstract class ControllerBase
     }
 
     //методы для реализации
-    abstract function setActions();
-    abstract function process($action);
-    abstract function render();
+    protected abstract function process($action);
+    protected abstract function render();
 
     //подключение файла вида - для использования в контроллерах
-	function renderView($view) {
+	protected function renderView($view) {
 		include(PATH_VIEW . $view . '.php');
     }
 
-    function splitPages($count, $page){
+    protected function splitPages($count, $page){
         $page_size = $this->app->config['section']['page_size'];
         $count_page=(int)(($count-1)/$page_size)+1;
 
@@ -85,20 +84,48 @@ abstract class ControllerBase
         return compact('page', 'count_page', 'left_page', 'right_page', 'page_size');
     }
 
+    protected function delTree($dir) {
+        $files = array_diff(scandir($dir), array('.','..'));
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file");
+        }
+        return rmdir($dir);
+    }
+
+    protected function copyTree($src, $dst) { 
+        $dir = opendir($src); 
+        if (!@mkdir($dst)) return FALSE; 
+        while(false !== ( $file = readdir($dir)) ) { 
+            if (( $file != '.' ) && ( $file != '..' )) { 
+                if ( is_dir($src . '/' . $file) ) { 
+                    $this->copyTree($src . '/' . $file,$dst . '/' . $file); 
+                } 
+                else { 
+                    copy($src . '/' . $file,$dst . '/' . $file); 
+                } 
+            } 
+        } 
+        closedir($dir); 
+        return TRUE;
+    } 
+
     //запуск контроллера
-    function show() {
+    public function show() {
+        $ut = $this->useTransactions;
         try{
-            $this->db->transactionStart();
+            if ($ut)
+                $this->db->transactionStart();
 
             $action = isset($_REQUEST['param1']) ? strtolower($_REQUEST['param1']) : '';
             if (!empty($action) && !empty($this->actions) && !in_array($action, $this->actions))
                 throw new ControllerException('Неправильные параметры запроса.');
             $ret = $this->process($action);
-
-            $this->db->transactionCommit();
+            if ($ut)
+                $this->db->transactionCommit();
         }
         catch (Exception $ex){
-            $this->db->transactionRollback();
+            if ($ut)
+                $this->db->transactionRollback();
             if ($ex instanceof DatabaseException)
                 throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $ex);
             else throw $ex;

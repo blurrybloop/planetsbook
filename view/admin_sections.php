@@ -118,17 +118,17 @@
                                     <label for="description">Описание</label>
                                     <textarea name="description" id="description" required="" pattern="^.+$"><?php if (!empty($this->data['section']['description'])) echo $this->data['section']['description']; ?></textarea>
                                     <label>Категория</label>
-                                    <div class="js-combobox" js-combobox-selected="<?php if (isset($this->data['section']['type'])) echo $this->data['section']['type']; ?>" id="cat_combo">
-                                        <div js-combobox-option="0">Солнце и Солнечная система</div>
-                                        <div js-combobox-option="1">Планеты</div>
-                                        <div js-combobox-option="2">Спутники</div>
-                                        <div js-combobox-option="3">Другое</div>
+                                    <div class="js-combobox" data-combobox-selected="<?php if (isset($this->data['section']['type'])) echo $this->data['section']['type']; ?>" id="cat_combo">
+                                        <div data-combobox-option="0">Солнце и Солнечная система</div>
+                                        <div data-combobox-option="1">Планеты</div>
+                                        <div data-combobox-option="2">Спутники</div>
+                                        <div data-combobox-option="3">Другое</div>
                                     </div>
                                     <div style="display: none;">
                                         <label>Планета</label>
-                                        <div class="js-combobox" js-combobox-selected="<?php if (isset($this->data['section']['parent_id'])) echo $this->data['section']['parent_id']; ?>" id="planet_combo">
+                                        <div class="js-combobox" data-combobox-selected="<?php if (isset($this->data['section']['parent_id'])) echo $this->data['section']['parent_id']; ?>" id="planet_combo">
                                             <?php foreach ($this->data['planets'] as $planet) {
-                                                      echo "<div js-combobox-option={$planet['id']}>{$planet['title']}</div>";
+                                                      echo "<div data-combobox-option={$planet['id']}>{$planet['title']}</div>";
                                                   } ?>
 
                                         </div>
@@ -211,16 +211,16 @@
 <script>
     <?php if (!empty($this->data['subaction']) && ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit')) { ?>
     $('#cat_combo').change(function () {
-        if ($(this).attr('js-combobox-selected') == 2)
+        if ($(this).attr('data-combobox-selected') == 2)
             $(this).next().css('display', 'block');
         else
             $(this).next().css('display', 'none');
 
-        $('#cat_id').attr('value', $(this).attr('js-combobox-selected'));
+        $('#cat_id').attr('value', $(this).attr('data-combobox-selected'));
     });
 
     $('#planet_combo').change(function () {
-        $('#planet_id').attr('value', $(this).attr('js-combobox-selected'));
+        $('#planet_id').attr('value', $(this).attr('data-combobox-selected'));
     });
     <?php } ?>
 </script>
@@ -238,10 +238,10 @@
     });
 
     $('.remove').click(function(){
-        var j = $.get('/admin/sections/delete/?section_id=' + $(this).closest('label').attr('for').replace('section', ''), {}, function(){
+        var j = $.getJSON('/admin/sections/delete/?section_id=' + $(this).closest('label').attr('for').replace('section', ''), {}, function(){
             location.reload();
         }).fail(function(){
-            messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
+            messageBox('<p>Хьюстон, у нас проблемы!</p>' + formatError(j.responseJSON, "message", "details"), 'left');
         });
     });
 
@@ -336,8 +336,7 @@
         if (lock) return;
         lock = true;
             $('#section_submit').addClass('loading');
-            var j = $.post('?<?php if (isset($this->data['section']['id'])) echo 'section_id=' . $this->data['section']['id'] . '&' ?>save=1', $(this).serialize(), function () {
-                var r = JSON.parse(j.responseText);
+            var j = $.post('?<?php if (isset($this->data['section']['id'])) echo 'section_id=' . $this->data['section']['id'] . '&' ?>save=1', $(this).serialize(), function (data) {
                 bigUploader.reset();
                 smallUploader.reset();
             <?php if ($this->data['subaction'] == 'add') { ?>
@@ -349,29 +348,29 @@
                           echo '<p>Что вы хотите сделать?</p><ul>';
                           echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
                           echo '<li><a href="javascript: msgboxClose()">Добавить еще один раздел</a></li>';
-                          echo '<li><a href="\' + r["pub_path"] + \'">Опубликовать статью в этом разделе</a></li>';
+                          echo '<li><a href="\' + data.pub_path + \'">Опубликовать статью в этом разделе</a></li>';
                           echo '</ul>'; ?>', 'left');
                     <?php } else if ($this->data['subaction'] == 'edit') { ?>
                                  var d = new Date();
 
                 $('input[name=big_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
-                $('input[name=big_image_path]').attr('value', r["images_path"][0]);
-                $('#big_image img').attr('src', r["images_path"][0] + '?' + d.getTime());
+                $('input[name=big_image_path]').attr('value', data.images_path[0]);
+                $('#big_image img').attr('src', data.images_path[0] + '?' + d.getTime());
 
                 $('input[name=small_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
-                $('input[name=small_image_path]').attr('value', r["images_path"][1]);
-                $('#small_image img').attr('src', r["images_path"][1] + '?' + d.getTime());
+                $('input[name=small_image_path]').attr('value', data.images_path[1]);
+                $('#small_image img').attr('src', data.images_path[1] + '?' + d.getTime());
 
                 messageBox('<?php
                           echo '<p>Все изменения успешно внесены!</p>';
                           echo '<p>Что вы хотите сделать?</p><ul>';
                           echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
                           echo '<li><a href="javascript: msgboxClose()">Продолжить редактирование раздела</a></li>';
-                          echo '<li><a href="\' + r["pub_path"] + \'">Опубликовать статью в этом разделе</a></li>';
+                          echo '<li><a href="\' + data.pub_path + \'">Опубликовать статью в этом разделе</a></li>';
                           echo '</ul>'; ?>', 'left');
                 <?php } ?>
-           }).fail(function(){
-               messageBox('<p>Хьюстон, у нас проблемы!</p>' + j.responseText, 'left');
+           }, "json").fail(function(){
+               messageBox('<p>Хьюстон, у нас проблемы!</p>' + formatError(j.responseJSON, "message", "details"), 'left');
            }).always(function () {
                lock = false;
                 $('#section_submit').removeClass('loading');

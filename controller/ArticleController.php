@@ -3,7 +3,9 @@ require_once('SectionsController.php');
 
 class ArticleController extends MenuController
 {
-    function setActions(){
+
+    public function __construct($app, $db, array $data = NULL){
+        parent::__construct($app, $db, $data);
         $this->actions = [];
     }
 
@@ -40,7 +42,7 @@ class ArticleController extends MenuController
 
         $res = $this->db->fetch("SELECT articles.id AS article_id, articles.title AS title, data_folder FROM articles INNER JOIN sections ON articles.section_id=sections.id ORDER BY views LIMIT 5");
         foreach ($res as &$r){
-            $r['href'] = $this->app->config['path']['section'] . $r['data_folder'] . '/' . $r['article_id'];
+            $r['href'] = $this->app->config['path']['section'] . $r['data_folder'] . '/' . $r['article_id'] . '/';
         }
         unset($r);
         $this->data['see_also'] = $res;

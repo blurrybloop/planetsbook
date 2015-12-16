@@ -28,6 +28,7 @@
     <Compile Include="controller\ErrorController.php" />
     <Compile Include="controller\ImageController.php" />
     <Compile Include="controller\PulseController.php" />
+    <Compile Include="controller\StorageController.php" />
     <Compile Include="controller\UsersController.php" />
     <Compile Include="config.php" />
     <Compile Include="include\ControllerException.php" />
@@ -40,6 +41,7 @@
     <Compile Include="view\admin_messages.php" />
     <Compile Include="view\admin_articles.php" />
     <Compile Include="view\admin_sections.php" />
+    <Compile Include="view\admin_storage.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
@@ -73,10 +75,13 @@
   <ItemGroup>
     <Content Include="css\article.css" />
     <Content Include="css\combobox.css" />
+    <Content Include="css\comments.css" />
+    <Content Include="css\fullscreen.css" />
     <Content Include="css\main.css" />
     <Content Include="css\planet_selector.css" />
     <Content Include="css\admin.css" />
     <Content Include="css\profile.css" />
+    <Content Include="css\storage.css" />
     <Content Include="img\airplane.png" />
     <Content Include="img\arrow.png" />
     <Content Include="img\asteroids.png" />
@@ -148,11 +153,13 @@
     <Content Include="img\wrench.png" />
     <Content Include="js\combobox.js" />
     <Content Include="js\comments.js" />
+    <Content Include="js\fullscreen.js" />
     <Content Include="js\image_uploader.js" />
     <Content Include="js\jQuery\jquery-1.11.0-vsdoc.js" />
     <Content Include="js\jQuery\jquery-1.11.0.js" />
     <Content Include="js\jQuery\jquery-1.11.0.min.js" />
     <Content Include="js\sticky.js" />
+    <Content Include="js\storage.js" />
     <Content Include="js\utils.js" />
     <Content Include="js\planet_selector.js" />
   </ItemGroup>

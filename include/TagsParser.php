@@ -73,7 +73,11 @@ class TagsParser{
                             $closeTag = 'div';
                             break;
                         case 'url':
-                            $openTag = 'a href=' . $this->makeAbsoluteUri((!empty($current[2][0]) ? $current[2][0] : substr($this->text, $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0]))));
+                            $uri = (!empty($current[2][0]) ? $current[2][0] : substr($this->text, $current[0][1] + strlen($current[0][0]), $match[0][1] - $current[0][1] - strlen($current[0][0])));
+                            if (!preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $uri)) {
+                               continue 2;
+                            }
+                            $openTag = 'a href=' . $uri;
                             $closeTag = 'a';
                             break;
                         case 'img':
@@ -109,14 +113,5 @@ class TagsParser{
             else $this->matches->push($match);
         }
         return $this->text;
-    }
-
-    private function makeAbsoluteUri($href){
-        return preg_replace_callback('#(mailto\:|(?:news|(?:ht|f)tp(?:s?))\://)?\S+#', function($matches){
-            $ret = '';
-            if (empty($matches[1])) $ret .= 'http://' . $matches[0];
-            else $ret = $matches[0];
-            return $ret;
-        }, trim($href, '\'"'));
     }
 }

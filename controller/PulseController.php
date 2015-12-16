@@ -3,8 +3,10 @@ require_once 'ControllerBase.php';
 
 class PulseController extends ControllerBase
 {    
-    function setActions(){
-        $this->actions = [];
+    function __construct($app, $db, array $data = NULL){
+        parent::__construct($app, $db, $data);
+        $this->showErrorPage = FALSE;
+        $this->useTransactions = FALSE;
     }
 
     //чистка временной папки

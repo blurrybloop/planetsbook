@@ -26,9 +26,12 @@
                     <div id="moon_item">
                         <img src="/img/moon_small.png" /><p>Спутники</p>
                     </div>
-                    <div>
-                        <img src="/img/asteroids.png" /><p>Другое</p>
-                    </div>
+                    <?php
+                    foreach ($this->data['menu'] as $val){
+                        if ($val['type'] == 3)
+                            echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
+                    }
+                    ?>
                 </div>
             </div>
             <div>
@@ -267,8 +270,8 @@
                  mcnt--;
                  $('#user_menu .log_message > div').html('<p>Отлично!</p><p>Вы только что успешно зарегистрировались на нашем сайте.</p>').parent().removeClass('success fail').addClass('success').css('height', $('#user_menu .log_message > *').outerHeight(true));
                  setTimeout(function () { $('#user_menu .log_message').css('height', 0); }, 3000);
-             }).fail(function () {
-                 $('#reg_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + j.responseText).parent().removeClass('success fail').addClass('fail').css('height', $('#reg_menu .log_message > *').outerHeight(true));
+             }, "json").fail(function () {
+                 $('#reg_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message")).parent().removeClass('success fail').addClass('fail').css('height', $('#reg_menu .log_message > *').outerHeight(true));
              }).always(function () {
                  $('#reg_submit').removeClass('loading');
                  setTimeout(function () { $('#reg_menu .log_message').css('height', 0); }, 3000);
@@ -280,8 +283,8 @@
              $('#login_submit').addClass('loading');
              var j = $.post('/users/login/', $(this).serialize(), function () {
                 location.reload();
-             }).fail(function () {
-                 $('#login_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + j.responseText).parent().removeClass('success fail').addClass('fail').css('height', $('#login_menu .log_message > *').outerHeight(true));
+             }, "json").fail(function () {
+                 $('#login_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message")).parent().removeClass('success fail').addClass('fail').css('height', $('#login_menu .log_message > *').outerHeight(true));
              }).always(function () {
                  $('#login_submit').removeClass('loading');
                  setTimeout(function () { $('#login_menu .log_message').css('height', 0); }, 3000);
@@ -291,8 +294,8 @@
          $('#logout_item').click(function () {
              var j = $.post('/users/logout/', [], function () {
                  location.reload();
-             }).fail(function(){
-                $('#user_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + j.responseText).parent().removeClass('success success').addClass('fail').css('height', $('#user_menu .log_message > *').outerHeight(true));
+             }, "json").fail(function(){
+                 $('#user_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message")).parent().removeClass('success success').addClass('fail').css('height', $('#user_menu .log_message > *').outerHeight(true));
                  setTimeout(function () { $('#user_menu .log_message').css('height', 0); }, 3000);
             });
 

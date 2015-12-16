@@ -4,9 +4,6 @@ require_once 'MenuController.php';
 
 class SectionsController extends MenuController
 {
-    function setActions(){
-        $this->actions = [];
-    }
 
 	function process($action){
         //перенаправление на ArticleController

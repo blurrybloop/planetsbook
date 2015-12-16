@@ -1,0 +1,230 @@
+﻿.js-storage{
+    margin: .5em 1em;
+    font-size: .9em;
+}
+
+.js-storage > .tabs{
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+.js-storage > .tabs > input[type=radio]{
+    display: none;
+}
+
+.js-storage > .tabs > input[type=radio]:checked + label{
+    top: 1px;
+    z-index: 51;
+}
+
+.js-storage > .tabs > label{
+    cursor: pointer;
+    transition: top .2s;
+    top: 5px;
+    position: relative;
+    text-align: center;
+    width: 15%;
+    white-space: nowrap;
+    background-color:rgb(53, 51, 51);
+    color: white;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-top: 4px solid #9F3737;
+    display: inline-block;
+    padding: 1em;
+   
+}
+
+
+.js-storage > .tabs > label:hover{
+    top: 1px;
+}
+
+.js-storage > .tabs > label > span{
+    overflow: hidden;
+    display: block;
+}
+
+.js-storage iframe, .js-storage form{
+    display: none;
+}
+
+
+.js-storage > .pages{
+    position: relative;
+    top: -100%;
+    z-index: 50;
+    background-color:rgb(53, 51, 51);
+    width: 100%;
+    height: 500px;
+    border: 1px solid black;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.js-storage > .pages > div{
+    z-index: 51;
+    transition: visibility .5s, opacity .5s;
+    position: absolute;
+    width:100%;
+    height:100%;
+}
+
+.page-body{
+    overflow: auto;
+    height: 80%;
+}
+
+.page-body > div{
+    padding: .5em;
+    margin: .5em;
+    text-align: center;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    transition: box-shadow .5s;
+}
+
+.page-body > div.loading{
+     background: url(/img/loading.gif) center center no-repeat;
+     background-size: 1em 1em;
+}
+
+.page-body > div.loading > img{
+    visibility: hidden;
+    opacity: 0;
+}
+
+.page-body > div:hover{
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.66);
+}
+
+.page-body > div.selected{
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.33);
+}
+
+.page-body > div > img{
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: top;
+    transition: visibility .3s, opacity .3s;
+}
+
+
+.page-header{
+    display: table;
+   text-align: right;
+   width:100%;
+   height: 10%;
+}
+
+.page-header > div{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.page-header > div:nth-child(1){
+    width: 50%;
+    text-align: left;
+    padding-left: 1em;
+}
+
+.page-header > div:nth-child(1) > .js-combobox{
+  width: 50%;
+}
+
+.page-header > div:nth-child(2){
+    width: 50%;
+    text-align: right;
+    padding-right: 1em;
+    white-space: nowrap;
+}
+
+.page-header > div:nth-child(2) > input{
+    width:50%;
+    height: 2em !important;
+    background-color: #2A2828 !important;
+    font-size: 1em;
+    padding: 0 .5em;
+    margin: 0 !important;
+
+}
+
+.page-header > div:nth-child(2) > input + img{
+    position: relative;
+    height: 1em;
+    right: 2.2em;
+    top:.5em;
+    background-color: #2A2828;
+    padding: .4em;
+    
+}
+
+.js-storage-pages{
+   float: left;
+}
+
+.js-storage-pages > img{
+   height: 1em;
+   vertical-align: middle;
+   padding: 0 .1em;
+   cursor: pointer;
+}
+
+.js-storage-pages > div{
+   display: inline-block;
+}
+
+.js-storage-tools{
+    float: right;
+}
+
+.js-storage-tools > *{
+    width: auto !important;
+    cursor: pointer;
+    margin-right: 1em;
+    transition: background-color .3s;
+    border-radius: 3px 3px;
+    display: inline-block;
+    padding: 3px 3px 3px 25px;
+    background-size: auto 1em;
+    background-position: 5px center;
+    background-repeat: no-repeat;
+}
+
+.js-storage-upload{background-image: url('/img/upload.png');}
+.js-storage-select{ background-image: url('/img/layers.png');}
+.js-storage-ok{ background-image: url('/img/checkmark.png');}
+.js-storage-delete{ background-image: url('/img/trash.png');}
+.js-storage-descript{ background-image: url('/img/edit.png');}
+.js-storage-cancel{ background-image: url('/img/cancel.png');}
+
+.js-storage-tools > *:hover{
+    background-color: rgb(16, 14, 14);
+}
+
+.js-storage-tools > .invisible{
+    display: none;
+}
+
+.page-footer > img{ 
+    width: 20px;
+    height: 20px;
+}
+
+.page-footer > *{
+    display: inline-block;
+    padding: 15px 10px;
+}
+
+.page-footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 10%;
+}
+
+.pages .log_message{
+    width: 100%;
+}

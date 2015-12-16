@@ -87,6 +87,7 @@
         _uploaded = [];
         if (tmr != undefined) clearInterval(tmr);
         $('#page_id' + i).attr('value', 0);
+        pid = 0;
     }
 
 }

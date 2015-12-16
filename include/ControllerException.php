@@ -4,7 +4,7 @@ class ControllerException extends Exception
 {
     protected $details;
 
-    function __construct($message, $details = '',  $code = 0, Exception $previous = NULL){    
+    function __construct($message, $details = '',  $code = 0, Exception $previous = NULL){
         parent::__construct($message, $code, $previous);
         $this->details = $details;
     }
@@ -14,6 +14,6 @@ class ControllerException extends Exception
     }
 
     function getDetails(){
-        return $this->details;
+        return (string)$this->details;
     }
 }

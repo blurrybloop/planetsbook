@@ -1,4 +1,5 @@
 <?php
+
 error_reporting(E_ALL);
 require_once 'config.php';
 
@@ -11,6 +12,7 @@ define('PATH_INCLUDE',      PATH_ROOT . $config['path']['include']      . '/');
 define('PATH_TEMP',         PATH_ROOT . $config['path']['temp']         . '/');
 define('PATH_SECTION',      PATH_ROOT . $config['path']['section']      . '/');
 define('PATH_AVATAR',       PATH_ROOT . $config['path']['avatar']       . '/');
+define('PATH_STORAGE',      PATH_ROOT . $config['path']['storage']      . '/');
 
 require_once(PATH_INCLUDE . 'app.php');
 $app=new Application($config);

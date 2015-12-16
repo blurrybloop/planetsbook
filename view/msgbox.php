@@ -1,42 +1,30 @@
 
-<div class="msgbox_container">
-    <div>
-        <div>
-            <div class="msgbox">
-                <div>
-                    <div>✕</div>
-                </div>
-                <div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     function msgboxClose() {
-        $('.msgbox > div:first-child > div').click();
+        $('.msgbox_container').last().transitionEnd(function(){ $(this).remove() }, 250).removeClass('showed');
     }
 
-    $('.msgbox > div:first-child > div').click(function () {
-        $(this).closest('.msgbox_container').removeClass('showed');
-    });
+    function messageBox(content, align, _width) {
+        var container = $('<div class="msgbox_container">' +
+            '<div>' +
+                '<div>' +
+                '</div>' +
+            '</div>' +
+        '</div>').click(function (e) {
+            if ($(e.target).closest('.msgbox').length == 0) {
+                msgboxClose();
+            }
+        });
 
-    $('.msgbox_container > div > div').click(function (e) {
-        if ($(e.target).closest('.msgbox').length == 0) {
-            $(this).closest('.msgbox_container').removeClass('showed');
-        }
-    });
+        var c = $(content).wrap("div");
+        $("<input type='checkbox' id='details_check' /><label for='details_check'>Детали<img src='/img/details_arrow.png' /></label>").insertBefore(c.find('.details'))
 
-        function messageBox(content, align, _width) {
-            var c = $(content);
-            var el = $('.msgbox > div:last-child');
-            el.html('');
-            el.append(c);
-            $("<input type='checkbox' id='details_check' /><label for='details_check'>Детали<img src='/img/details_arrow.png' /></label>").insertBefore($('.details'));
-            if (align) el.css('text-align', align);
-            if (_width) $('.msgbox').width(_width);
-            $('.msgbox_container').addClass('showed');
-        }
+        var box = $('<div class="msgbox"></div>')
+                .append($('<div><div>✕</div></div>').children().first().click(function () { msgboxClose() }).parent())
+                .append(c).css('text-align', align ? align : 'left').width(_width ? _width : '30%');
+        container.children().children().append(box);
+        $('body').append(container);
+        setTimeout( function() { container.addClass('showed') }, 0);
+ }
 
 </script>

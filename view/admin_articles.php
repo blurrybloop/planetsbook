@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="/css/profile.css" />
     <link rel="stylesheet" href="/css/admin.css" />
     <link rel="stylesheet" href="/css/combobox.css" />
+    <link rel="stylesheet" href="/css/storage.css" />
+    <link rel="stylesheet" href="/css/fullscreen.css" />
     <script src="/js/utils.js"></script>
     <script src="/js/image_uploader.js"></script>
 </head>
@@ -34,11 +36,11 @@
                             <div class="updown_head">
                                 <div>
                                     Сортировка
-                                    <div class="js-combobox" js-combobox-selected="<?php echo isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 0?>" id="cat_combo">
-                                        <a js-combobox-option="0" href="?sort=0<?php if ($this->data['split']) echo '&split=1'; ?>">Дата добавления</a>
-                                        <a js-combobox-option="1" href="?sort=1<?php if ($this->data['split']) echo '&split=1'; ?>">Популярность</a>
-                                        <a js-combobox-option="2" href="?sort=2<?php if ($this->data['split']) echo '&split=1'; ?>">Алфавит</a>
-                                        <a js-combobox-option="3" href="?sort=3<?php if ($this->data['split']) echo '&split=1'; ?>">Сначала непроверенные</a>
+                                    <div class="js-combobox" data-combobox-selected="<?php echo isset($_REQUEST['sort']) ? $_REQUEST['sort'] : 0?>" id="cat_combo">
+                                        <a data-combobox-option="0" href="?sort=0<?php if ($this->data['split']) echo '&split=1'; ?>">Дата добавления</a>
+                                        <a data-combobox-option="1" href="?sort=1<?php if ($this->data['split']) echo '&split=1'; ?>">Популярность</a>
+                                        <a data-combobox-option="2" href="?sort=2<?php if ($this->data['split']) echo '&split=1'; ?>">Алфавит</a>
+                                        <a data-combobox-option="3" href="?sort=3<?php if ($this->data['split']) echo '&split=1'; ?>">Сначала непроверенные</a>
                                     </div>
                                 </div>
                                 <div>
@@ -110,10 +112,10 @@
                                     <label for="description">Описание</label>
                                     <textarea name="description" id="description" required="" pattern="^.+$"><?php  if (!empty($this->data['article']['description'])) echo $this->data['article']['description']; ?></textarea>
                                     <label>Раздел</label>
-                                    <div class="js-combobox" id="section_combo" js-combobox-selected="<?php if (!empty($this->data['article']['section_id'])) echo $this->data['article']['section_id']; else if (isset($_GET['section']) && is_numeric($_GET['section'])) echo $_GET['section']; ?>">
+                                    <div class="js-combobox" id="section_combo" data-combobox-selected="<?php if (!empty($this->data['article']['section_id'])) echo $this->data['article']['section_id']; else if (isset($_GET['section']) && is_numeric($_GET['section'])) echo $_GET['section']; ?>">
                                         <?php if (!empty($this->data['sections'])) {
                                                           foreach ($this->data['sections'] as $section) {
-                                                              echo "<div js-combobox-option='{$section['id']}'>{$section['title']}</div>";
+                                                              echo "<div data-combobox-option='{$section['id']}'>{$section['title']}</div>";
                                                           }
                                                       }?>
                                     </div>
@@ -128,11 +130,11 @@
                                             <div class='tip'>Предпросмотр</div>
                                         </div>
                                     </div>
-
                                     <div id="article_content">
-                                        <textarea id="contents" name="contents" required=""><?php if (!empty($this->data['article']['contents'])) echo $this->data['article']['contents']; ?></textarea>
+                                        <textarea id="contents" name="contents" required="" spellcheck="false"><?php if (!empty($this->data['article']['contents'])) echo $this->data['article']['contents']; ?></textarea>
                                     </div>
                                     <h2>Прикрепленные изображения</h2>
+                                    
                                     <div class="img_thumbs">
                                         <?php if (!empty($this->data['article']['images'])) {
                                             foreach ($this->data['article']['images'] as $img) {
@@ -176,16 +178,17 @@
     <?php if (!empty($this->data['subaction']) && ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit')) { ?>
 
     $('#section_combo').change(function () {
-        $('#section_id').attr('value', $(this).attr('js-combobox-selected'));
+        $('#section_id').attr('value', $(this).attr('data-combobox-selected'));
     });
 
     <?php if (isset($_REQUEST['section'])) { ?>
-    $('#section_combo').attr('js-combobox-selected', '<?php echo $_REQUEST['section']; ?>');
+    $('#section_combo').attr('data-combobox-selected', '<?php echo $_REQUEST['section']; ?>');
     $('#section_combo').change();
      <?php }} ?>
 
 </script>
 <script src="/js/combobox.js"></script>
+<script src="/js/storage.js"></script>
 <script>
 
     <?php if (empty($this->data['subaction'])) { ?>
@@ -198,10 +201,10 @@
     <?php } ?>
 
     $('.remove > a').click(function () {
-        var j = $.get('/admin/articles/delete/?article_id=' + $(this).closest('label').attr('for').replace('article', ''), {}, function () {
+        var j = $.getJSON('/admin/articles/delete/?article_id=' + $(this).closest('label').attr('for').replace('article', ''), {}, function () {
             location.reload();
         }).fail(function () {
-            messageBox(j.responseText, 'left');
+            messageBox(formatError(j.responseJSON, "message", "details"), 'left');
         });
     });
 <?php }
@@ -252,12 +255,24 @@
         else if (t.hasClass('comm_ul')) $(contents).makeUL();
         else if (t.hasClass('comm_ol')) $(contents).makeOL();
         else if (t.hasClass('comm_url')) $(contents).makeURL();
-        else if (t.hasClass('comm_img')) { if (lock) return; uploader.upload();}
+        else if (t.hasClass('comm_img')) { if (lock) return;
+            var s = $("<div class='js-storage' data-target='/storage/' data-user-id='<?php echo $this->data['user']['id'] ?>' data-admin='<?php echo (int)$this->data['user']['is_admin'] ?>'></div>");
+            var storage = new Storage(s);
+            storage.onSelected = function(sel){
+                msgboxClose();
+                for (var i = 0; i < sel.length; i++) {
+                    if (window.contents)
+                        $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + sel[i] + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
+                   // $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + sel[i] + "' /> <div>" + s + "</div></div>")
+                }
+            }
+            messageBox(s, 'left', '60%');
+        }
         else if (t.hasClass('comm_help')) {
-            var j = $.get('/comments/help/', {}, function(){
-                messageBox(j.responseText, 'left', '60%');
+            var j = $.getJSON('/comments/help/', {}, function(data){
+                messageBox(data.help, 'left', '60%');
             }).fail(function(){
-                messageBox('Хьюстон, у нас проблемы!' + j.responseText, 'left');
+                messageBox('Хьюстон, у нас проблемы!' + formatError(j.responseJSON, "message", "details"), 'left');
             })
         }
     });
@@ -317,14 +332,13 @@
         lock = true;
         e.preventDefault();
         $('#pub_submit').addClass('loading');
-        var j = $.post('?<?php if ($this->data['subaction'] == 'edit') echo 'article_id=' . $this->data['article']['id'] . '&'; ?>save=1', $(this).serialize(), function () {
-            var r = JSON.parse(j.responseText);
+        var j = $.post('?<?php if ($this->data['subaction'] == 'edit') echo 'article_id=' . $this->data['article']['id'] . '&'; ?>save=1', $(this).serialize(), function (data) {
             uploader.reset();
             <?php if ($this->data['subaction'] == 'edit') { ?>
             $('#edit_content > .img_thumbs').html("");
-            for(var ii=0; ii<r["res"].length; ii++){
-                var s = r["res"][ii].substr(r["res"][ii].lastIndexOf('/') + 1);
-                $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + r["res"][ii] + "' /> <div>" + s + "</div></div>");
+            for(var ii=0; ii<data.res.length; ii++){
+                var s = data.res[ii].substr(data.res[ii].lastIndexOf('/') + 1);
+                $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + data.res[ii] + "' /> <div>" + s + "</div></div>");
             }
             <?php } else if ($this->data['subaction'] == 'add') { ?>
             $(pub_form)[0].reset();
@@ -337,7 +351,7 @@
                                   echo '<p>Что вы хотите сделать?</p><ul>';
                                   echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
                                   echo '<li><a href="javascript: msgboxClose()">Добавить еще одну публикацию</a></li>';
-                                  if ($this->data['user']['is_admin']) echo '<li><a href="\' + r["article_path"] + \'">Перейти на страницу опубликованной статьи</a></li>';
+                                  if ($this->data['user']['is_admin']) echo '<li><a href="\' + data.article_path + \'">Перейти на страницу опубликованной статьи</a></li>';
                                   echo '</ul>';
                               }
                             else if ($this->data['subaction'] == 'edit'){
@@ -348,11 +362,11 @@
                                  echo '<p>Что вы хотите сделать?</p><ul>';
                                  echo '<li><a href="javascript: history.go(-1)">Вернуться на предыдущую страницу</a></li>';
                                  echo '<li><a href="javascript: msgboxClose()">Продолжить редактирование этой статьи</a></li>';
-                                 echo '<li><a href="\' + r["article_path"] + \'">Перейти на страницу опубликованной статьи</a></li>';
+                                 echo '<li><a href="\' + data.article_path + \'">Перейти на страницу опубликованной статьи</a></li>';
                                  echo '</ul>';
                               }
                                   ?>', 'left');
-        }).fail(function () {
+        }, "json").fail(function () {
             messageBox(j.responseText, 'left');
         }).always(function () {
             lock = false;
@@ -361,6 +375,7 @@
     });
 
     $(pub_form).on('reset', function () {
+        uploader.reset();
         $('.thumb_action > div:nth-child(2)').click();
     });
 
@@ -383,3 +398,5 @@
     <?php } ?>
 
 </script>
+<script src="/js/storage.js"></script>
+<script src="/js/fullscreen.js"></script>

@@ -8,41 +8,12 @@ const IMAGE_DELETE = 2;
 
 class AdminController extends MenuController
 {
-    public $action;
-
     function __construct($app, $db, array $data = NULL){
         parent::__construct($app, $db, $data);
+        $this->actions = ['messages', 'preview', 'sections', 'articles', 'users', 'storage'];
+        $this->showErrorPage = TRUE;
         $this->validateRights([USER_REGISTERED]);
     }
-
-    function setActions(){
-        $this->actions = ['messages', 'preview', 'sections', 'articles'];
-    }
-
-    private function delTree($dir) {
-        $files = array_diff(scandir($dir), array('.','..'));
-        foreach ($files as $file) {
-            (is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file");
-        }
-        return rmdir($dir);
-    }
-
-    private function copyTree($src, $dst) { 
-        $dir = opendir($src); 
-        if (!@mkdir($dst)) return FALSE; 
-        while(false !== ( $file = readdir($dir)) ) { 
-            if (( $file != '.' ) && ( $file != '..' )) { 
-                if ( is_dir($src . '/' . $file) ) { 
-                    $this->copyTree($src . '/' . $file,$dst . '/' . $file); 
-                } 
-                else { 
-                    copy($src . '/' . $file,$dst . '/' . $file); 
-                } 
-            } 
-        } 
-        closedir($dir); 
-        return TRUE;
-    } 
 
     function messages(){
         $this->showErrorPage = TRUE;
@@ -98,7 +69,7 @@ class AdminController extends MenuController
             }
 
             //проверка формата
-            if (!preg_match('#^.{1,100}$#', $_POST['title'])) throw new ControllerException('Неправильный формат заголовка.');
+            if (!preg_match('#^.{1,100}$#u', $_POST['title'])) throw new ControllerException('Неправильный формат заголовка.');
             if (!preg_match('#^.+$#m', $_POST['description'])) throw new ControllerException('Неправильный формат описания.');
             if (!preg_match('#^.+$#m', $_POST['contents'])) throw new ControllerException('Неправильный формат содержания.');
 
@@ -342,7 +313,7 @@ class AdminController extends MenuController
         else if ($action == 'add'){
             if (!empty($_GET['save'])) {
                 $this->saveSection();
-                $this->action = 'addsection';
+                $this->data['action'] = 'addsection';
                 return;
             }
             $this->data['planets'] = $this->db->fetch('SELECT id, title FROM sections WHERE type=1');
@@ -355,7 +326,7 @@ class AdminController extends MenuController
             $id = $_GET['section_id'];
             if (!empty($_GET['save'])) {
                 $this->saveSection($id);
-                $this->action = 'addsection';
+                $this->data['action'] = 'addsection';
                 return;
             }
 
@@ -378,6 +349,7 @@ class AdminController extends MenuController
 
             $this->db->delete('sections', ['id' => $id]);
             @$this->delTree(PATH_SECTION . $res[0]['data_folder']);
+            $this->data['subaction'] = 'delete';
         }
     }
 
@@ -388,6 +360,7 @@ class AdminController extends MenuController
 
         //список статей
         if (empty($action)){
+ 
             $this->validateRights([USER_ADMIN]);
 
             $count = $this->db->fetch('SELECT COUNT(*) AS c FROM articles', 1)[0]['c'];
@@ -421,9 +394,10 @@ class AdminController extends MenuController
         }
         //вывод статьи для добавления
         else if ($action == 'add'){
+
             if (!empty($_GET['save'])) {
                 $this->saveArticle();
-                $this->action = 'addarticle';
+                $this->data['action'] = 'addarticle';
                 return;
             }
             $res = $this->db->fetch('SELECT id, title FROM sections' . ($this->data['user']['is_admin'] ? '' : ' WHERE allow_user_articles=1'));
@@ -436,7 +410,7 @@ class AdminController extends MenuController
             $id = $_GET['article_id'];
             if (!empty($_GET['save'])) {
                 $this->saveArticle($id);
-                $this->action = 'addarticle';
+                $this->data['action'] = 'addarticle';
                 return;
             }
 
@@ -493,18 +467,20 @@ class AdminController extends MenuController
         $this->data['subaction'] = $action;
     }
 
+    function storage(){}
+
     function process($action){
         parent::process('');
-        if (empty($action)) $this->action = $action = 'messages';
-        else  $this->action = $action;
+        if (empty($action)) $this->data['action'] = $action = 'messages';
+        else  $this->data['action'] = $action;
         $this->$action();
     }
 
     function render(){
-        if ($this->action == 'preview'){
+        if ($this->data['action'] == 'preview'){
             echo $this->data['parsed_text'] . '<div class="clearfix"></div>';
         }
-        else if ($this->action == 'addarticle'){
+        else if ($this->data['action'] == 'addarticle'){
             $j = [];
             if (isset($this->data['res'])){
                 foreach ($this->data['res'] as $r){
@@ -514,15 +490,16 @@ class AdminController extends MenuController
             $j['article_path'] = $this->data['article_path'];
             echo json_encode($j);
         }
-        else if ($this->action == 'addsection'){
+        else if ($this->data['action'] == 'addsection'){
             $j = ['pub_path' => '/admin/articles/add/?section=' . $this->data['section_id'], 'images_path' => $this->data['images_path']];
             echo json_encode($j);
         }
         else if (isset($this->data['subaction']) && ($this->data['subaction'] == 'deleteimg' || $this->data['subaction'] == 'delete')){
+            echo json_encode([]);
         }
         else{
             $this->data['menu'] = parent::render();
-            $this->renderView('admin_' . $this->action);
+            $this->renderView('admin_' . $this->data['action']);
         }
     }
 }

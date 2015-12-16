@@ -188,8 +188,8 @@ require 'msgbox.php'
             var j = $.post('/users/edit/?update=1&id=<?php echo $this->data['profile']['id'] ?>', $(this).serialize(), function(){
                 $('#edit_log > div').html('<p>Все изменения были успешно внесены.</p>').parent().removeClass('fail').addClass('success').css('height', $('#edit_log > *').outerHeight(true));
                  setTimeout(function () { $('#edit_log').css('height', 0); }, 3000);
-            }).fail(function(){
-                 $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + j.responseText).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
+            }, "json").fail(function(){
+                 $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + formatError(j.responseJSON, "message", "details")).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
                  setTimeout(function () { $('#edit_log').css('height', 0); }, 5000);
             }).always(function(){
                 lock = false;

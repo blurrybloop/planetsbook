@@ -7,10 +7,7 @@
     <script src="/js/utils.js"></script>
 </head>
 <body>
-    <?php
-          if (isset($this->data['section']['image'])) { ?>
-    <img src="<?php echo $this->data['section']['image'] ?>" />
-    <?php } ?>
+
     <?php
 echo $this->data['menu'];
 require 'msgbox.php'
@@ -43,10 +40,10 @@ if($this->data['section']['allow_user_articles'] && isset($this->data['user'])) 
                                 </div>
                                 <div>
                                     Сортировать по
-                                    <div class="js-combobox" js-combobox-selected="<?php echo isset($this->data['sort']) ? $this->data['sort'] : 0?>" id="cat_combo">
-                                        <a js-combobox-option="0" href="?sort=0&page=<?php echo $this->data['page'] ?>">дате публикации</a>
-                                        <a js-combobox-option="1" href="?sort=1&page=<?php echo $this->data['page'] ?>">популярности</a>
-                                        <a js-combobox-option="2" href="?sort=2&page=<?php echo $this->data['page'] ?>">алфавиту</a>
+                                    <div class="js-combobox" data-combobox-selected="<?php echo isset($this->data['sort']) ? $this->data['sort'] : 0?>" id="cat_combo">
+                                        <a data-combobox-option="0" href="?sort=0&page=<?php echo $this->data['page'] ?>">дате публикации</a>
+                                        <a data-combobox-option="1" href="?sort=1&page=<?php echo $this->data['page'] ?>">популярности</a>
+                                        <a data-combobox-option="2" href="?sort=2&page=<?php echo $this->data['page'] ?>">алфавиту</a>
                                     </div>
                                 </div>
                             </div>
