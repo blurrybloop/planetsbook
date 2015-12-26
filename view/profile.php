@@ -4,8 +4,9 @@
 <?php require 'html_head.php' ?>
     <link rel="stylesheet" href="/css/article.css" />
     <link rel="stylesheet" href="/css/profile.css" />
-    <script src="/js/utils.js"></script>
-    <script src="/js/image_uploader.js"></script>
+    <link rel="stylesheet" href="/css/combobox.css" />
+    <link rel="stylesheet" href="/css/storage.css" />
+    <link rel="stylesheet" href="/css/fullscreen.css" />
 </head>
 <body>
 
@@ -27,7 +28,7 @@ require 'msgbox.php'
                             <div>
                                 <?php if ($this->outputMode == OUT_SHOW_PROFILE) { ?>
                                 <section>
-                                    <img src="<?php echo $this->app->config['path']['avatar'] . $this->data['profile']['avatar'] . '.png'?>" />
+                                    <img src="<?php echo empty($this->data['profile']['avatar']) ? '/img/noavatar.png' : $this->data['profile']['avatar']?>" />
                                 </section>
                                 <section class="user_info">
                                     <section>
@@ -80,7 +81,7 @@ require 'msgbox.php'
                                         <legend>Аватар</legend>
                                         <div>
                                             <div>
-                                                <img id="avatar_img" src="<?php echo $this->app->config['path']['avatar'] . $this->data['profile']['avatar'] . '.png'?>" />
+                                                <img id="avatar_img" src="<?php  echo empty($this->data['profile']['avatar']) ? '/img/noavatar.png' : $this->data['profile']['avatar'] ?>" />
                                             </div>
                                             <div>
 
@@ -199,55 +200,39 @@ require 'msgbox.php'
         });
 
     var avatar = $('#avatar_img');
-    var uploader = new ImageUploader(cont, false, true, <?php echo $this->app->config['pulse']['frequency'] * 1000; ?>);
-
-    uploader.onStartUploading = function () {
-        lock = true;
-        $('#upload_avatar').addClass('loading');
-    }
-
-    uploader.onUploaded = function (images) {
-        lock = false;
-        $('#upload_avatar').removeClass('loading');
-        if (images.length) {
-            $('input[name=avatar_action]').attr('value', 1);
-            $('input[name=avatar_path]').attr('value', images[0]);
-            var d = new Date();
-            avatar.attr('src', images[0] + '?' + d.getTime());
-        }
-    }
-
-    uploader.onError = function (err) {
-        $('input[name=avatar_action]').attr('value', 0);
-        $('#edit_log > div').html('<p>Хьюстон, у нас проблемы!</p>' + err).parent().removeClass('success').addClass('fail').css('height', $('#edit_log > *').outerHeight(true));
-        setTimeout(function () { $('#edit_log').css('height', 0); }, 5000);
-    }
 
     $('#reset_avatar').click(function(){
         if (lock) return;
         $('input[name=avatar_action]').attr('value', 0);
-        var d = new Date();
-        avatar.attr('src', '<?php echo $this->app->config['path']['avatar'] . $this->data['profile']['avatar'] . '.png'?>' + '?' + d.getTime());
+        avatar.attr('src', '<?php echo empty($this->data['profile']['avatar']) ? '/img/noavatar.png' : $this->data['profile']['avatar'] ?>');
     });
 
     $('#remove_avatar').click(function () {
         if (lock) return;
-        if (uploader.getUploaded().length) uploader.delete(uploader.getUploaded()[0]);
         $('input[name=avatar_action]').attr('value', 2);
-        avatar.attr('src', '<?php echo $this->app->config['path']['avatar'] . '0.png'?>');
+        avatar.attr('src', '/img/noavatar.png');
 
     });
 
-    uploader.onDeleted = function(){
-       $('input[name=avatar_action]').attr('value', 2);
-        avatar.attr('src', '<?php echo $this->app->config['path']['avatar'] . '0.png'?>');
-    }
-
     $('#upload_avatar').click(function () {
         if (lock) return;
-        uploader.upload();
+        var s = $("<div class='js-storage' data-target='/avatar/' data-user-id='<?php echo $this->data['user']['id'] ?>' data-admin='<?php echo (int)$this->data['user']['is_admin'] ?>'></div>");
+            var storage = new Storage(s);
+            storage.onSelected = function(sel){
+                msgboxClose();
+                if (sel.length() > 0){
+                    $('input[name=avatar_action]').attr('value', 1);
+                    $('input[name=avatar_path]').attr('value', sel.keyAt(0));
+                    avatar.attr('src', sel.valueAt(0));
+                }
+            }
+            messageBox(s, 'left', '60%');
     });
 
     <?php } ?>
 </script>
+<script src="/js/combobox.js"></script>
+<script src="/js/storage.js"></script>
+<script src="/js/fullscreen.js"></script>
+
 

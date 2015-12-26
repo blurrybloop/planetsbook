@@ -93,7 +93,7 @@ Comments.prototype.fetch = function () {
         setTimeout(function () { el.removeClass('invisible'); }, 0);
         if (self.onUpdateComment) self.onUpdateComment.call(el);
         self._lockFetch = false;
-    }).fail(function () { messageBox(formatError(j.responseJSON, "message")); });
+    }).fail(function () { alert(j.responseText); messageBox(formatError(j.responseJSON, "message", "details")); });
 }
 
 Comments.prototype.help = function () {

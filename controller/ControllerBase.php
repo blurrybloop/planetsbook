@@ -25,8 +25,11 @@ abstract class ControllerBase
 
         //контроллеры должны обращатся к $data['user'] вместо $_SESSION['user_id']
         if ($this->db && isset($_SESSION['user_id']) && isset($_SESSION['user_ip']) && $_SERVER['REMOTE_ADDR'] == $_SESSION['user_ip'])
-            if ($res = $this->db->fetch('SELECT id, login, is_admin, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt FROM users WHERE id=' . $_SESSION['user_id']))
+            if ($res = $this->db->fetch('SELECT users.id AS id, login, is_admin, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, CONCAT(storage.id, ".", extension) as avatar, rating, comments_cnt FROM users LEFT JOIN storage ON avatar=storage.id WHERE users.id=' . $_SESSION['user_id'])){
                 $this->data['user'] = $res[0];
+                if (!empty($this->data['user']['avatar']))
+                    $this->data['user']['avatar'] = $this->app->config['path']['storage'] . $this->data['user']['avatar'];
+            }
     }
 
     //проверка посетителя на соответствие указанной группе пользователей
@@ -127,7 +130,7 @@ abstract class ControllerBase
             if ($ut)
                 $this->db->transactionRollback();
             if ($ex instanceof DatabaseException)
-                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $ex);
+                throw new ControllerException('Произошла ошибка.<br/>Повторите действие позже.', $ex->getMessage());
             else throw $ex;
         }
         if ($ret !== FALSE) $this->render();

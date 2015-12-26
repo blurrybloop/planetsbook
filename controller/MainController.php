@@ -19,7 +19,7 @@ class MainController extends MenuController
                 if ($val['type'] == 0 || $val['type'] == 1){
                     $show_res[$val['id']]['title'] = $val['title'];
                     $show_res[$val['id']]['description'] = $val['description'];
-                    $show_res[$val['id']]['image'] = $this->app->config['path']['section'] . $val['data_folder'] . '/main.png';
+                    $show_res[$val['id']]['image'] = $val['big_file'];
                     $show_res[$val['id']]['href'] = $val['href'];
                     if (!isset($show_res[$val['id']]['moons'])) $show_res[$val['id']]['moons'] = [];
                 }
@@ -27,7 +27,7 @@ class MainController extends MenuController
                     $show_res[$val['parent_id']]['moons'][] = [ 
                         'title'         =>  $val['title'], 
                         'description'   =>  $val['description'], 
-                        'image'         =>  $this->app->config['path']['section'] . $val['data_folder'] . '/main.png', 
+                        'image'         =>  $val['big_file'], 
                         'href'          =>  $val['href']
                     ];
             }

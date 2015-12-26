@@ -45,7 +45,10 @@ class CommentsController extends ControllerBase
         if ($_GET['page']>$count_page) return;
         if ($_GET['page']==0) $_GET['page']=1;
 
-        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.article_id = " . $_GET['article_id'] . " GROUP BY comments.id ORDER BY add_date DESC LIMIT " . (($_GET['page']-1)*$_GET['page_size']) . ",{$_GET['page_size']}");
+        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, CONCAT(avatar, '.', extension) AS avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(comments.add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id LEFT JOIN storage ON avatar=storage.id WHERE comments.article_id = " . $_GET['article_id'] . " GROUP BY comments.id ORDER BY date_add DESC LIMIT " . (($_GET['page']-1)*$_GET['page_size']) . ",{$_GET['page_size']}");
+        foreach ($res as &$r)
+            $r['avatar'] = $this->app->config['path']['storage'] . $r['avatar'];
+        unset ($r);
         $this->data['comments'] = $res;
     }
 
@@ -104,10 +107,11 @@ class CommentsController extends ControllerBase
         $this->validateArgs($_GET, [['comment_id', 'numeric']]);
         $this->validateRights([USER_ANY]);
 
-        if (!($res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.id = " . $_GET['comment_id'])))
+        if (!($res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, CONCAT(avatar, '.', extension) AS avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(comments.add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id LEFT JOIN storage ON avatar=storage.id WHERE comments.id = " . $_GET['comment_id'])))
             throw new ControllerException('Комментарий не существует.');
 
         $this->data['comments'][0] = $res[0];
+        $this->data['comments'][0]['avatar'] = $this->app->config['path']['storage'] . $this->data['comments'][0]['avatar'];
     }
 
     //текст комментария с bb-кодами
@@ -123,10 +127,11 @@ class CommentsController extends ControllerBase
         }
 
         $this->validateRights(NULL, $id);
-        if (!($res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id WHERE comments.id = $id")))
+        if (!($res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, CONCAT(avatar, '.', extension) AS avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(comments.add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) AS rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id LEFT JOIN storage ON avatar=storage.id WHERE comments.id = $id")))
             throw new ControllerException('Комментарий не существует.');
 
         $this->data['comments'][0] = $res[0];
+        $this->data['comments'][0]['avatar'] = $this->app->config['path']['storage'] . $this->data['comments'][0]['avatar'];
         $this->outputMode = OUT_TEXT;
     }
 
@@ -178,7 +183,6 @@ class CommentsController extends ControllerBase
                     if (!isset($c['comm_text'])) $c['comm_text'] = "";
 
                     $c['status'] = $c['is_admin'] ? 'Администратор' : 'Пользователь';
-                    $c['avatar'] = $this->app->config['path']['avatar'] . $c['avatar'] . '.png';
 
                     if ($this->outputMode == OUT_NORMAL){
                         $this->parser->text = $c['comm_text'];

@@ -7,7 +7,7 @@
 [h1]2. Кто добирался до Южного полюса?[/h1]
 
 [figure=float-left width=400]
-[img]14495182094673_1449518210.png[/img]
+[img]/storage/46.jpg[/img]
 [figcaption=left]На Южном полюсе. Слева направо: Амундсен, Хельмер Хансен, Сверре Хассель, Оскар Вистинг. Декабрь 1911 года[/figcaption]
 [/figure]
 
@@ -47,7 +47,7 @@
 
 
 [figure=float-right width=400]
-[img]14495182094673_1449518459.png[/img]
+[img]/storage/47.jpg[/img]
 [figcaption]"Генерал Шерман"[/figcaption]
 [/figure]
 
@@ -162,7 +162,7 @@
 
 
 [figure=float-left width=400]
-[img]14495182094673_1449518731.png[/img]
+[img]/storage/48.jpg[/img]
 [figcaption]Большой Барьерный Риф[/figcaption]
 [/figure]
 
@@ -201,11 +201,11 @@
 
 [h1]31. Самые высокие горы[/h1]
 
-
 [figure=float-right width=400]
-[img]14495182094673_1449518928.png[/img]
+[img]/storage/49.jpg[/img]
 [figcaption]Эверест[/figcaption]
 [/figure]
+
 
 [align=justify]Гора Эверест или, как ее еще называют, Джомолунгма, является самой высокой горой. Ее вершина находится на высоте 8848 метров над уровнем моря. Однако, если измерить гору от самого ее основания до вершины — она достигает 17 170 метров.[/align]
 

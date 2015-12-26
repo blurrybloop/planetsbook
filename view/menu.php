@@ -17,7 +17,7 @@
                     <?php
                     foreach ($this->data['menu'] as $val){
                             if ($val['type'] == 0)
-                                echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
+                                echo "<a href='{$val['href']}'><img src='" . $val['small_file'] . "' /><p>{$val['title']}</p></a>";
                         }
                     ?>
                     <div id="planets_item">
@@ -29,7 +29,7 @@
                     <?php
                     foreach ($this->data['menu'] as $val){
                         if ($val['type'] == 3)
-                            echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
+                            echo "<a href='{$val['href']}'><img src='" . $val['small_file'] . "' /><p>{$val['title']}</p></a>";
                     }
                     ?>
                 </div>
@@ -44,8 +44,8 @@
                     </div>
                     <div id="user_item">
                         <img src="<?php 
-                                      if (!empty($this->data['user']['avatar'])) echo $this->app->config['path']['avatar'] . $this->data['user']['avatar'] . '.png' ; 
-                                      else echo $this->app->config['path']['avatar'] . '0.png'; ?>" />
+                                      if (!empty($this->data['user']['avatar'])) echo $this->data['user']['avatar']; 
+                                      else echo '/img/noavatar.png'; ?>" />
                         <p>[<?php echo (isset($this->data['user']) ? $this->data['user']['login'] : 'Гость')  ?>]</p>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <?php
                     foreach ($this->data['menu'] as $val){
                         if ($val['type'] == 1) 
-                            echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
+                            echo "<a href='{$val['href']}'><img src='" . $val['small_file'] . "' /><p>{$val['title']}</p></a>";
                     }
                     ?>
                 </div>
@@ -86,7 +86,7 @@
                     <?php
                     foreach ($this->data['menu'] as $val)
                             if ($val['type'] == 2)
-                                echo "<a href='{$val['href']}'><img src='" . $this->app->config['path']['section'] . $val['data_folder'] . '/main_small.png' . "' /><p>{$val['title']}</p></a>";
+                                echo "<a href='{$val['href']}'><img src='" . $val['small_file'] . "' /><p>{$val['title']}</p></a>";
                     ?>
                 </div>
             </div>
@@ -102,10 +102,12 @@
         <div class="items">
             <div>
                 <div>
+                    <div class="log_message"><div></div></div>
                     <div class="search_container">
                         <input type="search" placeholder="Что вы хотите найти?" />
-                        <img src="/img/search.png" />
+                        <div class="search-button"></div>
                     </div>
+                    <div class="search-results invisible"></div>
                 </div>
             </div>
         </div>
@@ -271,7 +273,7 @@
                  $('#user_menu .log_message > div').html('<p>Отлично!</p><p>Вы только что успешно зарегистрировались на нашем сайте.</p>').parent().removeClass('success fail').addClass('success').css('height', $('#user_menu .log_message > *').outerHeight(true));
                  setTimeout(function () { $('#user_menu .log_message').css('height', 0); }, 3000);
              }, "json").fail(function () {
-                 $('#reg_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message")).parent().removeClass('success fail').addClass('fail').css('height', $('#reg_menu .log_message > *').outerHeight(true));
+                 $('#reg_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message", "details")).parent().removeClass('success fail').addClass('fail').css('height', $('#reg_menu .log_message > *').outerHeight(true));
              }).always(function () {
                  $('#reg_submit').removeClass('loading');
                  setTimeout(function () { $('#reg_menu .log_message').css('height', 0); }, 3000);
@@ -295,7 +297,7 @@
              var j = $.post('/users/logout/', [], function () {
                  location.reload();
              }, "json").fail(function(){
-                 $('#user_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message")).parent().removeClass('success success').addClass('fail').css('height', $('#user_menu .log_message > *').outerHeight(true));
+                 $('#user_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message")).parent().removeClass('success').addClass('fail').css('height', $('#user_menu .log_message > *').outerHeight(true));
                  setTimeout(function () { $('#user_menu .log_message').css('height', 0); }, 3000);
             });
 
@@ -313,4 +315,33 @@
     <?php unset($_SESSION['logout_success']);
             } ?>
 
+
+
+    $('#search_menu .search_container > input').change(function(){
+        $(this).nextAll('.search-button').click();
+    })
+
+    $('#search_menu .search_container > .search-button').click(function(){
+        var self = $(this);
+        var val = $.trim($(this).prev().val());
+        if (val.length == 0) return;
+        var ins = $(this).addClass('loading').parent().nextAll('.search-results').transitionEnd(function(){
+            $(this).html("");
+
+            var j = $.getJSON('/search/', {'text' : val}, function (data) {
+                for (var i=0; i<data.length; i++){
+                    ins.append('<div><a href="' + data[i].href + '">' + data[i].title + '</a></div>');
+                }
+                
+                if (data.length == 0) ins.append('<div style="text-align: center; width:100%; padding:0;">Ничего не найдено.</div>');
+
+                self.removeClass('loading');
+                ins.removeClass('invisible');
+
+            }).fail(function(){
+                $('#search_menu .log_message > div').html('<p>Хьюстон, у нас проблемы!</p><br/>' + formatError(j.responseJSON, "message", "details")).parent().removeClass('success').addClass('fail').css('height', $('#search_menu .log_message > *').outerHeight(true));
+                setTimeout(function () { $('#search_menu .log_message').css('height', 0); }, 5000);
+            });
+        }, 350).addClass('invisible');
+    });
 </script>

@@ -90,60 +90,6 @@ label{
     visibility: hidden;
 }
 
-.img_thumbs{
-    text-align: center;
-}
-
-.img_thumbs > div > img{
-    max-height: 100px;
-}
-.img_thumbs > div{
-    text-align: center; 
-    display: inline-block; 
-    position: relative;
-    margin-right: 50px;
-    margin-top:20px;
-    position: relative;
-}
-
-.img_thumbs > div:hover .thumb_action{
-    opacity:1;
-    visibility: visible;
-}
-
-.thumb_action{
-    text-align: right;
-    opacity:0;
-    visibility: hidden;
-    transition: opacity .5s, visibility .5s;
-}
-
-.thumb_action > div{
-     cursor: pointer;
-    position: relative;
-    display: inline-block;
-    height: 24px;
-    width: 24px; 
-    margin-left: 10px;
-}
-
-.thumb_action > div > .tip{
-    top: 100%;
-}
-
-.thumb_action > div:hover > .tip{
-    visibility: visible;
-    opacity: 1;
-}
-
-.thumb_action > div:first-child{
-    background: url(/img/brackets.png) 0 0 no-repeat;
-}
-
-.thumb_action > div:first-child + div{
-    background: url(/img/delete.png) 0 0 no-repeat;
-}
-
 form[name=images_form]{
     display: none;
 }

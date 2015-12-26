@@ -4,7 +4,7 @@
     <?php require 'html_head.php' ?>
     <link rel="stylesheet" href="/css/article.css" />
     <link rel="stylesheet" href="/css/comments.css" />
-    <script src="/js/utils.js"></script>
+    <link rel="stylesheet" href="/css/fullscreen.css" />
 
 </head>
 <body>
@@ -102,4 +102,16 @@
          sticky.width(sticky.parent().width());
      });
      $(window).resize();
+</script>
+<script src="/js/fullscreen.js"></script>
+<script>
+    var figures = $('.read > article figure');
+    var images = [];
+    figures.each(function (i) {
+        images.push({ 'src': $(this).children('img').attr('src'), 'title': $(this).children('figcaption').html() });
+        $(this).click(function () {
+            fs.show(i);
+        })
+    });
+    var fs = new Fullscreen(images);
 </script>

@@ -77,13 +77,19 @@ $.fn.makeRight = function () { this.first().wrapSelected('\r\n[align=right]', '[
 $.fn.makeJustify = function () { this.first().wrapSelected('\r\n[align=justify]', '[/align]\r\n'); }
 
 function formatError(obj) {
-alert(obj);
     var formatted = "";
     if (obj && obj.error) {
         if (arguments.length == 1) {
             for (var prop in obj.error) {
-                if (obj.error.hasOwnProperty(prop))
-                    formatted += "<div class='" + prop + "'>" + obj.error[prop] + "</div>";
+                if (obj.error.hasOwnProperty(prop)) {
+                    formatted += "<div class='" + prop + "'>";
+                    if (obj.error[prop] instanceof Array) {
+                        for (var j=0; j<obj.error[prop].length; j++)
+                            formatted += "<div>" + obj.error[prop][j] + "</div>";
+                    }
+                    else formatted += "<div class='" + prop + "'>" + obj.error[prop] + "</div>";
+                    formatted += "</div>";
+                }
             }
         }
         else {

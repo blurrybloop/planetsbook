@@ -13,6 +13,7 @@
             <?php if (isset($this->data['user']['id']) && $this->data['user']['is_admin']) { ?>
             <div class="section"><div><a href="/admin/users/">Пользователи</a></div></div>
             <div class="section <?php if ($this->data['action'] == 'storage') echo 'selected' ?>"><div><a href="/admin/storage/">Хранилище</a></div></div>
+            <div class="section <?php if ($this->data['action'] == 'stats') echo 'selected' ?>"><div><a href="/admin/stats/">Статистика</a></div></div>
             <?php } ?>
 
         </div>

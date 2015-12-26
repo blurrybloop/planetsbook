@@ -1,5 +1,8 @@
 <?php
 
+require_once PATH_INCLUDE . 'gd/GDImage.php';
+require_once PATH_INCLUDE . 'gd/charts/BarChart.php';
+require_once PATH_INCLUDE . 'gd/charts/LineChart.php';
 require_once 'MenuController.php';
 
 const IMAGE_NOACTION = 0;
@@ -10,7 +13,7 @@ class AdminController extends MenuController
 {
     function __construct($app, $db, array $data = NULL){
         parent::__construct($app, $db, $data);
-        $this->actions = ['messages', 'preview', 'sections', 'articles', 'users', 'storage'];
+        $this->actions = ['messages', 'preview', 'sections', 'articles', 'users', 'storage', 'stats'];
         $this->showErrorPage = TRUE;
         $this->validateRights([USER_REGISTERED]);
     }
@@ -30,17 +33,8 @@ class AdminController extends MenuController
     //предпросмотр статьи
     function preview(){
         $this->showErrorPage = FALSE;
-        $this->validateArgs($_POST, [['text', 'string'], ['images', 'array']]);
-        $text = strip_tags(trim($_POST['text']));
-        $images = (array)$_POST['images']; //изображения, прикрепленные к статье
-        $text = preg_replace_callback('#(\[img(?:=[\'"\w\.:\/\\\\&\?\#\-\+\=\*]*)?(?:\swidth=\d+)?(?:\sheight=\d+)?\]\s*)(\d+_\d+\.\w+)(\s*\[\/img\])#', function($match) use ($images){     
-            foreach ($images as $img){
-                if (pathinfo($img, PATHINFO_BASENAME) == $match[2]) //это прикреплено, меняем путь таким образом, чтобы браузер мог отобразить картинку
-                    return $match[1] . $img . $match[3];
-            }
-            return $match[0];
-        }, $text);
-
+        $this->validateArgs($_POST, [['text', 'string']]);
+        $text = strip_tags(trim($_POST['text']));        
         require_once PATH_INCLUDE . 'TagsParser.php';
         $parser = new TagsParser($text);
         $this->data['parsed_text'] = $parser->parse();
@@ -116,45 +110,12 @@ class AdminController extends MenuController
                 $this->db->update('articles', $fields, ['id' => $id]); //базу обновили, папку переместили
             }
 
-            $total_size = 0;
-
-            //избавляемся от загруженных, но неиспользованных картинок
-            $used = [];
-            $p = [];
-            if (preg_match_all('#(\[img(?:=[\'"\w\.:\/\\\\&\?\#\-\+\=\*]*)?(?:\swidth=\d+)?(?:\sheight=\d+)?\]\s*)(\d+_\d+\.\w+)(\s*\[\/img\])#', $text, $match)){
-                foreach ($match[0] as $i => $m){
-                    if (!@getimagesize($oldfile = $article_path . '/' . $match[2][$i])) {
-                        if (!@getimagesize($oldfile = PATH_TEMP . $match[2][$i])){
-                            continue; //картинки нет ни во временных файлах, ни в папке со статьей
-                        }
-                    }
-                    $total_size += filesize($oldfile);
-                    if ($total_size > $this->app->config['article']['max_resources']*1024*1024)
-                        throw new ControllerException("Превышен максимальный размер, выделенный для ресурсов этой статьи ({$this->app->config['article']['max_resources']}МБ}).<br/>Попробуйте удалить несколько прикрепленных файлов.");
-                    $p[] = $oldfile;
-                    $used[] = $match[2][$i]; //да, она использована
-                }
-            }
-
-            for($i = 0; $i < count($p); $i++){
-                copy($p[$i], $article_path . '/' . $used[$i]);
-            }
-
-            //очищаем папку статьи от ненужного хлама
-            $unused = array_diff(scandir($article_path), $used, ['.', '..']);
-            foreach ($unused as $u){
-                if (@getimagesize($article_path . '/' . $u)){
-                    @unlink($article_path . '/' . $u);
-                }
-            }
-
             file_put_contents($article_path . 'description.txt' , preg_replace('#^(.+)$#m', '<p>$1</p>', strip_tags(trim($_POST['description']))));
             file_put_contents($article_path . 'text.txt', $text);
 
             if (isset($old_folder) && strcasecmp($article_path, $old_folder) !=0) @$this->delTree($old_folder);
 
             //шалость удалась!
-            $this->data['res'] = $used;
             $this->data['article_path'] = $article_path_root;
         }
         catch (Exception $ex){
@@ -191,10 +152,10 @@ class AdminController extends MenuController
                 ($_POST['small_image_action'] == IMAGE_ADD && empty($_POST['small_image_action'])))
                 throw new ControllerException('Неправильные параметры запроса.<br/>Повторите действие позже.');
 
-            if (!$id && $_POST['big_image_action'] != IMAGE_ADD && $_POST['small_image_action'] != IMAGE_ADD) //нужно добавить хотя бы 1 изображение
-                throw new ControllerException('Вы должны выбрать хотя бы одно изображение.');
-            else if ($id && $_POST['big_image_action'] == IMAGE_DELETE && $_POST['small_image_action'] == IMAGE_DELETE) //если оба изображения удалены, ничего не останется
-                throw new ControllerException('Вы должны выбрать хотя бы одно изображение.');
+            if (!$id && $_POST['small_image_action'] != IMAGE_ADD)
+                throw new ControllerException('Вы должны выбрать маленькое изображение.');
+            if ($_POST['small_image_action'] == IMAGE_DELETE)
+                throw new ControllerException('Вы не можете удалить маленькое изображение.');
 
             if (!preg_match('#^.{1,50}$#', $_POST['title'])) throw new ControllerException('Неправильный формат заголовка.');
             if (!preg_match('#^.+$#m', $_POST['description'])) throw new ControllerException('Неправильный формат описания.');
@@ -211,14 +172,13 @@ class AdminController extends MenuController
 
             $_POST['show_main'] = (!empty($_POST['show_main']) && strtolower($_POST['show_main']) == 'on') ? 1 : 0;
             $_POST['allow_user_articles'] = (!empty($_POST['allow_user_articles']) && strtolower($_POST['allow_user_articles']) == 'on') ? 1 : 0;
+            if ($_POST['show_main'] == 1 && (($id && $_POST['big_image_action'] == IMAGE_DELETE) || (!$id && $_POST['big_image_action'] != IMAGE_ADD)))
+                throw new ControllerException("Вы должны выбрать изображение для отображения на главной странице.");
 
             if ($id){
                 if (!($res = $this->db->fetch('SELECT data_folder from sections WHERE id=' . $id)))
                     throw new ControllerException('Раздел еще не существует.');
                 $old_folder = PATH_SECTION . $res[0]['data_folder'];
-
-                if (!file_exists($old_folder . '/main.png') && $_POST['small_image_action'] != IMAGE_ADD && $_POST['small_image_action'] == IMAGE_DELETE)
-                    throw new ControllerException('Вы должны выбрать хотя бы одно изображение.');
 
                 $section_folder = PATH_SECTION . $_POST['data_folder'];
                 if (strcasecmp($old_folder, $section_folder) != 0){
@@ -238,28 +198,20 @@ class AdminController extends MenuController
 
             if ($_POST['big_image_action'] == IMAGE_ADD){
                 require_once PATH_INCLUDE . 'GDExtensions.php';
-                if (!GDExtensions::fitToRect(PATH_TEMP . pathinfo($_POST['big_image_path'], PATHINFO_BASENAME), 500, 500, $section_folder . '/main.png'))
-                    throw new ControllerException('Не удалось сохранить изображение.', GDExtensions::lastError());  
-            }
-            else if ($_POST['big_image_action'] == IMAGE_DELETE){
-                if (!@unlink($section_folder . '/main.png')) //пробуем удалить изображение
-                    throw new ControllerException('Не удалось удалить изображение.');
+                if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $_POST['big_image_path'])))
+                    throw new ControllerException('Неправильный идентификатор изображения.');
+
+                if (!($s = PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension']) || $s[0] > 500 || $s[1] > 500)
+                    throw new ControllerException('Превышены максимальные размеры большого изображения (500x500)');
             }
 
             if ($_POST['small_image_action'] == IMAGE_ADD){
                 require_once PATH_INCLUDE . 'GDExtensions.php';
-                if (!GDExtensions::fitToRect(PATH_TEMP . pathinfo($_POST['small_image_path'], PATHINFO_BASENAME), 25, 25, $section_folder . '/main_small.png'))
-                    throw new ControllerException('Не удалось сохранить изображение.', GDExtensions::lastError());
-            }
-            else if ($_POST['small_image_action'] == IMAGE_DELETE){
-                if (!@unlink($section_folder . '/main_small.png'))
-                    throw new ControllerException('Не удалось удалить изображение.');
-            }
-            //маленькое изображение можно получить из большого
-            if ($_POST['small_image_action'] == IMAGE_DELETE || (!$id && $_POST['small_image_action'] == IMAGE_NOACTION)){
-                require_once  PATH_INCLUDE . 'GDExtensions.php';
-                if (!GDExtensions::fitToRect($section_folder .  '/main.png', 25, 25, $section_folder . '/main_small.png'))
-                    throw new ControllerException('Не удалось сохранить изображение.', GDExtensions::lastError());
+                if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $_POST['small_image_path'])))
+                    throw new ControllerException('Неправильный идентификатор изображения.');
+
+                if (!($s = PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension']) || $s[0] > 500 || $s[1] > 500)
+                    throw new ControllerException('Превышены максимальные размеры маленького изображения (500x500)');
             }
 
             $values = [
@@ -272,6 +224,9 @@ class AdminController extends MenuController
                     'show_main'             =>      $_POST['show_main'],
                     'allow_user_articles'   =>      $_POST['allow_user_articles'],
                  ];
+
+            if($_POST['big_image_action'] != IMAGE_NOACTION) $values['big_image'] = $_POST['big_image_action'] == IMAGE_DELETE ? NULL : $_POST['big_image_path'];
+            if($_POST['small_image_action'] == IMAGE_ADD) $values['small_image'] = $_POST['small_image_path'];
 
             if ($id)
                 $this->db->update('sections', $values, ['id' => $id]);
@@ -288,10 +243,6 @@ class AdminController extends MenuController
             }
             throw $ex;
         }
-        $this->data['images_path'] = [
-            $this->app->config['path']['section'] . $_POST['data_folder'] . '/main.png', 
-            $this->app->config['path']['section'] . $_POST['data_folder'] . '/main_small.png'
-            ];
     }
 
     function sections(){
@@ -302,11 +253,20 @@ class AdminController extends MenuController
 
         //вывод списка разделов
         if (empty($action)){
-            $res = $this->db->fetch('SELECT sections.id AS id, title, data_folder, parent_id, DATE_FORMAT(creation_date, "%e.%m.%Y") AS creation_date, users.id AS user_id, login FROM sections INNER JOIN users ON creator_id=users.id');
+            $res = $this->db->fetch('SELECT sections.id AS id, title, data_folder, parent_id, DATE_FORMAT(creation_date, "%e.%m.%Y") AS creation_date, CONCAT(big_image, ".", big.extension) AS big_file, CONCAT(small_image, ".", small.extension) AS small_file, users.id AS user_id, login FROM sections INNER JOIN users ON creator_id=users.id LEFT JOIN storage big ON big_image=big.id LEFT JOIN storage small ON small_image=small.id');
+            $this->data['sections'] = [];
             foreach ($res as $s){
-                if (!empty($s['parent_id']))
+                $s['big_file'] = $this->app->config['path']['storage'] . $s['big_file'];
+                $s['small_file'] = $this->app->config['path']['storage'] . $s['small_file'];
+                if (!empty($s['parent_id'])){
                     $this->data['sections'][$s['parent_id']]['children'][] = $s; //дочерние разделы идут в children родителя
-                else $this->data['sections'][$s['id']] = $s;
+                }
+                else {
+                    if (isset($this->data['sections'][$s['id']]))
+                        $this->data['sections'][$s['id']] = array_merge($this->data['sections'][$s['id']], $s);
+                    else $this->data['sections'][$s['id']] = $s;
+                }
+
             }
         }
         //вывод формы для добавления
@@ -330,8 +290,15 @@ class AdminController extends MenuController
                 return;
             }
 
-            if (!$res = $this->db->fetch('SELECT * FROM sections WHERE id=' . $id))
+            if (!$res = $this->db->fetch('SELECT sections.id AS id, title, data_folder, parent_id, allow_user_articles, show_main, sections.description AS description, type, DATE_FORMAT(creation_date, "%e.%m.%Y") AS creation_date, CONCAT(big_image, ".", big.extension) AS big_file, CONCAT(small_image, ".", small.extension) AS small_file FROM sections LEFT JOIN storage big ON big_image=big.id LEFT JOIN storage small ON small_image=small.id WHERE sections.id=' . $id))
                 throw new ControllerException('Этот раздел еще не существует.');
+
+            foreach ($res as &$r){
+                $r['big_file'] = $this->app->config['path']['storage'] . $r['big_file'];
+                $r['small_file'] = $this->app->config['path']['storage'] . $r['small_file'];
+            }
+            unset($r);
+
             $this->data['section'] = $res[0];
 
             $this->data['section']['description'] = strip_tags(preg_replace('#(<\/h3>|<br\/>)#', "\n", $this->data['section']['description']));
@@ -422,34 +389,12 @@ class AdminController extends MenuController
             $this->data['article']['description'] = preg_replace('#<p>(.*)<\/p>#U', "$1", $this->data['article']['description']);
 
             $folder = PATH_SECTION . "{$this->data['article']['data_folder']}/{$this->data['article']['id']}/";
-            $folder_site = $this->app->config['path']['section'] . "{$this->data['article']['data_folder']}/{$this->data['article']['id']}/";
-
+            
             //содержание
             $this->data['article']['contents'] = @file_get_contents($folder . 'text.txt');
 
             //список разделов
             $this->data['sections'] = $this->db->fetch('SELECT id, title FROM sections');
-
-            $this->data['article']['images'] = scandir($folder);
-
-            //выбор изображений из папки статьи
-            $this->data['article']['images'] = array_map(function($val) use ($folder_site) {
-                return $folder_site . $val;
-            }, array_filter($this->data['article']['images'], function($val) use ($folder) {
-                return $val != '.' && $val != '..' && @getimagesize($folder . $val);
-            }));
-        }
-        //удаление изображений из папки статьи
-        else if ($action == 'deleteimg'){
-            $this->showErrorPage = FALSE;
-            $this->validateRights([USER_ADMIN]);
-            $this->validateArgs($_GET, [['article_id', 'numeric'], ['image_path']]);
-            $id = $_GET['article_id'];
-            $path = pathinfo($_GET['image_path'], PATHINFO_BASENAME);
-
-            if (!($res = $this->db->fetch('SELECT data_folder FROM articles INNER JOIN sections ON articles.section_id = sections.id WHERE articles.id=' . $id)))
-                throw new ControllerException('Этот раздел еще не существует.');
-            @unlink(PATH_SECTION . $res[0]['data_folder'] . '/' . $id . '/' . $path);
         }
         //удаление статьи
         else if ($action == 'delete'){
@@ -468,6 +413,94 @@ class AdminController extends MenuController
     }
 
     function storage(){}
+    function stats(){
+        if (isset($_REQUEST['top_articles'])){
+            if ($t = $this->db->fetch('SELECT views FROM articles ORDER BY views DESC LIMIT 5')){
+                $v = [0];
+                foreach ($t as $a) $v[] = $a['views'];
+                unset($v[0]);
+                $this->data['image'] = new GDImage(NULL, new Size(800,500));
+                $g=new BarChart(new Boundary(0,0,$this->data['image']->size()->width,$this->data['image']->size()->height));
+                $g->depth(15);
+                $g->background(new Color(255,144,130, 127));
+                $g->values(['bgcolors' => [new Color(255,102,91),new Color(50,255,0), new Color(63,168,255), new Color(255,220,22), new Color(255,112,238)], 'labels' => TRUE, 'thickness' => 3]);
+                $g->data($v);
+                $g->title(['text' => 'Топ 5 публикаций', 'color' => new Color(255,255,255), 'font' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Bold.ttf' ,14), 'margin' => ['top' => 0, 'bottom' => 15]]);
+                $g->axis(['font_x' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf',8), 'font_y' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf',8), 'bgcolor' => new Color(255,255,255,100), 'fgcolor' => new Color(255,255,255), 'y_lines' => TRUE]);
+                $g->max(50);
+                $g->min(0);
+                $g->draw($this->data['image']->getHandle());
+            }
+            $this->data['subaction'] = 'image';
+        }
+        else if (isset($_REQUEST['storage_usage'])){
+            $this->validateArgs($_REQUEST, [['start_date', 'string'], ['end_date', 'string'], ['resolution', 'numeric']]);
+
+            $s = $_REQUEST['start_date'];
+            $e =$_REQUEST['end_date'];
+            $r = $_REQUEST['resolution'];
+       
+            $v = [];
+            if ($t = $this->db->call('show_storage_usage', [$s, $e, $r])){
+                $b = $t[0]['balance'];
+
+                for ($i=1; $i<count($t); $i++){
+                    if ($r == 1)
+                        $v[sprintf('%02d.%02d.%04d', $t[$i]['day'], $t[$i]['month'], $t[$i]['year'])] = round(($b += $t[$i]['balance'])/1024/1024,2);
+                    else if ($r == 2)
+                        $v[sprintf('%02d.%04d', $t[$i]['month'], $t[$i]['year'])] = round(($b += $t[$i]['balance']) / 1024/1024,2);
+                }
+
+               
+                $this->data['image'] = new GDImage(NULL, new Size(800,500));
+                $g=new LineChart(new Boundary(0,0,$this->data['image']->size()->width,$this->data['image']->size()->height));
+                $g->depth(15);
+                $g->background(new Color(255,144,130, 127));
+                $g->values(['bgcolors' => [new Color(0,255,0)], 'fgcolors' => [new Color(255,255,255)], 'font' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf' ,10), 'labels' => TRUE, 'thickness' => 2]);
+                $g->data($v);
+                $g->title(['text' => 'Использование хранилища', 'color' => new Color(255,255,255), 'font' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Bold.ttf' ,14), 'margin' => ['top' => 0, 'bottom' => 15]]);
+                $g->axis(['font_x' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf',8, 90), 'font_y' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf',8), 'bgcolor' => new Color(255,255,255,100), 'fgcolor' => new Color(255,255,255), 'y_lines' => TRUE]);
+                //$g->max(50);
+                //$g->min(0);
+                $g->draw($this->data['image']->getHandle());
+            }
+            $this->data['subaction'] = 'image';
+        }
+
+        else{
+
+            if ($t = $this->db->fetch('SELECT COUNT(*) AS total_users FROM users'))
+                $this->data['stats']['total_users'] = $t[0]['total_users'];
+
+            if ($t = $this->db->fetch('SELECT COUNT(*) AS total_admins FROM users WHERE is_admin=1'))
+                $this->data['stats']['total_admins'] = $t[0]['total_admins'];
+
+            if ($t = $this->db->fetch('SELECT id, login, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date FROM users WHERE reg_date=(SELECT MAX(reg_date) FROM users)'))
+                $this->data['stats']['last_user'] = $t[0];
+
+            if ($t = $this->db->fetch('SELECT SUM(file_size) AS total_size FROM storage'))
+                $this->data['stats']['storage_usage'] = round($t[0]['total_size'] / 1024 / 1024, 1) . ($this->app->config['storage']['max_size'] != -1 ? ' из ' . $this->app->config['storage']['max_size'] : '') . ' МБ';
+
+            if ($t = $this->db->fetch('SELECT COUNT(*) AS total_sections FROM sections'))
+                $this->data['stats']['total_sections'] = $t[0]['total_sections'];
+
+            if ($t = $this->db->fetch('SELECT COUNT(*) AS total_articles FROM articles'))
+                $this->data['stats']['total_articles'] = $t[0]['total_articles'];
+
+            if ($t = $this->db->fetch('SELECT COUNT(*) AS total_unverified_articles FROM articles WHERE verifier_id IS NULL'))
+                $this->data['stats']['total_unverified_articles'] = $t[0]['total_unverified_articles'];
+
+            if ($t = $this->db->fetch('SELECT COUNT(*) AS total_comments FROM comments'))
+                $this->data['stats']['total_comments'] = $t[0]['total_comments'];
+
+            if ($t = $this->db->fetch('SELECT articles.id AS id, articles.title AS title, data_folder, users.id AS user_id, login FROM articles INNER JOIN sections ON articles.section_id=sections.id INNER JOIN users ON author_id=users.id ORDER BY views DESC LIMIT 5')) { 
+                foreach ($t as &$a)
+                    $a['href'] = $this->app->config['path']['section'] . $a['data_folder'] . '/' . $a['id'];
+                unset($a);
+                $this->data['stats']['top_articles'] = $t;
+            }
+        }
+    }
 
     function process($action){
         parent::process('');
@@ -482,20 +515,19 @@ class AdminController extends MenuController
         }
         else if ($this->data['action'] == 'addarticle'){
             $j = [];
-            if (isset($this->data['res'])){
-                foreach ($this->data['res'] as $r){
-                    $j['res'][] = $this->data['article_path'] . $r;
-                }
-            }
             $j['article_path'] = $this->data['article_path'];
             echo json_encode($j);
         }
         else if ($this->data['action'] == 'addsection'){
-            $j = ['pub_path' => '/admin/articles/add/?section=' . $this->data['section_id'], 'images_path' => $this->data['images_path']];
+            $j = ['pub_path' => '/admin/articles/add/?section=' . $this->data['section_id']];
             echo json_encode($j);
         }
-        else if (isset($this->data['subaction']) && ($this->data['subaction'] == 'deleteimg' || $this->data['subaction'] == 'delete')){
+        else if (isset($this->data['subaction']) && $this->data['subaction'] == 'delete'){
             echo json_encode([]);
+        }
+        else if (isset($this->data['subaction']) && $this->data['subaction'] == 'image'){
+            if (isset($this->data['image']))
+                $this->data['image']->saveTo('png', NULL, 0);
         }
         else{
             $this->data['menu'] = parent::render();

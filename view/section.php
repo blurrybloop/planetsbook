@@ -4,7 +4,6 @@
     <?php require 'html_head.php' ?>
     <link rel="stylesheet" href="/css/article.css" />
     <link rel="stylesheet" href="/css/combobox.css" />
-    <script src="/js/utils.js"></script>
 </head>
 <body>
 

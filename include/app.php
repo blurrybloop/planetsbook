@@ -50,7 +50,6 @@ class Application
             if ($menu == 'error') 
                 throw new HttpException(isset($_REQUEST['param1']) ? (int)$_REQUEST['param1'] : 500);
 
-            $this->callController('pulse');
             $this->controller = NULL;
             $this->callController($menu);
         }

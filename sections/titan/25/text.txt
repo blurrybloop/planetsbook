@@ -12,6 +12,6 @@
 
 
 [figure=center width=500]
-[img]14495987316968_1449598732.png[/img]
+[img]/storage/33.jpg[/img]
 [figcaption][/figcaption]
 [/figure]

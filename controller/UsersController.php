@@ -69,6 +69,7 @@ class UsersController extends MenuController
                     'psw_hash'      =>      crypt($_POST['password'], $_POST['login']),
                     'email'         =>      empty($_POST['email']) ? NULL : $_POST['email'],
                     'real_name'     =>      empty($_POST['real_name']) ? NULL : $_POST['real_name'],
+                    'avatar'        =>      NULL,
                 ]);
         }
         catch (DatabaseException $ex){
@@ -109,9 +110,12 @@ class UsersController extends MenuController
         $id = $_GET['id'];
 
         parent::process('');
-        if (!($res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id)))
+        if (!($res = $this->db->fetch('SELECT users.id AS id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, CONCAT(avatar, ".", extension) AS avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users LEFT JOIN storage ON avatar=storage.id WHERE users.id=' . $id)))
             throw new ControllerException('Пользователь не существует.');
         $this->data['profile'] = $res[0];
+        if (!empty($this->data['profile']['avatar']))
+            $this->data['profile']['avatar'] = $this->app->config['path']['storage'] . $this->data['profile']['avatar'];
+
         $this->outputMode = OUT_SHOW_PROFILE;
     }
 
@@ -146,14 +150,17 @@ class UsersController extends MenuController
                 
                 if ($key == 'avatar_action'){
                     if ($value == 1 && isset($_POST['avatar_path'])){
-                        require_once PATH_INCLUDE . 'GDExtensions.php';
-                        if (!GDExtensions::fitToRect(PATH_TEMP . pathinfo($_POST['avatar_path'], PATHINFO_BASENAME), 100,100, PATH_AVATAR . $id . '.png'))
-                            throw new ControllerException('Произошла ошибка при изменении аватара.<br/>Попробуйте повторить действие позже.', GDExtensions::lastError());
-                        $values['avatar'] = $id;
+
+                        if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $_POST['avatar_path'])))
+                            throw new ControllerException('Неправильный идентификатор изображения.');
+
+                        if (!($s = PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension']) || $s[0] > 100 || $s[1] > 100)
+                            throw new ControllerException('Превышены максимальные размеры аватара (100x100)');
+
+                        $values['avatar'] = $_POST['avatar_path'];
                     }
                     else if ($value == 2){
-                        @unlink(PATH_AVATAR . $id . '.png');
-                        $values['avatar'] = 0;
+                        $values['avatar'] = NULL;
                     }
                     continue;
                 }
@@ -169,9 +176,11 @@ class UsersController extends MenuController
             $this->showErrorPage = TRUE;
             parent::validateRights([$id]);
             parent::process('');
-            if (!($res = $this->db->fetch('SELECT id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users WHERE id=' . $id)))
+            if (!($res = $this->db->fetch('SELECT users.id AS id, login, is_admin, email, real_name, DATE_FORMAT(reg_date, \'%e.%m.%Y %H:%i\') AS reg_date, DATE_FORMAT(last_visit, \'%e.%m.%Y %H:%i\') AS last_visit, CONCAT(avatar, ".", extension) AS avatar, rating, comments_cnt, skype, vk, facebook, twitter, site, from_where FROM users LEFT JOIN storage ON avatar=storage.id WHERE users.id=' . $id)))
                 throw new ControllerException('Пользователь не существует.');
             $this->data['profile'] = $res[0];
+            if (!empty($this->data['profile']['avatar']))
+                $this->data['profile']['avatar'] = $this->app->config['path']['storage'] . $this->data['profile']['avatar'];
             $this->outputMode = OUT_EDIT_PROFILE;
         }
     }

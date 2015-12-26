@@ -6,8 +6,8 @@
     <link rel="stylesheet" href="/css/profile.css" />
     <link rel="stylesheet" href="/css/admin.css" />
     <link rel="stylesheet" href="/css/combobox.css" />
-    <script src="/js/utils.js"></script>
-    <script src="/js/image_uploader.js"></script>
+    <link rel="stylesheet" href="/css/storage.css" />
+    <link rel="stylesheet" href="/css/fullscreen.css" />
 </head>
 <body>
 
@@ -28,22 +28,26 @@
                         <div>
                             <?php if (empty($this->data['subaction'])) { ?>
                             <div class="sections">
-                            <h1>
-                                Разделы
-                            </h1>
-                                <div style="text-align: center;"><div class="add"><a href="/admin/sections/add/">Новый раздел</a> </div></div>
+                                <h1>
+                                    Разделы
+                                </h1>
+                                <div style="text-align: center;">
+                                    <div class="add">
+                                        <a href="/admin/sections/add/">Новый раздел</a>
+                                    </div>
+                                </div>
                                 <div class="updown">
                                     <?php
                                       foreach ($this->data['sections'] as $section){
                                     ?>
-                                   <input name="item" id="section<?php echo $section['id'] ?>" type="checkbox" />
+                                    <input name="item" id="section<?php echo $section['id'] ?>" type="checkbox" />
                                     <div>
-                                        <label for="section<?php echo $section['id'] ?>"> 
+                                        <label for="section<?php echo $section['id'] ?>">
                                             <?php if (!empty($section['children'])) { ?>
                                             <img src="/img/down_arrow.png" />
                                             <?php } ?>
                                             <span class="section_title">
-                                                <img src="<?php echo $this->app->config['path']['section']  . $section['data_folder'] . '/main_small.png'; ?>" />
+                                                <img src="<?php echo $section['small_file'] ?>" />
                                                 <?php echo $section['title'] ?>
                                             </span>
                                             <span class="info">
@@ -52,7 +56,7 @@
                                                 </span>
                                                 <span class="user">
                                                     <?php echo $section['login'] ?>
-                                                </span>   
+                                                </span>
                                             </span>
                                             <span class="updown_action">
                                                 <span class="edit">
@@ -73,7 +77,7 @@
                                                 <div>
                                                     <label for="section<?php echo $child['id'] ?>">
                                                         <span class="section_title">
-                                                            <img src="<?php echo $this->app->config['path']['section']  . $child['data_folder'] . '/main_small.png'; ?>" />
+                                                            <img src="<?php echo $child['small_file'] ?>" />
                                                             <?php echo $child['title'] ?>
                                                         </span>
                                                         <span class="info">
@@ -86,7 +90,7 @@
                                                         </span>
                                                         <span class="updown_action">
                                                             <span class="edit">
-                                                                <a href="/admin/sections/edit/?section_id=<?php echo $section['id']; ?>">Редактировать</a>
+                                                                <a href="/admin/sections/edit/?section_id=<?php echo $child['id']; ?>">Редактировать</a>
                                                             </span>
                                                             <span class="remove">
                                                                 <a href="javascript:void(0)">Удалить</a>
@@ -94,7 +98,7 @@
                                                         </span>
                                                     </label>
                                                     <div class="updown_content"></div>
-                                                    </div>
+                                                </div>
                                             </div>
                                             <?php }
                                                   } ?>
@@ -102,19 +106,19 @@
                                     </div>
                                     <?php } ?>
                                 </div>
-                          </div>
-                           
+                            </div>
+
                             <?php }
                                   else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') {
                             ?>
-                            
+
                             <h1>
                                 <?php echo $this->data['subaction'] == 'add' ? 'Добавить раздел' : 'Редактировать раздел'?>
                             </h1>
                             <form name="section_form" method="post">
                                 <fieldset>
                                     <label for="title">Название</label>
-                                    <input name="title" id="title" type="text" required="" maxlength="50" pattern="^.+$" value="<?php if (!empty($this->data['section']['title'])) echo $this->data['section']['title']; ?>" />
+                                    <input name="title" id="title" type="text" required="" maxlength="50" pattern="^.+$" value="<?php if (!empty($this->data['section']['title'])) echo str_replace('"', '&quot;', $this->data['section']['title'])  ?>" />
                                     <label for="description">Описание</label>
                                     <textarea name="description" id="description" required="" pattern="^.+$"><?php if (!empty($this->data['section']['description'])) echo $this->data['section']['description']; ?></textarea>
                                     <label>Категория</label>
@@ -138,9 +142,9 @@
                                     <input name="data_folder" id="data_folder" type="text" required="" maxlength="255" pattern="^[A-Za-z0-9_\s\/]{1,255}$" value="<?php if (!empty($this->data['section']['data_folder'])) echo $this->data['section']['data_folder']; ?>" />
                                     <label for="allow_user_articles">Разрешить пользователям предлагать публикации</label>
                                     <input name="allow_user_articles" id="allow_user_articles" type="checkbox" <?php if (!empty($this->data['section']['allow_user_articles'])) echo 'checked'; ?> />
-                                    <br/>
+                                    <br />
                                     <label for="show_main">Отображать на главной</label>
-                                    <input name="show_main" id="show_main" type="checkbox" <?php if (!empty($this->data['section']['show_main'])) echo 'checked'; ?>/>
+                                    <input name="show_main" id="show_main" type="checkbox" <?php if (!empty($this->data['section']['show_main'])) echo 'checked'; ?> />
                                 </fieldset>
 
                                 <fieldset class="section_images">
@@ -150,12 +154,13 @@
                                             <div>
                                                 <div>
                                                     <img src="<?php 
-                                      $df;
-                                      if (!empty($this->data['section']['data_folder']))
-                                          $df = $this->app->config['path']['section'] . $this->data['section']['data_folder'];
-                                      if (!empty($df) && file_exists(PATH_SECTION . $this->data['section']['data_folder'] . '/main.png')) 
-                                          echo $df . '/main.png'; else echo '/img/nophoto.png';?>" />
-                                                    <div class="tip">Большое изображение.<br />Оно отображается на главной странице и в нижнем правом углу при переходе к соответсвующему разделу.</div>
+                                      if (!empty($this->data['section']['big_file'])) 
+                                          echo $this->data['section']['big_file']; else echo '/img/nophoto.png';?>" />
+                                                    <div class="tip">
+                                                        Большое изображение.
+                                                        <br />
+                                                        Оно отображается на главной странице и в нижнем правом углу при переходе к соответсвующему разделу.
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -168,15 +173,18 @@
                                         <div id="small_image">
                                             <div>
                                                 <div>
-                                                    <img src="<?php if (!empty($df) && file_exists(PATH_SECTION . $this->data['section']['data_folder'] . '/main_small.png')) 
-                                                                  echo $df . '/main_small.png'; else echo '/img/nophoto.png';?>" />
-                                                    <div class="tip">Маленькое изображение.<br />Оно отображается в меню.</div>
+                                                    <img src="<?php  if (!empty($this->data['section']['small_file'])) 
+                                                                         echo $this->data['section']['small_file']; else echo '/img/nophoto.png';?>?>" />
+                                                    <div class="tip">
+                                                        Маленькое изображение.
+                                                        <br />
+                                                        Оно отображается в меню.
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="buttons">
                                                 <label class="upload">Загрузить</label>
-                                                <label class="remove">Удалить</label>
                                                 <label class="reset">Отменить</label>
                                             </div>
                                         </div>
@@ -249,81 +257,54 @@
 
     var lock = false;
 
-    var bigUploader = new ImageUploader(cont, false, true, <?php echo $this->app->config['pulse']['frequency'] * 1000; ?>);
-    var smallUploader = new ImageUploader(cont, false, true, <?php echo $this->app->config['pulse']['frequency'] * 1000; ?>);
-
-    bigUploader.onStartUploading = function () {
-        lock = true;
-        $('#big_image .upload').addClass('loading');
-    }
-
-    bigUploader.onUploaded = function (images) {
-        lock = false;
-        $('#big_image .upload').removeClass('loading');
-        if (images.length) {
-            $('input[name=big_image_action]').attr('value', <?php echo IMAGE_ADD ?>);
-            $('input[name=big_image_path]').attr('value', images[0]);
-            var d = new Date();
-            $('#big_image img').attr('src', images[0] + '?' + d.getTime());
-        }
-    }
-
-    smallUploader.onStartUploading = function () {
-        lock = true;
-        $('#small_image .upload').addClass('loading');
-    }
-
-    smallUploader.onUploaded = function (images) {
-        lock = false;
-        $('#small_image .upload').removeClass('loading');
-        if (images.length) {
-            $('input[name=small_image_action]').attr('value', <?php echo IMAGE_ADD ?>);
-            $('input[name=small_image_path]').attr('value', images[0]);
-            var d = new Date();
-            $('#small_image img').attr('src', images[0] + '?' + d.getTime());
-        }
-    }
-
-    bigUploader.onError = smallUploader.onError = function (err) {
-        messageBox('<p>Хьюстон, у нас проблемы!</p>' + err, 'left');
-    }
-
     $('#big_image .upload').click(function () {
         if (lock) return;
-        bigUploader.upload();
+        var s = $("<div class='js-storage' data-target='/bigimage/' data-user-id='<?php echo $this->data['user']['id'] ?>' data-admin='<?php echo (int)$this->data['user']['is_admin'] ?>'></div>");
+            var storage = new Storage(s);
+            storage.onSelected = function(sel){
+                msgboxClose();
+                if (sel.length() > 0){
+                    $('input[name=big_image_action]').attr('value', <?php echo IMAGE_ADD ?>);
+                    $('input[name=big_image_path]').attr('value', sel.keyAt(0));
+                    $('#big_image img').attr('src', sel.valueAt(0));
+                }
+            }
+            messageBox(s, 'left', '60%');
     });
 
     $('#big_image .remove').click(function () {
          if (lock) return;
          $('input[name=big_image_action]').attr('value', <?php echo IMAGE_DELETE ?>);
-        bigUploader.delete($('#big_image img').attr('src'));
         $('#big_image img').attr('src', '/img/nophoto.png');
     });
 
     $('#small_image .upload').click(function () {
         if (lock) return;
-        smallUploader.upload();
-    });
-
-    $('#small_image .remove').click(function () {
-         if (lock) return;
-         $('input[name=small_image_action]').attr('value', <?php echo IMAGE_DELETE ?>);
-         smallUploader.delete($('#small_image img').attr('src'));
-        $('#small_image img').attr('src', '/img/nophoto.png');
+        var s = $("<div class='js-storage' data-target='/smallimage/' data-user-id='<?php echo $this->data['user']['id'] ?>' data-admin='<?php echo (int)$this->data['user']['is_admin'] ?>'></div>");
+            var storage = new Storage(s);
+            storage.onSelected = function(sel){
+                msgboxClose();
+                if (sel.length() > 0){
+                    $('input[name=small_image_action]').attr('value', <?php echo IMAGE_ADD ?>);
+                    $('input[name=small_image_path]').attr('value', sel.keyAt(0));
+                    $('#small_image img').attr('src', sel.valueAt(0));
+                }
+            }
+            messageBox(s, 'left', '60%');
     });
 
     $('#big_image .reset').click(function () {
         if (lock) return;
         $('input[name=big_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
-        bigUploader.delete($('#big_image img').attr('src'));
-        $('#big_image img').attr('src', '<?php if (!empty($this->data['section']['data_folder']) && file_exists(PATH_SECTION . $this->data['section']['data_folder'] . '/main.png')) echo $df . '/main.png'; else echo '/img/nophoto.png';?>');
+        $('#big_image img').attr('src', '<?php if (!empty($this->data['section']['big_file'])) 
+                                                   echo $this->data['section']['big_file']; else echo '/img/nophoto.png';?>');
     });
 
     $('#small_image .reset').click(function () {
         if (lock) return;
         $('input[name=big_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
-        bigUploader.delete($('#small_image img').attr('src'));
-        $('#small_image img').attr('src', '<?php if (!empty($this->data['section']['data_folder']) && file_exists(PATH_SECTION . $this->data['section']['data_folder'] . '/main_small.png')) echo $df . '/main_small.png'; else echo '/img/nophoto.png';?>');
+        $('#small_image img').attr('src', '<?php if (!empty($this->data['section']['small_file'])) 
+                                                     echo $this->data['section']['small_file']; else echo '/img/nophoto.png';?>');
     });
 
     $(section_form).on('reset', function () {
@@ -337,8 +318,6 @@
         lock = true;
             $('#section_submit').addClass('loading');
             var j = $.post('?<?php if (isset($this->data['section']['id'])) echo 'section_id=' . $this->data['section']['id'] . '&' ?>save=1', $(this).serialize(), function (data) {
-                bigUploader.reset();
-                smallUploader.reset();
             <?php if ($this->data['subaction'] == 'add') { ?>
                 lock = false;
                 $(section_form)[0].reset();
@@ -354,12 +333,7 @@
                                  var d = new Date();
 
                 $('input[name=big_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
-                $('input[name=big_image_path]').attr('value', data.images_path[0]);
-                $('#big_image img').attr('src', data.images_path[0] + '?' + d.getTime());
-
                 $('input[name=small_image_action]').attr('value', <?php echo IMAGE_NOACTION ?>);
-                $('input[name=small_image_path]').attr('value', data.images_path[1]);
-                $('#small_image img').attr('src', data.images_path[1] + '?' + d.getTime());
 
                 messageBox('<?php
                           echo '<p>Все изменения успешно внесены!</p>';
@@ -378,3 +352,5 @@
     });
     <?php } ?>
 </script>
+<script src="/js/storage.js"></script>
+<script src="/js/fullscreen.js"></script>

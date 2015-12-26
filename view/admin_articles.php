@@ -8,11 +8,9 @@
     <link rel="stylesheet" href="/css/combobox.css" />
     <link rel="stylesheet" href="/css/storage.css" />
     <link rel="stylesheet" href="/css/fullscreen.css" />
-    <script src="/js/utils.js"></script>
-    <script src="/js/image_uploader.js"></script>
 </head>
 <body>
-
+    
     <?php
     echo $this->data['menu'];
     require 'msgbox.php'
@@ -108,7 +106,7 @@
                                 <fieldset>
                                     <legend>Оглавление</legend>
                                     <label for="title">Название</label>
-                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" value="<?php if (!empty($this->data['article']['title'])) echo $this->data['article']['title']; ?>"/>
+                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" value="<?php if (!empty($this->data['article']['title'])) echo str_replace('"', '&quot;', $this->data['article']['title']); ?>"/>
                                     <label for="description">Описание</label>
                                     <textarea name="description" id="description" required="" pattern="^.+$"><?php  if (!empty($this->data['article']['description'])) echo $this->data['article']['description']; ?></textarea>
                                     <label>Раздел</label>
@@ -132,25 +130,6 @@
                                     </div>
                                     <div id="article_content">
                                         <textarea id="contents" name="contents" required="" spellcheck="false"><?php if (!empty($this->data['article']['contents'])) echo $this->data['article']['contents']; ?></textarea>
-                                    </div>
-                                    <h2>Прикрепленные изображения</h2>
-                                    
-                                    <div class="img_thumbs">
-                                        <?php if (!empty($this->data['article']['images'])) {
-                                            foreach ($this->data['article']['images'] as $img) {
-                                            ?>
-                                        <div>
-                                            <div class='thumb_action'>
-                                                <div>
-                                                    <div class='tip'>Вставить ВВ-код</div>
-                                                </div>
-                                                <div>
-                                                    <div class='tip'>Удалить</div>
-                                                </div>
-                                            </div>
-                                            <img src='<?php echo $img; ?>' /> <div><?php echo pathinfo($img, PATHINFO_BASENAME); ?></div>
-                                        </div>
-                                        <?php }} ?>
                                     </div>
                                 </fieldset>
                                 <input type="hidden" name="section_id" id="section_id" />
@@ -215,30 +194,7 @@
      else if ($this->data['subaction'] == 'add' || $this->data['subaction'] == 'edit') { ?>
 
     var lock = false;
-    var uploader = new ImageUploader(cont, true, false, <?php echo $this->app->config['pulse']['frequency'] * 1000 ?>);
-
-    uploader.onStartUploading = function () {
-        lock = true;
-    }
-
-    uploader.onUploaded = function (images) {
-        lock = false;
-        $('#upload_avatar').removeClass('loading');
-        for (var i = 0; i < images.length; i++) {
-            var s = images[i].substr(images[i].lastIndexOf('/') + 1);
-            if (window.contents)
-                $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + s + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
-            $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + images[i] + "' /> <div>" + s + "</div></div>")
-        }
-    }
-
-    uploader.onError = function (err) {
-        messageBox('<p>Хьюстон, у нас проблемы!</p>' + err, 'left');
-    }
-
-    uploader.onDeleted = function (img) {
-        if (img) img.parent().remove();
-    }
+    
 
     $('#tools').click(function (e) {
         var t = $(e.target);
@@ -260,10 +216,9 @@
             var storage = new Storage(s);
             storage.onSelected = function(sel){
                 msgboxClose();
-                for (var i = 0; i < sel.length; i++) {
+                for (var i = 0; i < sel.length(); i++) {
                     if (window.contents)
-                        $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + sel[i] + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
-                   // $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + sel[i] + "' /> <div>" + s + "</div></div>")
+                        $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + sel.valueAt(i) + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
                 }
             }
             messageBox(s, 'left', '60%');
@@ -316,11 +271,7 @@
             callback();
         }
         else {
-            var ii = [0];
-        $('.img_thumbs img').each(function(){
-            ii.push($(this).attr('src'));
-        });
-        var j = $.post('/admin/preview/', { text: $(contents).val(), images: ii }, callback).fail(function () { messageBox(j.responseText, 'center'); }).always(function(){
+        var j = $.post('/admin/preview/', { text: $(contents).val() }, callback).fail(function () { messageBox(j.responseText, 'center'); }).always(function(){
             $('.comm_preview').attr('src', preview ? '/img/eye.png' : '/img/edit.png');
             lock = false;
         });
@@ -333,14 +284,7 @@
         e.preventDefault();
         $('#pub_submit').addClass('loading');
         var j = $.post('?<?php if ($this->data['subaction'] == 'edit') echo 'article_id=' . $this->data['article']['id'] . '&'; ?>save=1', $(this).serialize(), function (data) {
-            uploader.reset();
-            <?php if ($this->data['subaction'] == 'edit') { ?>
-            $('#edit_content > .img_thumbs').html("");
-            for(var ii=0; ii<data.res.length; ii++){
-                var s = data.res[ii].substr(data.res[ii].lastIndexOf('/') + 1);
-                $('#edit_content > .img_thumbs').append("<div><div class='thumb_action'><div><div class='tip'>Вставить ВВ-код</div></div><div><div class='tip'>Удалить</div></div></div><img src='" + data.res[ii] + "' /> <div>" + s + "</div></div>");
-            }
-            <?php } else if ($this->data['subaction'] == 'add') { ?>
+            <?php if ($this->data['subaction'] == 'add') { ?>
             $(pub_form)[0].reset();
             <?php } ?>
             messageBox('<?php if ($this->data['subaction'] == 'add') {
@@ -373,28 +317,6 @@
             $('#pub_submit').removeClass('loading');
         });
     });
-
-    $(pub_form).on('reset', function () {
-        uploader.reset();
-        $('.thumb_action > div:nth-child(2)').click();
-    });
-
-    $('.img_thumbs').click(function (e) {
-        var img = $(e.target).parent().next();
-        if ($(e.target).is('.thumb_action > div:nth-child(2)')) {
-<?php if (isset($this->data['subaction']) && $this->data['subaction'] == 'edit') { ?>
-            var j = $.post('/admin/articles/deleteimg/?article_id=<?php echo $this->data['article']['id']; ?>&image_path=' + img.attr('src')).always(function () {
-<?php } ?>
-                uploader.delete(img.attr('src'), img);
-          <?php if (isset($this->data['subaction']) && $this->data['subaction'] == 'edit') { ?>});<?php } ?>
-
-        }
-        else if ($(e.target).is('.thumb_action > div:nth-child(1)')) {
-            if (window.contents)
-                $(contents).first().wrapSelected('\r\n[figure]\r\n[img]' + img.attr('src') + '[/img]\r\n[figcaption]', '[/figcaption]\r\n[/figure]\r\n');
-        }
-    });
-
     <?php } ?>
 
 </script>

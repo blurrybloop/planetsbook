@@ -1,5 +1,5 @@
 [figure=center]
-[img]1449566134496_1449566274.png[/img]
+[img]/storage/40.jpg[/img]
 [figcaption][/figcaption]
 [/figure]
 

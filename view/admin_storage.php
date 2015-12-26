@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/combobox.css" />
     <link rel="stylesheet" href="/css/storage.css" />
     <link rel="stylesheet" href="/css/fullscreen.css" />
-    <script src="/js/utils.js"></script>
+    <script src="/js/combobox.js"></script>
 </head>
 <body>
 
@@ -44,4 +44,3 @@
 <script src="/js/sticky.js"></script>
 <script src="/js/storage.js"></script>
 <script src="/js/fullscreen.js"></script>
-<script src="/js/combobox.js"></script>

@@ -58,7 +58,8 @@
         $(this).addClass('invisible').nextAll().addClass('invisible');
         $(this).prevAll().removeClass('invisible');
         self.params[self._storageIndex].select = 0;
-        if (self.onSelected) self.onSelected.call(self, self._selected.values);
+        if (self.onSelected) self.onSelected.call(self, self._selected);
+        self._currentStorage.find('.page-body > div').removeClass('selected');
     })
 
     this._storages.find('.js-storage-cancel').click(function () {
@@ -109,6 +110,7 @@
         if (e.target.className != 'page-body') {
             if (self.params[self._storageIndex].select) {
                 var pic = $(e.target).closest('div');
+                if (pic.is('.inactive')) return;
                 var id = pic.data("fileId");
                 if (pic.is('.selected')) self._selected.remove(id);
                 else self._selected.set(id, pic.children('img').attr('src'));
@@ -168,7 +170,7 @@ Storage.prototype.fetch = function (user, search, sort, page) {
 
         for (var i = 0; i < data.fetched.length; i++) {
             self._currentStorage.children('.page-body').append(
-                $("<div class='loading " + ((self.params[self._storageIndex].select && self._selected.get(parseInt(data.fetched[i].id)) != undefined) ? 'selected' : '') + "'  data-file-id='" + data.fetched[i].id + "' data-creation-date='" + data.fetched[i].add_date + "' data-description='" + data.fetched[i].description + "'></div>").append(
+                $("<div class='" +(data.fetched[i].active ? ' ' : 'inactive ') + "loading " + ((self.params[self._storageIndex].select && self._selected.get(parseInt(data.fetched[i].id)) != undefined) ? 'selected' : '') + "'  data-file-id='" + data.fetched[i].id + "' data-creation-date='" + data.fetched[i].add_date + "' data-description='" + data.fetched[i].description + "'></div>").append(
                 $("<img src='" + data.fetched[i].href + "'/>").load(function () {
                     $(this).parent().removeClass('loading');
                 })));
@@ -188,6 +190,7 @@ Storage.prototype.upload = function () {
         var p = JSON.parse($(this).contents().find('body').html());
         self.showDescriptDialog("<h2 style='text-align: left;'>Загрузили картинку?</h2><p style='text-align: left;'>Всего несколько слов помогут пользователям найти ее!</p>", p);
         self.fetch(self._storageIndex == 0 ? self._userID : 0, self.params[self._storageIndex].search, self.params[self._storageIndex].sort, self.params[self._storageIndex].page);
+
         if (p.error != undefined)
             self.showError(p);
         else
@@ -203,10 +206,11 @@ Storage.prototype.remove = function (ids) {
     var self = this;
     var c = ids.length;
     var j = $.getJSON(this._target + 'delete/', { 'file_id': ids }, function (data) {
-        self.showSuccess('Удалено ' + c + ' файлов(а).');
-        self.fetch(self._storageIndex == 0 ? self._userID : 0, self.params[self._storageIndex].search, self.params[self._storageIndex].sort, self.params[self._storageIndex].page);
+        self.showSuccess('Удалено ' + c + ' файлов(а).');        
     }).fail(function () {
         self.showError(j.responseJSON);
+    }).always(function () {
+        self.fetch(self._storageIndex == 0 ? self._userID : 0, self.params[self._storageIndex].search, self.params[self._storageIndex].sort, self.params[self._storageIndex].page);
     });
 }
 

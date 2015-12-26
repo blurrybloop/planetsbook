@@ -13,7 +13,7 @@ class Database
         if (!isset($options['pass'])) $options['pass']='';
         if (!isset($options['charset'])) $options['charset']='utf8';
         if (!isset($options['throwable'])) $options['throwable'] = TRUE;
-
+        
         $this->options = $options;
     }
 
@@ -73,6 +73,7 @@ class Database
         $f = array();
         while ($count-- && $ret = mysqli_fetch_assoc($r))
             $f[] = $ret;
+        
         mysqli_free_result($r);
         return $f;
     }
@@ -131,6 +132,34 @@ class Database
 
     function transactionRollback(){
         $this->query('ROLLBACK');
+    }
+
+    function call($procName, array $args){
+        $argString = '';
+        foreach ($args as $arg){
+            $argString .= $this->escapeString($arg) . ',';
+        }
+
+        $argString = rtrim($argString, ',');
+
+        if (!mysqli_multi_query($this->con, 'CALL ' . $procName . '(' . $argString . ')'))
+            return $this->handleError();
+        
+        $ret = NULL;
+
+        do {
+            if ($res = mysqli_store_result($this->con)) {
+                $r = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                
+                if ($ret === NULL) $ret = $r;
+                mysqli_free_result($res);
+            } else {
+                if ($this->lastErrorCode() != 0)
+                    return $this->handleError();
+            }
+        } while (mysqli_more_results($this->con) && mysqli_next_result($this->con));
+
+        return $ret;
     }
 
     function isConnected(){ return $this->con ? TRUE: FALSE; }

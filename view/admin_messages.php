@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="/css/article.css" />
     <link rel="stylesheet" href="/css/profile.css" />
     <link rel="stylesheet" href="/css/admin.css" />
-    <script src="/js/utils.js"></script>
 </head>
 <body>
 

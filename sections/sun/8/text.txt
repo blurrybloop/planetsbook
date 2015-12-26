@@ -7,7 +7,7 @@
                     
 
 [figure=float-left]
-[img]1446992087979_1446992088.png[/img]
+[img]/storage/52.jpg[/img]
 [figcaption]Фото 1[/figcaption]
 [/figure]
 
@@ -53,9 +53,10 @@
                   
 
 [figure=float-right]
-[img]1446992087979_1446992114.png[/img]
+[img]/storage/53.jpg[/img]
 [figcaption]Фото 2[/figcaption]
 [/figure]
+
 
                     [b][u]
                         7. "Поверхность Солнца в области, где располагается пятно, расположена примерно на 500-700 километров ниже, чем поверхность окружающей фотосферы..." (Википедия).

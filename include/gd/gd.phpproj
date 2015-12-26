@@ -1,0 +1,27 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Name>gd</Name>
+    <ProjectGuid>{30174502-786a-4d92-947e-d2001b80d4a2}</ProjectGuid>
+    <RootNamespace>gd</RootNamespace>
+    <OutputType>Library</OutputType>
+    <ProjectTypeGuids>{A0786B88-2ADB-4C21-ABE8-AA2D79766269}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <IncludeDebugInformation>true</IncludeDebugInformation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <IncludeDebugInformation>false</IncludeDebugInformation>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="charts\BarChart.php" />
+    <Compile Include="charts\Chart.php" />
+    <Compile Include="charts\LineChart.php" />
+    <Compile Include="GDGraphicalObjects.php" />
+    <Compile Include="GDHelpers.php" />
+    <Compile Include="GDImage.php" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="charts" />
+  </ItemGroup>
+</Project>

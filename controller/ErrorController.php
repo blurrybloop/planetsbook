@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 require_once 'MenuController.php';
 
@@ -66,8 +66,9 @@ class ErrorController extends MenuController
                 $this->data['error']['code'] = $this->exception->getCode();
                 $this->data['error']['message'] = $this->exception->getMessage();
                 $this->data['error']['line'] = $this->exception->getLine();
-                if (($this->exception instanceof ControllerException) && strlen($this->exception->getDetails()))
-                    $this->data['error']['details'] = $this->exception->getDetails();
+                $this->data['error']['file'] = $this->exception->getFile();
+                if (($this->exception instanceof ControllerException) )
+                    $this->data['error']['details'] = (is_array($this->exception->getDetails())) ? array_values($this->exception->getDetails()) : $this->exception->getDetails();
 
                 if ($this->exception instanceof HttpException)
                     http_response_code($this->exception->getCode());

@@ -3,7 +3,6 @@
 <head>
 <?php require 'html_head.php' ?>
     <link rel="stylesheet" href="/css/planet_selector.css" />
-    <script src="/js/utils.js"></script>
     <script src="/js/planet_selector.js"></script>
 </head>
 <body>

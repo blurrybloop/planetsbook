@@ -14,6 +14,6 @@ class ControllerException extends Exception
     }
 
     function getDetails(){
-        return (string)$this->details;
+        return $this->details;
     }
 }

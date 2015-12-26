@@ -4,3 +4,4 @@
 <link rel="stylesheet" href="/css/main.css">
 <script src="/js/html5shiv.js"></script>
 <script src="/js/jQuery/jquery-1.11.0.min.js"></script>
+<script src="/js/utils.js"></script>

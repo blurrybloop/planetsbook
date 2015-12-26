@@ -52,7 +52,7 @@ body {
 
 a {
     text-decoration: none;
-    border-bottom: 1px dashed;
+    border-bottom: 1px dotted;
     color: #aa3232;
     transition: color .5s;
 }
@@ -194,8 +194,20 @@ li{
 
 form.items > div > div > *{white-space: nowrap; padding-left: 1em;}
 
-.items  .search_container{
+.search-results{
+    white-space: normal;
+    transition: visibility .3s, opacity .3s;
+    visibility: visible;
+    opacity: 1;
+}
 
+.search-results > div{
+    display: block;
+       padding: .5em;
+}
+
+.items  .search_container{
+    position: relative;
      margin: 1em 1em 1em 1em;
      border-radius: .2em;
      border: #4A4848 solid .1em;
@@ -305,15 +317,26 @@ input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover{
     background: none;
     border: none;
     font-size:1em;
-    width: 80%;
+    width: 100%;
     padding: .5em;
     margin:0;
 }
 
-.items .search_container > img{
-    right: .5em;
-    top: 1em;
+.search-button{
+    background: url(/img/search.png) center center no-repeat;
+    background-size: 50% 50%;
+    right: 0;
+    top: 0;
+    margin: 0 !important;
+    padding: .5em .4em;
     position: absolute;
+    background-color: #1E1C1C !important;
+    height: 1.4em;
+    width: 1.5em;
+}
+
+.search-button.loading{
+    background-image: url(/img/loading.gif);
 }
 
 input[type=submit].loading{
