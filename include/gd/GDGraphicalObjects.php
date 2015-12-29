@@ -48,10 +48,12 @@ class Label extends GDGraphicalObject{
         if ($this->align >= self::ALIGN_LEFT_TOP && $this->align <= self::ALIGN_RIGHT_TOP) $y = $this->bound->top();
         else if ($this->align >= self::ALIGN_LEFT_MIDDLE && $this->align <= self::ALIGN_RIGHT_MIDDLE) $y = $this->bound->top() + ($this->bound->height() - $h) / 2;
         else if ($this->align >= self::ALIGN_LEFT_BOTTOM && $this->align <= self::ALIGN_RIGHT_BOTTOM) $y = $this->bound->bottom() - $h;
+        else $y = 0;
 
         if ($this->align % 3 == 0) $x = $this->bound->left();
         else if ($this->align % 3 == 1) $x = $this->bound->left() + ($this->bound->width() - $w) / 2;
         else if ($this->align % 3 == 2) $x = $this->bound->right() - $w;
+        else $x = 0;
 
         if ($this->font->isPHPFont()) {
 			imagestring($image, $this->font->family, $x, $y, $this->text, $this->bgcolor->resolve($image));

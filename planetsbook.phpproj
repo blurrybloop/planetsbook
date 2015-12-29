@@ -23,12 +23,11 @@
     <IncludeDebugInformation>false</IncludeDebugInformation>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="badbrowser.php" />
     <Compile Include="controller\AdminController.php" />
     <Compile Include="controller\AvatarController.php" />
     <Compile Include="controller\CommentsController.php" />
     <Compile Include="controller\ErrorController.php" />
-    <Compile Include="controller\ImageController.php" />
-    <Compile Include="controller\PulseController.php" />
     <Compile Include="controller\BigImageController.php" />
     <Compile Include="controller\SearchController.php" />
     <Compile Include="controller\SmallImageController.php" />
@@ -37,7 +36,12 @@
     <Compile Include="config.php" />
     <Compile Include="include\ControllerException.php" />
     <Compile Include="include\DatabaseException.php" />
-    <Compile Include="include\GDExtensions.php" />
+    <Compile Include="include\gd\charts\BarChart.php" />
+    <Compile Include="include\gd\charts\Chart.php" />
+    <Compile Include="include\gd\charts\LineChart.php" />
+    <Compile Include="include\gd\GDGraphicalObjects.php" />
+    <Compile Include="include\gd\GDHelpers.php" />
+    <Compile Include="include\gd\GDImage.php" />
     <Compile Include="include\HttpException.php" />
     <Compile Include="include\pulse.php" />
     <Compile Include="include\TagsParser.php" />
@@ -47,6 +51,7 @@
     <Compile Include="view\admin_sections.php" />
     <Compile Include="view\admin_stats.php" />
     <Compile Include="view\admin_storage.php" />
+    <Compile Include="view\admin_users.php" />
     <Compile Include="view\article.php" />
     <Compile Include="controller\ArticleController.php" />
     <Compile Include="controller\ControllerBase.php" />
@@ -69,6 +74,8 @@
     <Compile Include="view\menu.php" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="include\gd\" />
+    <Folder Include="include\gd\charts\" />
     <Folder Include="js\" />
     <Folder Include="js\jQuery\" />
     <Folder Include="css\" />
@@ -89,17 +96,22 @@
     <Content Include="css\storage.css" />
     <Content Include="img\airplane.png" />
     <Content Include="img\arrow.png" />
+    <Content Include="img\arrow2.png" />
     <Content Include="img\asteroids.png" />
+    <Content Include="img\astronaut.png" />
     <Content Include="img\bg.jpg" />
     <Content Include="img\bold.png" />
+    <Content Include="img\brackets.png" />
     <Content Include="img\calender.png" />
     <Content Include="img\callisto.png" />
     <Content Include="img\cancel.png" />
     <Content Include="img\center_align.png" />
     <Content Include="img\charon.png" />
+    <Content Include="img\checkmark.png" />
     <Content Include="img\clock.png" />
     <Content Include="img\comment.png" />
     <Content Include="img\cross.png" />
+    <Content Include="img\cross2.png" />
     <Content Include="img\delete.png" />
     <Content Include="img\details_arrow.png" />
     <Content Include="img\dislike.png" />
@@ -110,6 +122,7 @@
     <Content Include="img\eye.png" />
     <Content Include="img\eye1.png" />
     <Content Include="img\favicon.png" />
+    <Content Include="img\folder.png" />
     <Content Include="img\ganymede.png" />
     <Content Include="img\house.png" />
     <Content Include="img\info.png" />
@@ -117,6 +130,7 @@
     <Content Include="img\italic.png" />
     <Content Include="img\jupiter.png" />
     <Content Include="img\justify_align.png" />
+    <Content Include="img\layers.png" />
     <Content Include="img\left.png" />
     <Content Include="img\left_align.png" />
     <Content Include="img\like.png" />
@@ -129,6 +143,8 @@
     <Content Include="img\moon_small.png" />
     <Content Include="img\movie.png" />
     <Content Include="img\neptune.png" />
+    <Content Include="img\noavatar.png" />
+    <Content Include="img\nophoto.png" />
     <Content Include="img\notepad.png" />
     <Content Include="img\on_off.png" />
     <Content Include="img\phobos_deimos.png" />
@@ -136,6 +152,7 @@
     <Content Include="img\picture.png" />
     <Content Include="img\planet.png" />
     <Content Include="img\playback.png" />
+    <Content Include="img\plus.png" />
     <Content Include="img\pluto.png" />
     <Content Include="img\prev.png" />
     <Content Include="img\profile.png" />
@@ -150,8 +167,10 @@
     <Content Include="img\superscript.png" />
     <Content Include="img\system.png" />
     <Content Include="img\titan.png" />
+    <Content Include="img\trash.png" />
     <Content Include="img\triton.png" />
     <Content Include="img\underline.png" />
+    <Content Include="img\upload.png" />
     <Content Include="img\uranus.png" />
     <Content Include="img\user.png" />
     <Content Include="img\user2.png" />

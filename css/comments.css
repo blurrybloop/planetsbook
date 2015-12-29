@@ -55,6 +55,10 @@
     padding: 1em 0;
 }
 
+.comment > div:first-child a{
+    border: none;
+}
+
 .comment > div:first-child + div{
     position: relative;
     padding: 1em .5em;

@@ -60,7 +60,6 @@ class BarChart extends Chart {
 
 	protected function getValuesArea(Boundary $b){
 		$dy=$this->getD()->width;
-		$left=$this->axis['font_y']->getTextExtent($this->max)->width+$dy*2;
 		$dx=$this->getD()->height;
 		$h = $this->axis['font_x']->getTextExtent($this->maxleg)->height;
 		$dbottom = $b->bottom() - ($h < $dx*4 ? $dx * 4 : $h);

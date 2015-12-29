@@ -35,7 +35,7 @@ Comments.prototype._parse = function (data) {
                             "<div class='user_name'>" + j["comments"][i]['login'] + "</div>" +
                             "<div>" +
                                 "<a href='/users/profile?id=" + j["comments"][i]['user_id'] + "'>" +
-                                "<img src='" + j["comments"][i]['avatar'] + "' style='width: 50%' />" +
+                                "<img src='" + (j["comments"][i]['avatar'] ? j["comments"][i]['avatar'] : '/img/noavatar.png') + "' style='width: 50%' />" +
                                 "</a>" +
                             "</div>" +
                             j["comments"][i]['status'] +
@@ -83,7 +83,7 @@ Comments.prototype.fetch = function () {
     if (this._lockFetch || this._curPage == this._end_page) return;
     var self = this;
     this._lockFetch = true;
-    console.log(this._curPage);
+
     var j = $.getJSON("/comments/fetch/", { 'article_id': this._article, 'page': this._curPage++, 'page_size': 10 }, function (data) {
         var el = self._parse(data);
         if (el.length == 0) { self._curPage--; self._end_page = self._curPage; }

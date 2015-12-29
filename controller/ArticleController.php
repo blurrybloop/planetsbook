@@ -24,10 +24,7 @@ class ArticleController extends MenuController
         if (!isset($this->data['section']))
             throw new HttpException(404);
 
-        //if (is_file(PATH_SECTION . $this->data['section']['data_folder'] . '/main.png')) 
-        //    $this->data['section']['image'] = $this->app->config['path']['section'] . $this->data['section']['data_folder'] . '/main.png';
-
-        if (!($res = $this->db->fetch("SELECT articles.id AS article_id, title, DATE_FORMAT(pub_date, '%e.%m.%Y') AS pub_date, views, verifier_id, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE articles.id={$_REQUEST['param2']}")) ||
+        if (!($res = $this->db->fetch("SELECT articles.id AS article_id, title, DATE_FORMAT(pub_date, '%e.%m.%Y') AS pub_date, views, verifier_id, users.id AS user_id, login FROM articles INNER JOIN users ON articles.author_id = users.id WHERE articles.id=" . $this->db->escapeString($_REQUEST['param2']))) ||
             !file_exists(PATH_SECTION . $this->data['section']['data_folder'] . '/' . $res[0]['article_id']))
             throw new HttpException(404);
 

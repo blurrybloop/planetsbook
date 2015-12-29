@@ -13,7 +13,7 @@ class SearchController extends ControllerBase
 
     function search(){
         $this->validateArgs($_REQUEST, [['text', 'string']]);
-        $text = $_REQUEST['text'];
+        $text = trim($_REQUEST['text']);
         $files = glob(PATH_SECTION . '*/*/{description,text}.txt', GLOB_BRACE);
         $sql = 'SELECT id, title FROM articles WHERE id IN(';
         foreach ($files as $file){

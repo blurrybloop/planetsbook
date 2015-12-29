@@ -70,7 +70,8 @@ require 'msgbox.php'
                                         <div>Сайт: <a href="<?php echo $this->data['profile']['site']?>"><?php echo $this->data['profile']['site']?></a></div>
                                         <?php } ?>
                                         <?php if (!empty($this->data['profile']['from_where'])) { ?>
-                                        <div>Откуда: <?php echo $this->data['profile']['from_where']?></div>
+                                    <div>
+                                        Откуда: <?php echo htmlspecialchars($this->data['profile']['from_where'], ENT_QUOTES) ?></div>
                                         <?php } ?>
                                     </section>
                                 </section>
@@ -85,8 +86,8 @@ require 'msgbox.php'
                                             </div>
                                             <div>
 
-                                                <label id="upload_avatar">Загрузить изображение</label>
-                                                <label id="remove_avatar">Удалить аватар</label>
+                                                <label id="upload_avatar">Выбрать</label>
+                                                <label id="remove_avatar">Удалить</label>
                                                 <label id="reset_avatar">Отменить</label>
                                             </div>
                                         </div>
@@ -95,18 +96,18 @@ require 'msgbox.php'
                                         <legend>Смена пароля</legend>
                                         <div>
                                             <label for="old_psw">Старый пароль</label>
-                                            <input type="password" name="old_psw" />
+                                        <input type="password" name="old_psw" pattern="^[A-Za-z0-9_\<\>\!\~\@\#\$\%\^\&\*\(\)\+\=\-_\?\:\;\,\.\/\\]{6,}$" />
                                         </div>
                                         <div>
                                             <label for="new_psw">Новый пароль</label>
-                                            <input type="password" name="new_psw" />
+                                        <input type="password" name="new_psw" pattern="^[A-Za-z0-9_\<\>\!\~\@\#\$\%\^\&\*\(\)\+\=\-_\?\:\;\,\.\/\\]{6,}$" />
                                         </div>
                                     </fieldset>
                                     <fieldset>
                                         <legend>Контакты</legend>
                                         <div>
-                                            <label for="mail">E-mail</label>
-                                            <input type="email" name="mail" value="<?php if (!empty($this->data['profile']['email'])) echo $this->data['profile']['email']?>"/>
+                                            <label for="email">E-mail</label>
+                                            <input type="email" name="email" value="<?php if (!empty($this->data['profile']['email'])) echo $this->data['profile']['email']?>"/>
                                         </div>
                                         <div>
                                             <label for="real_name">Настоящее имя</label>
@@ -134,7 +135,7 @@ require 'msgbox.php'
                                         </div>
                                         <div>
                                             <label for="from_where">Откуда</label>
-                                            <input type="text" name="from_where" maxlength="150" pattern="^.{1,150}$" value="<?php if (!empty($this->data['profile']['from_where'])) echo $this->data['profile']['from_where']?>"/>
+                                        <input type="text" name="from_where" maxlength="150" pattern="^.{1,150}$" value="<?php if (!empty($this->data['profile']['from_where'])) echo  htmlspecialchars($this->data['profile']['from_where'], ENT_QUOTES)?>"/>
                                         </div>
                                     </fieldset>
                                     <input type="hidden" name="avatar_action" value="0" />

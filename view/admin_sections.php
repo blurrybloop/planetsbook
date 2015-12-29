@@ -48,7 +48,7 @@
                                             <?php } ?>
                                             <span class="section_title">
                                                 <img src="<?php echo $section['small_file'] ?>" />
-                                                <?php echo $section['title'] ?>
+                                                <?php echo htmlspecialchars($section['title'], ENT_QUOTES) ?>
                                             </span>
                                             <span class="info">
                                                 <span class="date">
@@ -78,7 +78,7 @@
                                                     <label for="section<?php echo $child['id'] ?>">
                                                         <span class="section_title">
                                                             <img src="<?php echo $child['small_file'] ?>" />
-                                                            <?php echo $child['title'] ?>
+                                                            <?php echo htmlspecialchars($child['title'], ENT_QUOTES) ?>
                                                         </span>
                                                         <span class="info">
                                                             <span class="date">
@@ -118,9 +118,9 @@
                             <form name="section_form" method="post">
                                 <fieldset>
                                     <label for="title">Название</label>
-                                    <input name="title" id="title" type="text" required="" maxlength="50" pattern="^.+$" value="<?php if (!empty($this->data['section']['title'])) echo str_replace('"', '&quot;', $this->data['section']['title'])  ?>" />
+                                    <input name="title" id="title" type="text" required="" maxlength="50" pattern="^.+$" value="<?php if (!empty($this->data['section']['title'])) echo htmlspecialchars($this->data['section']['title'], ENT_QUOTES)  ?>" />
                                     <label for="description">Описание</label>
-                                    <textarea name="description" id="description" required="" pattern="^.+$"><?php if (!empty($this->data['section']['description'])) echo $this->data['section']['description']; ?></textarea>
+                                    <textarea name="description" id="description" required="" pattern="^.+$"><?php if (!empty($this->data['section']['description'])) echo htmlspecialchars($this->data['section']['description'], ENT_QUOTES); ?></textarea>
                                     <label>Категория</label>
                                     <div class="js-combobox" data-combobox-selected="<?php if (isset($this->data['section']['type'])) echo $this->data['section']['type']; ?>" id="cat_combo">
                                         <div data-combobox-option="0">Солнце и Солнечная система</div>

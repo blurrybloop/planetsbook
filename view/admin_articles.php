@@ -62,7 +62,7 @@
                                     <label for="article<?php echo $article['article_id'] ?>">
                                         <img src="/img/down_arrow.png" />
                                         <a href=<?php echo $article['href']?>>
-                                            <?php echo $article['title'] ?>
+                                            <?php echo htmlspecialchars($article['title'], ENT_QUOTES) ?>
                                         </a>
                                         <span class="info">
                                             <span class="date">
@@ -76,7 +76,7 @@
                                             </span>
                                             <?php if (!$this->data['split']) { ?>
                                             <span class="a_section">
-                                                <?php echo $article['section_title'] ?>
+                                                <?php echo htmlspecialchars($article['section_title'], ENT_QUOTES) ?>
                                             </span>
                                             <?php } ?>
                                         </span>
@@ -89,7 +89,7 @@
                                             </span>
                                         </span>
                                     </label>
-                                    <div class="updown_content"><?php echo $article['description'];?></div>
+                                    <div class="updown_content"><?php echo htmlspecialchars($article['description'], ENT_QUOTES);?></div>
                                 </div>
                                 <?php } ?>
                                 <div id="pages">
@@ -106,9 +106,9 @@
                                 <fieldset>
                                     <legend>Оглавление</legend>
                                     <label for="title">Название</label>
-                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" value="<?php if (!empty($this->data['article']['title'])) echo str_replace('"', '&quot;', $this->data['article']['title']); ?>"/>
+                                    <input name="title" id="title" type="text" required="" maxlength="100" pattern="^.+$" value="<?php if (!empty($this->data['article']['title'])) echo htmlspecialchars($this->data['article']['title'], ENT_QUOTES); ?>"/>
                                     <label for="description">Описание</label>
-                                    <textarea name="description" id="description" required="" pattern="^.+$"><?php  if (!empty($this->data['article']['description'])) echo $this->data['article']['description']; ?></textarea>
+                                    <textarea name="description" id="description" required="" pattern="^.+$"><?php  if (!empty($this->data['article']['description'])) echo htmlspecialchars($this->data['article']['description'], ENT_QUOTES); ?></textarea>
                                     <label>Раздел</label>
                                     <div class="js-combobox" id="section_combo" data-combobox-selected="<?php if (!empty($this->data['article']['section_id'])) echo $this->data['article']['section_id']; else if (isset($_GET['section']) && is_numeric($_GET['section'])) echo $_GET['section']; ?>">
                                         <?php if (!empty($this->data['sections'])) {
@@ -129,7 +129,7 @@
                                         </div>
                                     </div>
                                     <div id="article_content">
-                                        <textarea id="contents" name="contents" required="" spellcheck="false"><?php if (!empty($this->data['article']['contents'])) echo $this->data['article']['contents']; ?></textarea>
+                                        <textarea id="contents" name="contents" required="" spellcheck="false"><?php if (!empty($this->data['article']['contents'])) echo htmlspecialchars($this->data['article']['contents'], ENT_QUOTES); ?></textarea>
                                     </div>
                                 </fieldset>
                                 <input type="hidden" name="section_id" id="section_id" />
@@ -311,7 +311,7 @@
                               }
                                   ?>', 'left');
         }, "json").fail(function () {
-            messageBox(j.responseText, 'left');
+            messageBox('<div>' + formatError(j.responseJSON, "message", "details") + "</div>", 'left');
         }).always(function () {
             lock = false;
             $('#pub_submit').removeClass('loading');

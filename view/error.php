@@ -4,7 +4,6 @@
 <?php require 'html_head.php' ?>
 <style>
     #content > div{
-
         top: 40px; 
         left: 40px; 
         position: relative; 

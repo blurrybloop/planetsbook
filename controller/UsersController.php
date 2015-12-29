@@ -120,6 +120,7 @@ class UsersController extends MenuController
     }
 
     function edit(){
+        $this->showErrorPage = FALSE;
         $this->validateArgs($_GET, [['id', 'numeric']]);
         $id = $_GET['id'];
 
@@ -149,12 +150,15 @@ class UsersController extends MenuController
                     continue;
                 
                 if ($key == 'avatar_action'){
-                    if ($value == 1 && isset($_POST['avatar_path'])){
+                    if ($value == 1){
+                        if (empty($_POST['avatar_path']) || !is_numeric($_POST['avatar_path']))
+                            throw new ControllerException('Неправильные параметры запроса');
 
                         if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $_POST['avatar_path'])))
                             throw new ControllerException('Неправильный идентификатор изображения.');
 
-                        if (!($s = PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension']) || $s[0] > 100 || $s[1] > 100)
+
+                        if (!($s = @getimagesize(PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension'])) || $s[0] > 100 || $s[1] > 100)
                             throw new ControllerException('Превышены максимальные размеры аватара (100x100)');
 
                         $values['avatar'] = $_POST['avatar_path'];
@@ -168,7 +172,7 @@ class UsersController extends MenuController
                     if (!empty($value)) $values['psw_hash'] = crypt($value, $this->data['user']['login']);
                     continue;
                 }
-                $values[$key] = empty($value) ? NULL : $value;
+                $values[$key] = empty($value) ? NULL : strip_tags($value);
             }
             $this->db->update('users', $values, ['id' => $id]);  
         }

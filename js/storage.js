@@ -47,7 +47,7 @@
             self.params[v1].search = $.trim($(this).val());
             if (self.params[v1].search.length == 0) self.params[v1].search = undefined;
             self.params[v1].page = 1;
-            self.fetch(self._userID, self.params[v1].search, self.params[v1].sort, self.params[v1].page);
+            self.fetch(v1 == 0 ? self._userID : undefined, self.params[v1].search, self.params[v1].sort, self.params[v1].page);
         });
         $(this).children('img').click(function () { $(this).prev().trigger('input') });
     });
@@ -153,7 +153,7 @@
             if (self.params[v1].sort == $(this).attr('data-combobox-selected')) return;
             self.params[v1].sort = $(this).attr('data-combobox-selected');
             if (v1 == self._storageIndex)
-                self.fetch(self._userID, self.params[v1].search, self.params[v1].sort, self.params[v1].page);
+                self.fetch(self._storageIndex == 0 ? self._userID : 0, self.params[v1].search, self.params[v1].sort, self.params[v1].page);
         })
         $(this).attachCombobox();
     });
@@ -190,7 +190,6 @@ Storage.prototype.upload = function () {
         var p = JSON.parse($(this).contents().find('body').html());
         self.showDescriptDialog("<h2 style='text-align: left;'>Загрузили картинку?</h2><p style='text-align: left;'>Всего несколько слов помогут пользователям найти ее!</p>", p);
         self.fetch(self._storageIndex == 0 ? self._userID : 0, self.params[self._storageIndex].search, self.params[self._storageIndex].sort, self.params[self._storageIndex].page);
-
         if (p.error != undefined)
             self.showError(p);
         else

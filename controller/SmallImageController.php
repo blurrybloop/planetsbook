@@ -1,7 +1,7 @@
 <?php
 
 require_once 'StorageController.php';
-require_once PATH_INCLUDE . 'GDExtensions.php';
+require_once PATH_INCLUDE . 'gd/GDImage.php';
 
 class SmallImageController extends StorageController
 {
@@ -10,8 +10,14 @@ class SmallImageController extends StorageController
     }
 
     protected function onUpload($file){
-        if (!GDExtensions::fitToRect($file, 25, 25, $file))
-            throw new ControllerException('Не удалось изменить размер изображения', GDExtensions::lastError());
+        try {
+            (new GDImage($file['tmp_name'], new Size(25,25), GDImage::RESIZE_FIT))->save();
+        }
+        catch (Exception $ex){
+            $this->errors[] = $file['name'] . ' - ' . $ex->getMessage();
+            return FALSE;
+        }
+
         return TRUE;
     }
 }

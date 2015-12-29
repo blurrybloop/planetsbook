@@ -25,9 +25,6 @@ class SectionsController extends MenuController
         if (!isset($this->data['section']))
             throw new HttpException(404);
 
-        //if (is_file(PATH_SECTION . $this->data['section']['data_folder'] . '/main.png')) 
-       //     $this->data['section']['image'] = $this->app->config['path']['section'] . $this->data['section']['data_folder'] . '/main.png';
-
         $count = $this->db->fetch('SELECT COUNT(*) AS c FROM articles WHERE section_id=' . $this->data['section']['id'], 1)[0]['c'];
         $page = 1;
         if (isset($_GET['page']) && is_numeric($_GET['page'])) $page = $_GET['page'];

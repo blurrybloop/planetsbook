@@ -45,16 +45,16 @@ class CommentsController extends ControllerBase
         if ($_GET['page']>$count_page) return;
         if ($_GET['page']==0) $_GET['page']=1;
 
-        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, CONCAT(avatar, '.', extension) AS avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(comments.add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id LEFT JOIN storage ON avatar=storage.id WHERE comments.article_id = " . $_GET['article_id'] . " GROUP BY comments.id ORDER BY date_add DESC LIMIT " . (($_GET['page']-1)*$_GET['page_size']) . ",{$_GET['page_size']}");
+        $res = $this->db->fetch("SELECT login, is_admin, DATE_FORMAT(reg_date, '%e.%m.%Y %H:%i') AS reg_date, CONCAT(avatar, '.', extension) AS avatar, users.id AS user_id, rating, comments_cnt, comments.id, comm_text, DATE_FORMAT(comments.add_date, '%e.%m.%Y %H:%i') AS date_add, SUM(rates.value) as rate FROM comments INNER JOIN users ON (users.id = comments.user_id) LEFT JOIN rates ON rates.comment_id = comments.id LEFT JOIN storage ON avatar=storage.id WHERE comments.article_id = " . $_GET['article_id'] . " GROUP BY comments.id ORDER BY comments.add_date DESC LIMIT " . (($_GET['page']-1)*$_GET['page_size']) . ",{$_GET['page_size']}");
         foreach ($res as &$r)
-            $r['avatar'] = $this->app->config['path']['storage'] . $r['avatar'];
+            if (!empty($r['avatar']))  $r['avatar'] = $this->app->config['path']['storage'] . $r['avatar'];
         unset ($r);
         $this->data['comments'] = $res;
     }
 
     //добавление
     function add(){
-        $this->validateArgs($_GET, [['article_id', 'numeric'], ['text']]);
+        $this->validateArgs($_GET, [['article_id', 'numeric'], ['text', 'string']]);
 
         $article = $_GET['article_id'];
         $text = $_GET['text'];
@@ -71,7 +71,7 @@ class CommentsController extends ControllerBase
 
     //редактирование
     function edit(){
-        $this->validateArgs($_GET, [['comment_id', 'numeric'], ['text']]);
+        $this->validateArgs($_GET, [['comment_id', 'numeric'], ['text', 'string']]);
 
         $id = $_GET['comment_id'];
         $text = $_GET['text'];
@@ -91,7 +91,7 @@ class CommentsController extends ControllerBase
  
     //предпросмотр
     function preview(){
-        $this->validateArgs($_GET, [['text']]);
+        $this->validateArgs($_GET, [['text', 'string']]);
 
         $text = $_GET['text'];
         $this->validateRights([USER_REGISTERED]);
@@ -111,7 +111,7 @@ class CommentsController extends ControllerBase
             throw new ControllerException('Комментарий не существует.');
 
         $this->data['comments'][0] = $res[0];
-        $this->data['comments'][0]['avatar'] = $this->app->config['path']['storage'] . $this->data['comments'][0]['avatar'];
+        if (!empty($this->data['comments'][0]['avatar'])) $this->data['comments'][0]['avatar'] = $this->app->config['path']['storage'] . $this->data['comments'][0]['avatar'];
     }
 
     //текст комментария с bb-кодами
@@ -131,14 +131,13 @@ class CommentsController extends ControllerBase
             throw new ControllerException('Комментарий не существует.');
 
         $this->data['comments'][0] = $res[0];
-        $this->data['comments'][0]['avatar'] = $this->app->config['path']['storage'] . $this->data['comments'][0]['avatar'];
+        if (!empty($this->data['comments'][0]['avatar'])) $this->data['comments'][0]['avatar'] = $this->app->config['path']['storage'] . $this->data['comments'][0]['avatar'];
         $this->outputMode = OUT_TEXT;
     }
 
     //оценка
     function rate(){
         $this->validateArgs($_GET, [['comment_id', 'numeric'], ['value', 'numeric']]);
-
         $id = $_GET['comment_id'];
         $val = $_GET['value'];
 

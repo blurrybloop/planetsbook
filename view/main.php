@@ -6,7 +6,6 @@
     <script src="/js/planet_selector.js"></script>
 </head>
 <body>
-
 <?php 
 echo $this->data['menu'];
     require 'msgbox.php' 

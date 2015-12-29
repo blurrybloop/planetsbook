@@ -20,10 +20,10 @@ class AdminController extends MenuController
 
     function messages(){
         $this->showErrorPage = TRUE;
-        parent::validateRights([USER_ADMIN]);
+        $this->validateRights([USER_ADMIN]);
         $res = $this->db->fetch('SELECT sections.title as section_title, data_folder, articles.id AS article_id, articles.title as article_title, users.id as user_id, login, DATE_FORMAT(pub_date, \'%e.%m.%Y %H:%i\') AS pub_date FROM articles INNER JOIN users ON articles.author_id=users.id INNER JOIN sections ON sections.id = articles.section_id WHERE verifier_id IS NULL');
         foreach ($res as &$r){
-            $r['href'] = $this->app->config['path']['section'] . $r['data_folder'] . '/' . $r['article_id'];
+            $r['href'] = $this->app->config['path']['section'] . $r['data_folder'] . '/' . $r['article_id'] . '/';
             $r['description'] = @file_get_contents(PATH_SECTION . $r['data_folder'] . '/' . $r['article_id'] . '/description.txt');
         }
         unset($r);
@@ -50,7 +50,7 @@ class AdminController extends MenuController
             if ($id) $this->validateRights([USER_ADMIN]);
 
             //торжественно клянусь, что замышляю только шалость!
-            $this->validateArgs($_POST, [['section_id', 'numeric'], ['title'], ['description'], ['contents']]);
+            $this->validateArgs($_POST, [['section_id', 'numeric'], ['title', 'string'], ['description', 'string'], ['contents', 'string']]);
 
             //для начала проверим, в какой раздел лезет пользователь
             if (!$this->db->fetch('SELECT id FROM sections WHERE id=' . $_POST['section_id'] . (empty($this->data['user']['is_admin']) ? ' AND allow_user_articles=1' : '')))
@@ -149,7 +149,7 @@ class AdminController extends MenuController
                 $this->validateArgs($_POST, [['planet_id', 'numeric']]);
 
             if (($_POST['big_image_action'] == IMAGE_ADD && empty($_POST['big_image_path'])) || 
-                ($_POST['small_image_action'] == IMAGE_ADD && empty($_POST['small_image_action'])))
+                ($_POST['small_image_action'] == IMAGE_ADD && empty($_POST['small_image_path'])))
                 throw new ControllerException('Неправильные параметры запроса.<br/>Повторите действие позже.');
 
             if (!$id && $_POST['small_image_action'] != IMAGE_ADD)
@@ -172,12 +172,16 @@ class AdminController extends MenuController
 
             $_POST['show_main'] = (!empty($_POST['show_main']) && strtolower($_POST['show_main']) == 'on') ? 1 : 0;
             $_POST['allow_user_articles'] = (!empty($_POST['allow_user_articles']) && strtolower($_POST['allow_user_articles']) == 'on') ? 1 : 0;
-            if ($_POST['show_main'] == 1 && (($id && $_POST['big_image_action'] == IMAGE_DELETE) || (!$id && $_POST['big_image_action'] != IMAGE_ADD)))
-                throw new ControllerException("Вы должны выбрать изображение для отображения на главной странице.");
 
             if ($id){
-                if (!($res = $this->db->fetch('SELECT data_folder from sections WHERE id=' . $id)))
+                if (!($res = $this->db->fetch('SELECT data_folder, big_image from sections WHERE id=' . $id)))
                     throw new ControllerException('Раздел еще не существует.');
+
+                if (empty($res[0]['big_image']) && $_POST['show_main'] == 1 && $_POST['big_image_action'] != IMAGE_ADD)
+                    throw new ControllerException("Вы должны выбрать изображение для отображения на главной странице.");
+                else if ($_POST['show_main'] == 1 && $_POST['big_image_action'] == IMAGE_DELETE)
+                    throw new ControllerException("Вы должны выбрать изображение для отображения на главной странице.");
+
                 $old_folder = PATH_SECTION . $res[0]['data_folder'];
 
                 $section_folder = PATH_SECTION . $_POST['data_folder'];
@@ -189,6 +193,9 @@ class AdminController extends MenuController
                 }
             }
             else {
+                if ($_POST['show_main'] == 1 && $_POST['big_image_action'] != IMAGE_ADD)
+                    throw new ControllerException("Вы должны выбрать изображение для отображения на главной странице.");
+
                 $section_folder = PATH_SECTION . $_POST['data_folder'];
                 if (!@mkdir($section_folder)) { //создаем папку
                     unset($section_folder);
@@ -197,8 +204,7 @@ class AdminController extends MenuController
             } 
 
             if ($_POST['big_image_action'] == IMAGE_ADD){
-                require_once PATH_INCLUDE . 'GDExtensions.php';
-                if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $_POST['big_image_path'])))
+                if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $this->db->escapeString($_POST['big_image_path']))))
                     throw new ControllerException('Неправильный идентификатор изображения.');
 
                 if (!($s = PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension']) || $s[0] > 500 || $s[1] > 500)
@@ -206,8 +212,7 @@ class AdminController extends MenuController
             }
 
             if ($_POST['small_image_action'] == IMAGE_ADD){
-                require_once PATH_INCLUDE . 'GDExtensions.php';
-                if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $_POST['small_image_path'])))
+                if (!($res = $this->db->fetch('SELECT id, extension FROM storage WHERE id=' . $this->db->escapeString($_POST['small_image_path']))))
                     throw new ControllerException('Неправильный идентификатор изображения.');
 
                 if (!($s = PATH_STORAGE . $res[0]['id'] . '.' . $res[0]['extension']) || $s[0] > 500 || $s[1] > 500)
@@ -256,8 +261,8 @@ class AdminController extends MenuController
             $res = $this->db->fetch('SELECT sections.id AS id, title, data_folder, parent_id, DATE_FORMAT(creation_date, "%e.%m.%Y") AS creation_date, CONCAT(big_image, ".", big.extension) AS big_file, CONCAT(small_image, ".", small.extension) AS small_file, users.id AS user_id, login FROM sections INNER JOIN users ON creator_id=users.id LEFT JOIN storage big ON big_image=big.id LEFT JOIN storage small ON small_image=small.id');
             $this->data['sections'] = [];
             foreach ($res as $s){
-                $s['big_file'] = $this->app->config['path']['storage'] . $s['big_file'];
-                $s['small_file'] = $this->app->config['path']['storage'] . $s['small_file'];
+                if (!empty( $s['big_file'])) $s['big_file'] = $this->app->config['path']['storage'] . $s['big_file'];
+                if (!empty( $s['small_file']))  $s['small_file'] = $this->app->config['path']['storage'] . $s['small_file'];
                 if (!empty($s['parent_id'])){
                     $this->data['sections'][$s['parent_id']]['children'][] = $s; //дочерние разделы идут в children родителя
                 }
@@ -294,8 +299,8 @@ class AdminController extends MenuController
                 throw new ControllerException('Этот раздел еще не существует.');
 
             foreach ($res as &$r){
-                $r['big_file'] = $this->app->config['path']['storage'] . $r['big_file'];
-                $r['small_file'] = $this->app->config['path']['storage'] . $r['small_file'];
+                if (!empty( $r['big_file'])) $r['big_file'] = $this->app->config['path']['storage'] . $r['big_file'];
+                if (!empty( $r['small_file'])) $r['small_file'] = $this->app->config['path']['storage'] . $r['small_file'];
             }
             unset($r);
 
@@ -399,6 +404,7 @@ class AdminController extends MenuController
         //удаление статьи
         else if ($action == 'delete'){
             $this->showErrorPage = FALSE;
+            $this->validateRights([USER_ADMIN]);
             $this->validateArgs($_GET, [['article_id', 'numeric']]);
             $id = $_GET['article_id'];
 
@@ -413,7 +419,10 @@ class AdminController extends MenuController
     }
 
     function storage(){}
+
     function stats(){
+        $this->validateRights([USER_ADMIN]);
+
         if (isset($_REQUEST['top_articles'])){
             if ($t = $this->db->fetch('SELECT views FROM articles ORDER BY views DESC LIMIT 5')){
                 $v = [0];
@@ -437,7 +446,7 @@ class AdminController extends MenuController
             $this->validateArgs($_REQUEST, [['start_date', 'string'], ['end_date', 'string'], ['resolution', 'numeric']]);
 
             $s = $_REQUEST['start_date'];
-            $e =$_REQUEST['end_date'];
+            $e = $_REQUEST['end_date'];
             $r = $_REQUEST['resolution'];
        
             $v = [];
@@ -460,8 +469,6 @@ class AdminController extends MenuController
                 $g->data($v);
                 $g->title(['text' => 'Использование хранилища', 'color' => new Color(255,255,255), 'font' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Bold.ttf' ,14), 'margin' => ['top' => 0, 'bottom' => 15]]);
                 $g->axis(['font_x' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf',8, 90), 'font_y' => new Font(PATH_ROOT . '/css/fonts/OpenSans-Regular.ttf',8), 'bgcolor' => new Color(255,255,255,100), 'fgcolor' => new Color(255,255,255), 'y_lines' => TRUE]);
-                //$g->max(50);
-                //$g->min(0);
                 $g->draw($this->data['image']->getHandle());
             }
             $this->data['subaction'] = 'image';
@@ -495,11 +502,16 @@ class AdminController extends MenuController
 
             if ($t = $this->db->fetch('SELECT articles.id AS id, articles.title AS title, data_folder, users.id AS user_id, login FROM articles INNER JOIN sections ON articles.section_id=sections.id INNER JOIN users ON author_id=users.id ORDER BY views DESC LIMIT 5')) { 
                 foreach ($t as &$a)
-                    $a['href'] = $this->app->config['path']['section'] . $a['data_folder'] . '/' . $a['id'];
+                    $a['href'] = $this->app->config['path']['section'] . $a['data_folder'] . '/' . $a['id'] . '/';
                 unset($a);
                 $this->data['stats']['top_articles'] = $t;
             }
         }
+    }
+
+    function users(){
+        $this->validateRights([USER_ADMIN]);
+        header('Location: http://planetsbook.pp.ua/admin');
     }
 
     function process($action){

@@ -144,6 +144,7 @@ class Font{
 		if (!$this->isPHPFont()){
 			return imagettfbbox($this->size,$this->angle,$this->family,$text);
 		}
+        return NULL;
 	}
 
     static function getDefault(){
