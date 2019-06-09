@@ -511,7 +511,7 @@ class AdminController extends MenuController
 
     function users(){
         $this->validateRights([USER_ADMIN]);
-        header('Location: http://planetsbook.pp.ua/admin');
+        header('Location: http://' . $_SERVER['HTTP_HOST'] . '/admin');
     }
 
     function process($action){

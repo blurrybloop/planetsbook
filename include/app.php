@@ -21,10 +21,11 @@ class Application
     }
 
     public function callController($name, $data = NULL){
-        if (!is_file(PATH_CONTROLLER . $name . 'Controller.php'))
+        $controllerPath = PATH_CONTROLLER . ucfirst($name . 'Controller.php');
+        if (!is_file($controllerPath))
             throw new HttpException(404);
 
-        include(PATH_CONTROLLER . $name . 'Controller.php');
+        include($controllerPath);
         $class= strtolower($name) . 'Controller';
 
         if (!class_exists($class))

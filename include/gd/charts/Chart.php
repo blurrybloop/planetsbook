@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '\..\GDGraphicalObjects.php';
+require_once __DIR__ . '/../GDGraphicalObjects.php';
 
 class ChartException extends Exception{
     function __construct($message, $code = 0, Exception $previous = NULL){
